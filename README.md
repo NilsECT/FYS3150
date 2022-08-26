@@ -12,3 +12,7 @@ contains all need to run the code
 ## tex
 
 contains .tex and .pdf file of the report
+
+## Noob i Github? Lær her! (Det rimte)
+
+https://learngitbranching.js.org/
