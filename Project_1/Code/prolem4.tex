@@ -1,0 +1,78 @@
+\documentclass[english,notitlepage]{article}  % defines the basic parameters of the document
+\usepackage[T1]{fontenc} %for å bruke æøå
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} %for å inkludere grafikk
+\usepackage{mathpazo}
+\usepackage[norsk]{babel}
+% Standard stuff
+\usepackage{amsmath,graphicx,varioref,verbatim,amsfonts,geometry,gensymb, multirow}
+% colors in text
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+% Hyper refs
+\usepackage[colorlinks=true,allcolors=black]{hyperref}
+
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{tikz}             % draw figures manually
+\usepackage{subfigure}        % imports a lot of cool and useful figure commands
+\usepackage{float}
+\usepackage{circuitikz}
+
+\usepackage{csquotes}
+\usepackage[backend=biber,style=alphabetic,sorting=ynt]{biblatex} %Imports biblatex package
+\addbibresource{referanser.bib}
+
+\begin{document}
+\title{Project 1 - Problem 4}
+\date{\today}
+
+\maketitle
+
+We have the following discretized expression:
+
+\begin{equation}\label{eq:second_derr}
+    \left[\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + O(h^2) = f_i\right]
+\end{equation}
+
+and we define $v_i = \frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} \approx f_i$ and $\vec{v}$ to be the vector containing all $v_i$.
+
+With this in mind we can set up a matrix equation with a tri-diagonal matrix, $\boldsymbol{A}\vec{v} = \vec{g}$, as
+\begin{equation}\label{eq:mat_Avg}
+    \begin{bmatrix}
+        2 & -1 & 0 & 0 \\
+        -1 & 2 & -1 & 0 \\
+        0 & -1 & 2 & -1 \\
+        0 & 0 & -1 & 2
+    \end{bmatrix} \begin{bmatrix}
+        v_1\\
+        v_2\\
+        v_3\\
+        v_4
+    \end{bmatrix} = \begin{bmatrix}
+        g_1\\
+        g_2\\
+        g_3\\
+        g_4
+    \end{bmatrix}
+\end{equation}
+
+We can now by compute $\boldsymbol{A}\vec{v}$ and compare the each row to \hyperref[eq:second_derr]{equation \ref*{eq:second_derr}}. We can multiply \hyperref[eq:second_derr]{equation \ref*{eq:second_derr}} by $h^2$ on both sides and define the right-hand side to be $g_i$ defining $\vec{g}$ appropriately we get the following:
+
+\begin{equation}\label{eq:mat_Vhf}
+    \begin{bmatrix}
+        2v_1 & -v_2 & 0 & 0 \\
+        -v_1 & 2v_2 & -v_3 & 0 \\
+        0 & -v_2 & 2v_3 & -v_4 \\
+        0 & 0 & -v_3 & 2v_4
+    \end{bmatrix} = \begin{bmatrix}
+        g_1 \equiv h^2 f_1\\
+        g_2 \equiv h^2 f_2\\
+        g_3 \equiv h^2 f_3\\
+        g_4 \equiv h^2 f_4
+    \end{bmatrix}
+\end{equation}
+
+So we can represent the discretized equation of the second derrivative as a matrix equation.
+
+
+\end{document}
