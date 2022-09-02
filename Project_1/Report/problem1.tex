@@ -1,0 +1,131 @@
+\documentclass[english,notitlepage]{revtex4-1}  % defines the basic parameters of the document
+%For preview: skriv i terminal: latexmk -pdf -pvc filnavn
+
+
+
+% if you want a single-column, remove reprint
+
+% allows special characters (including æøå)
+\usepackage[utf8]{inputenc}
+%\usepackage[english]{babel}
+
+%% note that you may need to download some of these packages manually, it depends on your setup.
+%% I recommend downloading TeXMaker, because it includes a large library of the most common packages.
+
+\usepackage{physics,amssymb}  % mathematical symbols (physics imports amsmath)
+\include{amsmath}
+\usepackage{graphicx}         % include graphics such as plots
+\usepackage{xcolor}           % set colors
+\usepackage{hyperref}         % automagic cross-referencing (this is GODLIKE)
+\usepackage{listings}         % display code
+\usepackage{subfigure}        % imports a lot of cool and useful figure commands
+\usepackage{float}
+%\usepackage[section]{placeins}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usetikzlibrary{quantikz}
+% defines the color of hyperref objects
+% Blending two colors:  blue!80!black  =  80% blue and 20% black
+\hypersetup{ % this is just my personal choice, feel free to change things
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}}
+
+%% Defines the style of the programming listing
+%% This is actually my personal template, go ahead and change stuff if you want
+
+
+
+%% USEFUL LINKS:
+%%
+%%   UiO LaTeX guides:        https://www.mn.uio.no/ifi/tjenester/it/hjelp/latex/
+%%   mathematics:             https://en.wikibooks.org/wiki/LaTeX/Mathematics
+
+%%   PHYSICS !                https://mirror.hmc.edu/ctan/macros/latex/contrib/physics/physics.pdf
+
+%%   the basics of Tikz:       https://en.wikibooks.org/wiki/LaTeX/PGF/Tikz
+%%   all the colors!:          https://en.wikibooks.org/wiki/LaTeX/Colors
+%%   how to draw tables:       https://en.wikibooks.org/wiki/LaTeX/Tables
+%%   code listing styles:      https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+%%   \includegraphics          https://en.wikibooks.org/wiki/LaTeX/Importing_Graphics
+%%   learn more about figures  https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions
+%%   automagic bibliography:   https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management  (this one is kinda difficult the first time)
+%%   REVTeX Guide:             http://www.physics.csbsju.edu/370/papers/Journal_Style_Manuals/auguide4-1.pdf
+%%
+%%   (this document is of class "revtex4-1", the REVTeX Guide explains how the class works)
+
+
+%% CREATING THE .pdf FILE USING LINUX IN THE TERMINAL
+%%
+%% [terminal]$ pdflatex template.tex
+%%
+%% Run the command twice, always.
+%% If you want to use \footnote, you need to run these commands (IN THIS SPECIFIC ORDER)
+%%
+%% [terminal]$ pdflatex template.tex
+%% [terminal]$ bibtex template
+%% [terminal]$ pdflatex template.tex
+%% [terminal]$ pdflatex template.tex
+%%
+%% Don't ask me why, I don't know.
+
+\begin{document}
+
+\title{Title of the document}      % self-explanatory
+\author{Your name(s) here}          % self-explanatory
+\date{\today}                             % self-explanatory
+\noaffiliation                            % ignore this, but keep it.
+
+
+\maketitle
+
+\textit{List a link to your github repository here!}
+
+\section*{Problem 1}
+
+  The one-dimensional Poisson equation can be written as
+
+  \begin{equation}
+    -\frac{d^2 u}{dx^2} = f(x) \label{eqn:poisson}
+  \end{equation}
+
+  where $f(x)$, the source term, is known. We assume a setup such that the source term is $f(x) = 100e^{-10x}$, $x \in [0, 1]$, and the boundary conditions are $u(0) = 0$ and $u(1)=0$.
+
+
+  We want to check analytically that an exact solution to \eqref{eqn:poisson} can be given by
+
+  \begin{equation}
+    u(x) = 1 - (1-e^{-10})x - e^{-10x} \label{eqn:u(x)}
+  \end{equation}
+
+  We differentiate $u(x)$ twice and find that
+
+  \begin{equation}
+    \begin{split}
+      \frac{d^2}{dx^2} u(x) &= \bigg( 1 - (1-e^{-10} ) x - e^{-10x} \bigg) \\
+      &=  \frac{d}{dx} \bigg( 1-e^{-10} + 10 e^{-10x} \bigg) \\
+      &=  - 100 e^{-10x} \\
+      &= -f(x) \\
+    \end{split}
+  \end{equation}
+
+  as we wanted. In addition, we check whether the boundary conditions are fulfilled:
+
+  \begin{equation}
+    \begin{split}
+      u(0) &= \big( 1 - e^0 \big) = 1-1 \\
+      &= 0 \\
+      u(1) &= 1-1+e^{-10} - e^{-10} \\
+      &= 0 \\
+    \end{split}
+  \end{equation}
+
+  This means $u(x)$ in \eqref{eqn:u(x)} is a solution to our specific setup.
+
+
+
+
+\end{document}
