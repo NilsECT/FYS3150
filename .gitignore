@@ -24,6 +24,14 @@ temp*
 *.toc
 *.snm
 *.vrb
+
+*.bbl
+*.bcf
+*.fdb_latexmk
+*.fls
+*.run.xml
+*.synctex.gz
+
 # eclipse files:
 *.cproject
 *.project
