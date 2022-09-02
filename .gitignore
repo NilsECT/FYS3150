@@ -24,6 +24,14 @@ temp*
 *.toc
 *.snm
 *.vrb
+
+*.bbl
+*.bcf
+*.fdb_latexmk
+*.fls
+*.run.xml
+*.synctex.gz
+
 # eclipse files:
 *.cproject
 *.project
@@ -54,3 +62,6 @@ doc/Projects/2016/Project2/.project2_2016.copyright
 doc/Programs/ParallelizationMPI/dill10
 
 doc/pub/*
+
+# for macOS:
+.DS_Store
