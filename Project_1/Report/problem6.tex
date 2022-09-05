@@ -1,0 +1,144 @@
+\documentclass[english,notitlepage]{article}  % defines the basic parameters of the document
+\usepackage[T1]{fontenc} %for å bruke æøå
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} %for å inkludere grafikk
+\usepackage{mathpazo}
+\usepackage[norsk]{babel}
+% Standard stuff
+\usepackage{amsmath,graphicx,varioref,verbatim,amsfonts,geometry,gensymb, multirow}
+% colors in text
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+% Hyper refs
+\usepackage[colorlinks=true,allcolors=black]{hyperref}
+
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{tikz}             % draw figures manually
+\usepackage{subfigure}        % imports a lot of cool and useful figure commands
+\usepackage{float}
+\usepackage{circuitikz}
+
+\usepackage{csquotes}
+\usepackage[backend=biber,style=alphabetic,sorting=ynt]{biblatex} %Imports biblatex package
+\addbibresource{referanser.bib}
+
+\begin{document}
+\title{Project 1 - Problem 6}
+\date{\today}
+
+\maketitle
+
+The general expression for $\boldsymbol{A}\vec{v} = \vec{g}$ with $\vec{a}$, $\vec{b}$ and $\vec{c}$ being the sub-, main- and supdiagonal respectively is:
+\begin{equation}\label{eq:mat_Avg}
+    \begin{bmatrix}
+        b_1 & c_2 & 0 & 0 \\
+        a_1 & b_2 & c_3 & 0 \\
+        0 & a_2 & b_3 & c_4 \\
+        0 & 0 & a_3 & b_4
+    \end{bmatrix} \begin{bmatrix}
+        v_1\\
+        v_2\\
+        v_3\\
+        v_4
+    \end{bmatrix} = \begin{bmatrix}
+        g_1\\
+        g_2\\
+        g_3\\
+        g_4
+    \end{bmatrix}
+\end{equation}
+
+We can solve this with Gaussian elimination in two general steps: \hyperref[sec:forward]{[1]} Forward substitution and \hyperref[sec:backward]{[2]} Backward substitution.
+
+\subsection*{Forward substitution}\label{sec:forward}
+
+The goal here is to get an upper triangular matrix, that is we want to do the follwoing:
+\begin{equation*}
+    \begin{bmatrix}
+        \cdot & \cdot & \cdot & \cdot \\
+        \cdot & \cdot & \cdot & \cdot \\
+        \cdot & \cdot & \cdot & \cdot \\
+        \cdot & \cdot & \cdot & \cdot
+    \end{bmatrix} \begin{bmatrix}
+        \cdot\\
+        \cdot\\
+        \cdot\\
+        \cdot
+    \end{bmatrix} = \begin{bmatrix}
+        \cdot\\
+        \cdot\\
+        \cdot\\
+        \cdot
+    \end{bmatrix}
+    \rightarrow
+    \begin{bmatrix}
+        \cdot & \cdot & \cdot & \cdot \\
+        0 & \cdot & \cdot & \cdot \\
+        0 & 0 & \cdot & \cdot \\
+        0 & 0 & 0 & \cdot
+    \end{bmatrix} \begin{bmatrix}
+        \cdot\\
+        \cdot\\
+        \cdot\\
+        \cdot
+    \end{bmatrix} = \begin{bmatrix}
+        \cdot\\
+        \cdot\\
+        \cdot\\
+        \cdot
+    \end{bmatrix}
+\end{equation*}
+
+So we want to get rid of all $a_i$ entries in \hyperref[eq:mat_Avg]{the matrix equation (\ref*{eq:mat_Avg})}. We will number and denote the rows with roman numerals.
+
+\begin{gather}
+    \RN{2} = \RN{2} - \frac{a_2}{b_1}\RN{1}\\
+    \text{The diagonal new entries will be denoted } \tilde{b_i} \nonumber \\
+    \RN{3} = \RN{3} - \frac{a_3}{\tilde{b_2}}\RN{2}\\
+    \RN{4} = \RN{4} - \frac{a_4}{\tilde{b_3}}\RN{3}\\
+\end{gather}
+
+This gives us the following algorithm for precdure
+\begin{gather}\label{eq:for}
+    \tilde{b_1} = b_1 \\
+    \tilde{b_i} = b_i - \frac{a_i}{\tilde{b_{i-1}}}c_{i-1}\\\label{line:for_b}
+    \tilde{g_1} = g_1 \\
+    \tilde{g_i} = g_i - \frac{a_i}{\tilde{b_{i-1}}}\tilde{g_{i-1}}\\\label{line:for_g}
+\end{gather}
+This will be for $i = 2, 3, ..., n$ for a general tridiagonal matrix.
+
+\subsection*{Backward substitution}\label{sec:backward}
+
+Now that we have done the forward substitution we want to find the solution to all $v_i$ from the following equation:
+
+\begin{equation}
+    \begin{bmatrix}
+        \tilde{b_1} & c_2 & 0 & 0 \\
+        0 & \tilde{b_2} & c_3 & 0 \\
+        0 & 0 & \tilde{b_3} & c_4 \\
+        0 & 0 & 0 & \tilde{b_4}
+    \end{bmatrix} \begin{bmatrix}
+        v_1\\
+        v_2\\
+        v_3\\
+        v_4
+    \end{bmatrix} = \begin{bmatrix}
+        \tilde{g_1}\\
+        \tilde{g_2}\\
+        \tilde{g_3}\\
+        \tilde{g_4}
+    \end{bmatrix}
+\end{equation}
+
+we quickly see that $v_4 = \frac{\tilde{g_4}}{\tilde{b_4}}$ and to get the remaining $v_i$ we move up with the following algorithm (we include the case of $v_n$ to generalize the algorithm):
+\begin{gather}\label{eq:back}
+    v_n = \frac{\tilde{g_n}}{\tilde{b_n}}\\
+    v_i = \frac{\tilde{g_i} - c_iv_{i-1}}{\tilde{b_i}}\\
+\end{gather}
+for $i = n-1, n-2, ..., 2, 1$.
+
+\subsection*{FLOPs}
+
+We can see that \hyperref[eq:for]{algorithm \ref*{eq:for}} requires $2(n-1)$ floating point operations. $n-1$ FLOPs for \hyperref[line:for_b]{equation (\ref*{line:for_b})} and \hyperref[line:for_g]{equation (\ref*{line:for_g})} each. From \hyperref[eq:back]{equation \ref*{eq:back}} we can count $3(n-1) + 1$ FLOPs. This gives us a total of $5n - 4$ FLOPs to solve $\boldsymbol{A}\vec{v} = \vec{g}$ with a tridiagonal matrix of dimentions $n\times n$.
+
+\end{document}
