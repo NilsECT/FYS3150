@@ -33,8 +33,8 @@ int main (){
     clock_t t1 = clock();
     
     for     (int i = 1; i<n; i++){
-        b(i) = b(i) - (a(i)/b(i-1))*c(i);
-        g(i) = g(i) - (a(i)/b(i-1))*g(i);
+        b(i) = b(i) - (a(i)/b(i-1))*c(i-1);
+        g(i) = g(i) - (a(i)/b(i-1))*g(i-1);
 
     }
 
@@ -43,8 +43,8 @@ int main (){
     for     (int i=n-2; i>=0; i--){
         v(i) = (g(i) - c(i)*v(i+1))/b(i);
     }
-    std::cout << g << std::endl;
-    std::cout << v << std::endl;
+    //std::cout << g << std::endl;
+    //std::cout << v << std::endl;
 
 
     // Stop measuring time
