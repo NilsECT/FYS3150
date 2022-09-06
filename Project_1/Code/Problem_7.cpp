@@ -55,7 +55,7 @@ int main (){
     arma::mat A = arma::mat(n, 3); //Defines matrix for easyer writing to file
     for  (int i = 0; i < n; i++){ //for-loop of every element n 
         A(i,0) = x(i); //Defines x as 1. column in the matrix
-        A(i,1) = g(i); //Defines u valus as 2. column in the matrix
+        A(i,1) = u(x(i)); //Defines u valus as 2. column in the matrix
         A(i,2) = v(i);
     }
 
