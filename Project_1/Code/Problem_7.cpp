@@ -37,7 +37,9 @@ int main (){
         g(i) = g(i) - (a(i)/b(i-1))*g(i);
 
     }
+
     v(n-1) = g(n-1)/b(n-1);
+    
     for     (int i=n-2; i>=0; i--){
         v(i) = (g(i) - c(i)*v(i+1))/b(i);
     }
