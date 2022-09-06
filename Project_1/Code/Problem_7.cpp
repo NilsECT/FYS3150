@@ -15,7 +15,7 @@ double f(double x){
 
 int main (){
     int N = 1;
-    int n = 10;
+    int n = 1000;
     double h = 1./n;
     arma::vec x = arma::linspace(0,N,n);
     arma::vec g = arma::vec(n);   
@@ -39,7 +39,7 @@ int main (){
     }
 
     v(n-1) = g(n-1)/b(n-1);
-    
+
     for     (int i=n-2; i>=0; i--){
         v(i) = (g(i) - c(i)*v(i+1))/b(i);
     }
