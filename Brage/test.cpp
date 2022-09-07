@@ -4,12 +4,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <armadillo>
 
 int main() {
-    std::vector<int> tall(10);
-
-    for (int t : tall) {
-        std::cout << t << std::endl;
+    
+    for (int i=1; i<10; i++) {
+        std::cout << i << std::endl;
     }
 
     return 0;
