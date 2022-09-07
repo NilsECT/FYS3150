@@ -38,7 +38,7 @@ int main (int argc, char* argv[]){
 
     gt(1) = g(1);
     bt(1) = b(1);
-    for     (int i = 2; i<n-1; i++){
+    for     (int i = 2; i<n; i++){
         bt(i) = b(i) - (a(i)/bt(i-1))*c(i-1);
         gt(i) = g(i) - (a(i)/bt(i-1))*gt(i-1);
     }
