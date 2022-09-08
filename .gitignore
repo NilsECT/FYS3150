@@ -13,6 +13,7 @@ tmp*
 temp*
 .#*
 \#*
+
 # tex files:
 *.log
 *.dvi
@@ -24,6 +25,9 @@ temp*
 *.toc
 *.snm
 *.vrb
+
+# REVTeX-specific:
+*Notes.bib
 
 *.bbl
 *.bcf
