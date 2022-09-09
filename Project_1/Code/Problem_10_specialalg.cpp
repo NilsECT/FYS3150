@@ -10,11 +10,9 @@ double u(double x){
   return 1 - (1-exp(-10))*x - exp(-10*x);
 }
 
-int main(int argc, char* argv[]){
+int main(){
 
-
-  /*int n = atoi(argv[1]);  // Number of steps in g, v*/
-  int N = atoi(argv[1]);  // Number of times to "clock" the algorithm
+  int N = 100; // Number of times to "clock" the algorithm
   arma::vec n_vec = arma::logspace(1, 6, 6); // Vector with n= 10, 100, ..., 10^6
 
   int n = 10;  // Initial number of steps
@@ -52,7 +50,6 @@ int main(int argc, char* argv[]){
     b_tilde(0) = 2.;
 
     /////////
-    //    std::vector<double> times(N);
     arma::vec dt_vec = arma::vec(N);
 
     for (int j = 0; j < N; j ++){
