@@ -26,6 +26,13 @@ temp*
 *.snm
 *.vrb
 
+*.pdf
+
+# Intermediate files
+*.txt
+*.csv
+*.dat
+
 # REVTeX-specific:
 *Notes.bib
 
