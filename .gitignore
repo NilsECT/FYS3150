@@ -77,3 +77,6 @@ doc/pub/*
 
 # for macOS:
 .DS_Store
+
+# NO TEST FILES!
+test*
