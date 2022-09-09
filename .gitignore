@@ -2,6 +2,7 @@
 *.o
 *.so
 *.a
+*.exe
 # temporary files:
 *.pyc
 *.bak
