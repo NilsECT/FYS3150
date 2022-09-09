@@ -11,7 +11,6 @@ double f(double x){
 int main (){
     double N = 1;
 
-    std::string name = "out_e";
 
     for (int I = 1; I <= 7; I++){
 
@@ -72,12 +71,8 @@ int main (){
             A(i,1) = v(i);
         }
 
-        std::cout << A << std::endl;
-
-
         // need to change I into string
-        name += (std::string) I;
-        name += ".txt";
+        std::string name = "out_e"+std::to_string(I)+".txt";
 
         std::ofstream MyFile(name); // "(o)fstream" writes to file
         MyFile << A; //What we want in the file

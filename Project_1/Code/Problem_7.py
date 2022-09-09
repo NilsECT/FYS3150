@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 x,u = np.loadtxt("Problem_2.txt", unpack=True) #numpy's txt-reading
-x1, v1 = np.loadtxt("out10.txt", unpack=True)
-x2, v2 = np.loadtxt("out100.txt", unpack=True)
-x3, v3 = np.loadtxt("out1000.txt", unpack=True)
+x1, v1 = np.loadtxt("oute1.txt", unpack=True)
+x2, v2 = np.loadtxt("oute2.txt", unpack=True)
+x3, v3 = np.loadtxt("oute3.txt", unpack=True)
 
 plt.plot(x,u,label="u") # plotting y over x
 plt.plot(x1,v1,"x",linewidth=0.4,label="n=10")
