@@ -2,6 +2,7 @@
 *.o
 *.so
 *.a
+*.exe
 # temporary files:
 *.pyc
 *.bak
@@ -25,6 +26,13 @@ temp*
 *.toc
 *.snm
 *.vrb
+
+*.pdf
+
+# Intermediate files
+*.txt
+*.csv
+*.dat
 
 # REVTeX-specific:
 *Notes.bib
