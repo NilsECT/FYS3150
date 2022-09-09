@@ -1,27 +1,64 @@
 
-#include <iostream>
+#include <time.h>
 #include <armadillo>
-#include <sstream>
+#include <iostream>
 #include <fstream>
-#include <string>
 
 
-int main() {
+double f(double x){
+    return 100*exp(-10*x);
+}
 
-    std::string u_filename = "Problem_2.txt";
-    std::string filename10 = "out10.txt";
-    std::string filename100 = "out100.txt";
-    std::string filename1000 = "out1000.txt";
+int main (){
+    double N = 1;
+    int n = ;
+    double h = N/n;
+    arma::vec x = arma::linspace(0,N,n+1);
+    arma::vec g = arma::vec(n+1); 
+    arma::vec gt = arma::vec(n+1);  // g-tilde
+    arma::vec v = arma::vec(n+1); 
+    arma::vec vt = arma::vec(n+1); // v-tilde
+    
+    v(0) = 0;
+    v(n) = 0;
 
-    arma::mat u_mat, mat10, mat100, mat1000;
-    u_mat.load(u_filename, arma::raw_ascii);
-    mat10.load(filename10, arma::raw_ascii);
-    mat100.load(filename100, arma::raw_ascii);
-    mat1000.load(filename1000, arma::raw_ascii);
+    g(1) = f(x(1))*h*h + v(0);
+    g(n-1) = f(x(n-1))*h*h + v(n);
+    for     (int i = 2; i<n-1; i++){
+        g(i) = f(x(i))*h*h;
+    }
 
-    arma::vec Delta10 = mat10.col(1);
-    std::cout << Delta10 << std::endl;
+    arma::vec a = arma::vec(n).fill(-1.); 
+    arma::vec b = arma::vec(n).fill(2.); //b
+    arma::vec bt = arma::vec(n); //b-tilde
+    arma::vec c = arma::vec(n).fill(-1.); 
 
 
-    return 0;
+
+    gt(1) = g(1);
+    bt(1) = b(1);
+    for     (int i = 2; i<n; i++){
+        bt(i) = b(i) - (a(i)/bt(i-1))*c(i-1);
+        gt(i) = g(i) - (a(i)/bt(i-1))*gt(i-1);
+    }
+    
+    //std::cout << "Hola" << std::endl;
+    
+    v(n-1) = gt(n-1)/bt(n-1);
+    
+    for     (int i=n-2; i>0; i--){
+        v(i) = (gt(i) - c(i)*v(i+1))/bt(i);
+    }
+    //std::cout << v << std::endl;
+
+
+    arma::mat A = arma::mat(n+1, 2); //Defines matrix for easyer writing to file
+    for  (int i = 0; i < n+1; i++){ //for-loop of every element n 
+        A(i,0) = x(i); //Defines x as 1. column in the matrix
+        //A(i,1) = u(x(i)); //Defines u valus as 2. column in the matrix
+        A(i,1) = v(i);
+    }
+
+    std::cout << A << std::endl;
+       return 0;
 }

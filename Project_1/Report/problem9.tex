@@ -1,0 +1,97 @@
+\documentclass[english,notitlepage]{revtex4-1}  % defines the basic parameters
+%of the document For preview: skriv i terminal: latexmk -pdf -pvc filnavn
+
+
+
+% if you want a single-column, remove reprint
+
+% allows special characters (including æøå)
+\usepackage[utf8]{inputenc}
+%\usepackage[english]{babel}
+
+%% note that you may need to download some of these packages manually, it
+%depends on your setup. % I recommend downloading TeXMaker, because it includes
+%a large library of the most common packages.
+
+\usepackage{physics,amssymb}  % mathematical symbols (physics imports amsmath)
+\usepackage{amsmath}
+\usepackage{graphicx}         % include graphics such as plots
+\usepackage{xcolor}           % set colors
+\usepackage{hyperref}         % automagic cross-referencing (this is GODLIKE)
+\usepackage{listings}         % display code
+\usepackage{subfigure}        % imports a lot of cool and useful figure commands
+\usepackage{float}
+%\usepackage[section]{placeins}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usetikzlibrary{quantikz}
+% defines the color of hyperref objects Blending two colors:  blue!80!black  =
+% 80% blue and 20% black
+\hypersetup{ % this is just my personal choice, feel free to change things
+    colorlinks, linkcolor={red!50!black}, citecolor={blue!50!black},
+    urlcolor={blue!80!black}}
+
+
+\begin{document}
+
+\title{Problem 9}      % self-explanatory
+\author{Frida}          % self-explanatory
+\date{\today}                             % self-explanatory
+\noaffiliation                            % ignore this, but keep it.
+
+\maketitle
+
+\section{Problem 9}
+
+\subsection{Specialize the algorithm}
+
+
+We want to specialize the algorithm from Problem 6 for the special case where $\boldsymbol{A}$ is specified by the signature $(-1, 2, -1)$. This menas that $\vec{a}$ and $\vec{c}$ are vectors of length $n-1$, consisting only of the value $-1$, and $\vec{b}$ is an $n$-length vector filled with the value $2$.
+
+Substituting every $a_i, c_i$ with $-1$ and $b_i$ with $2$, we obtain the following equations for
+
+\begin{equation}
+  \begin{split}
+    \tilde{b}_1 &= b_1 = 2 \\
+    \tilde{b}_i &= b_i - \frac{a_i}{\tilde{b}_{i-1}} c_{i-1} = 2 - \frac{1}{\tilde{b}_{i-1}} \\ \label{eqn:specalg_b}
+   \end{split}
+\end{equation}
+
+\begin{equation}
+  \begin{split}
+    \tilde{g}_1 &= g_1 \\
+    \tilde{g}_i &= g_i - \frac{a_i}{\tilde{b}_{i-1}} \tilde{g}_{i-1} = g_i + \frac{\tilde{g}_{i-1}}{\tilde{b}_{i-1}} \\ \label{eqn:specalg_g}
+   \end{split}
+\end{equation}
+
+Similarly, for the backward substitution we get the following equations:
+
+\begin{equation}
+  \begin{split}
+    v_n &= \frac{\tilde{g}_n}{\tilde{b_n}} \\
+    v_i &= \frac{\tilde{g}_i - c_i v_{i+1}}{\tilde{b}_i} = \frac{\tilde{g}_i + v_{i+1}}{\tilde{b}_i} \\ \label{eqn:specalg_v}
+   \end{split}
+\end{equation}
+
+\subsection{Count the number of FLOPs in specialized algorithm}
+
+We count the number of FLOPs required for the special algorithm.
+
+When calculating every element of $\vec{\tilde{b}}$, we see from \eqref{eqn:specalg_b} that we perform 2 FLOPs (consisting of addition and division) for every $i \in [1, N-1]$. The initial element $b_1$ requires no FLOPs. Exactly the same holds for calculating $\vec{\tilde{g}}$ in \eqref{eqn:specalg_g}.
+
+However, for the backward substitution in \eqref{eqn:specalg_v}, we see that in addition to the $2(n-1)$ FLOPs, we need one more for the last term $v_n$.
+
+In total, we require
+
+\begin{equation}
+  3 ~ \cdotp \big[ 2(n-1)\big] + 1 = 6n-5 \text{ FLOPs}
+\end{equation}
+
+\subsection{Implement algorithm in code}
+
+Lastly, we write code that implements the algorithm. The code lies in \lstinline{Problem9.cpp}.
+
+
+\end{document}
