@@ -80,3 +80,6 @@ doc/pub/*
 
 # NO TEST FILES!
 test*
+
+build/
+.vscode/
