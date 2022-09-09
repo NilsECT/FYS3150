@@ -11,7 +11,6 @@ def error(d2u_approx, d2u_exact):
     n = int((len(d2u_exact))/(len(d2u_approx)-1))
     d2u_exact_1 = np.empty(0)
     d2u_exact_1 = np.append(d2u_exact[::n],d2u_exact[-1])
-    
     abs_err = np.absolute(d2u_approx - d2u_exact_1)
     rel_err = np.absolute(abs_err / d2u_exact_1)
     log10_abs_err = np.log10(abs_err)

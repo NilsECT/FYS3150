@@ -11,7 +11,7 @@ int main(){
     //This coes creates to array. One linspace form 0 to N, and one as a function of the first.
     //It then writes to both arrays to a matrix. Last it writes the matrix to a txt-file.
     int N = 1; //lengt of x-array
-    int n = 10000000; //number og slices
+    int n = 10000; //number og slices
     arma::vec x = arma::linspace(0,N,n); //Defines x as linspace form 0 to N wit n slices
     arma::mat A = arma::mat(n, 2); //Defines matrix for easyer writing to file
     for  (int i = 0; i < n; i++){ //for-loop of every element n 
