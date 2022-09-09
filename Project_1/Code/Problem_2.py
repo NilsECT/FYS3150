@@ -11,4 +11,4 @@ plt.plot(x,y,label="u(x)") # plotting y over x
 plt.xlabel("x")
 plt.ylabel("y")
 plt.legend()
-plt.savefig("Problem_2_plot.pdf")
+plt.savefig("Problem_2_plot.svg")

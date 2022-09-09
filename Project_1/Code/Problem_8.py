@@ -8,6 +8,7 @@ x3, v3 = np.loadtxt("out1000.txt", unpack=True)
 
 # Compute numpy arrays with the absolute error, relative error and log10(relative error)
 def error(d2u_approx, d2u_exact):
+    ## Length of exact must be longer or same length than approx for the abs error to work.
     n = int((len(d2u_exact))/(len(d2u_approx)-1))
     d2u_exact_1 = np.empty(0)
     d2u_exact_1 = np.append(d2u_exact[::n],d2u_exact[-1])
@@ -34,7 +35,7 @@ plt.plot(x_3, log10_abs_err_1000,label="n=1000")
 plt.xlabel("x")
 plt.ylabel("log(abs(v-u))")
 plt.legend()
-plt.savefig("log10_abs_err.pdf")
+plt.savefig("log10_abs_err.svg")
 
 #Plot rel error:
 plt.figure(2)
@@ -45,6 +46,6 @@ plt.plot(x_3, log10_rel_err_1000,label="n=1000")
 plt.xlabel("x")
 plt.ylabel("log(abs(v-u)/u))")
 plt.legend()
-plt.savefig("log10_rel_err.pdf")
+plt.savefig("log10_rel_err.svg")
 
 

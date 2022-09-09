@@ -30,10 +30,10 @@ for filename in liste:
 
 k = int(1e7)
 x = np.logspace(1,7,7)
-print(max_rel)
+
 plt.loglog(x,max_rel)
 plt.xlabel("n_step")
 plt.ylabel("relativ_error")
-plt.savefig("Problem_8_c_plot.pdf")
+plt.savefig("Problem_8_c_plot.svg")
 
 
