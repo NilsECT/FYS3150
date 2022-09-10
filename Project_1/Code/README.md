@@ -2,7 +2,7 @@
 
 Hello and welcome to our getting to learn c++ through a series of interesting challenges closely related to linear algebra. This is our first encounter to c++ so the code might be messy now but in the next projects we hope our flaws are rectified.
 
-## The compiling and running of the program is here the ones used for the terminal in Ubuntu 20.04.1 for MacOS you might have to add "-larmadillo" as such: g++ -larmadillo foo.cpp -o foo.exe
+## The compiling and running of the program is here the ones used for the terminal in Ubuntu 20.04.1, for MacOS you might have to add "-larmadillo" as such: g++ -larmadillo foo.cpp -o foo.exe
 
 A few notes, the packages needed to run these programs are listed in the course-page of FYS3150/4150. The page contains a link to the github repository of the course which has so much nice info!
 The commands starting with "xdg-open" are to see the plots created.
@@ -37,3 +37,17 @@ Here it's just to see the plots from the data created in the previous problem.
 #### 3. xdg-open log10_rel_err.svg
 #### 4. python3 Problem_8_c.py
 #### 5. xdg-open Problem_8_c_plot.svg
+
+## Problem 9
+
+Here it is just if you need to, the code is written again in Problem_10_master.cpp. The program we will create here prints out the result to the terminal so if you want to add it to a file just add "> name.txt" in the command line when you run the program (you choose the name).
+
+#### 1. g++ Problem_9.cpp -o Problem_9.exe
+#### 2. ./Problem_9.exe
+
+## Problem 10
+
+Here we will create the tables wanted through a script that takes both problem 7 and 9. The output is printed to the terminal and commented in the .pdf we handed in.
+
+#### 1. g++ Problem_10_master.cpp -o Problem_10.exe
+#### 2. g++ Problem_10.exe
