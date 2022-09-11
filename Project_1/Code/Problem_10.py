@@ -12,4 +12,5 @@ plt.errorbar(np.log10(data["n"]), data["dt_mean_spec"], yerr=data["dt_stddev_spe
 plt.legend()
 plt.xlabel("log_10(n steps)")
 plt.ylabel("Time (s)")
+plt.savefig("plot_10.png")
 plt.show()

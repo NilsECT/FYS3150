@@ -73,7 +73,9 @@
   This means $u(x)$ in \hyperref[eqn:u(x)]{equation \ref*{eqn:u(x)}}
    is a solution to our specific setup.
 
+\section*{Problem 2}
 
+See code in the repository.
 
 
 \section*{Problem 3: Deriving the discretized Poisson equation.}
@@ -352,6 +354,10 @@
 
     We can see that \hyperref[eq:for]{algorithm \ref*{eq:for}} requires $2(n-1)$ floating point operations. $n-1$ FLOPs for \hyperref[line:for_b]{equation (\ref*{line:for_b})} and \hyperref[line:for_g]{equation (\ref*{line:for_g})} each. From \hyperref[eq:back]{equation \ref*{eq:back}} we can count $3(n-1) + 1$ FLOPs. This gives us a total of $5n - 4$ FLOPs to solve $\boldsymbol{A}\vec{v} = \vec{g}$ with a tridiagonal matrix of dimentions $n\times n$.
 
+\section*{Problems 7 and 8}
+
+See code in repository.
+
 \section*{Problem 9}
 
   \subsection*{Specialize the algorithm}
@@ -401,5 +407,18 @@
     \subsection*{Implement algorithm in code}
 
     Lastly, we write code that implements the algorithm. The code lies in \lstinline{Problem9.cpp}.
+
+\section*{Problem 10}
+    
+    
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics*[width=\linewidth]{plot_P10.png}
+    \caption{Logarithmic plot of the time each algorithm takes to compute the same equations with increasing number of steps. We see that the algorithms show a diverging tendency with an increasing number of steps.}
+    \label{fig:P10}
+  \end{center}
+\end{figure}
+
+We've run each algorithm 100 times for each number of steps growing exponentially from 10 to $10^6$. The plot in figure \hyperref[fig:P10]{figure \ref*{fig:P10}} shows the different times each algorithm takes with the standard errors of each mean. We can see that for greater and greater number of steps, the special algorithm proves more and more efficient.
 
 \end{document}

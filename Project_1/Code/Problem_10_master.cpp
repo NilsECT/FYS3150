@@ -17,7 +17,7 @@ double u(double x){
 int main (){
     double N = 1; // Max value of x
     arma::vec n_vec = arma::logspace(1, 6, 6); // Vector with n= 10, 100, ..., 10^6
-    int n_times = 100;  // No. of times to clock the time
+    int n_times = 1000;  // No. of times to clock the time
 
     double width = 16;
     double prec = 2;
