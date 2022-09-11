@@ -5,10 +5,12 @@
 #include <iomanip>
 
 double f(double x){
+  // Calculates the source term in our setup of the Poisson equation
     return 100*exp(-10*x);
 }
 
 double u(double x){
+  // Calculates exact solution of our setup of the Poisson equation
   return 1 - (1-exp(-10))*x - exp(-10*x);
 }
 
@@ -19,7 +21,6 @@ int main (){
 
     double width = 16;
     double prec = 2;
-
 
     std::cout << "#" << std::setw(width) << "n" << std::setw(width) << "dt_mean" << std::setw(width) << "dt_stddev";
     std::cout << std::setw(width) << "dt_mean_spec" << std::setw(width) << "dt_stddev_spec" << std::endl;
@@ -35,12 +36,13 @@ int main (){
         double dt_stddev_special;
 
         std::cout << std::setw(width) << std::setprecision(prec) << std::scientific << (double) n;
-        double h = N/n;
+        double h = N/n; // Step length
         arma::vec x = arma::linspace(0,N,n+1);
 
-        arma::vec g = arma::vec(n+1);
+        // Initialize arrays
+        arma::vec g = arma::vec(n+1);   // RHS of matrix equation
         arma::vec gt = arma::vec(n+1);  // g-tilde
-        arma::vec v = arma::vec(n+1);
+        arma::vec v = arma::vec(n+1);   // discretized solution
 
         v(0) = 0;
         v(n) = 0;
@@ -48,6 +50,7 @@ int main (){
         g(0) = 0;
         g(n) = 0;
 
+        // Boundary terms of RHS equation:
         g(1) = f(x(1))*h*h + v(0);
         g(n-1) = f(x(n-1))*h*h + v(n);
 
@@ -56,14 +59,15 @@ int main (){
             g(i) = f(x(i))*h*h;
         }
 
+        // Initialize arrays:
         arma::vec a = arma::vec(n).fill(-1.);
         arma::vec b = arma::vec(n).fill(2.); // b
         arma::vec bt = arma::vec(n); // b-tilde
         arma::vec c = arma::vec(n).fill(-1.);
 
-
-        arma::vec dt_vec = arma::vec(n_times);
-        arma::vec dt_vec_special = arma::vec(n_times);
+        // For storing the measured times:
+        arma::vec dt_vec = arma::vec(n_times);    // General algorithm
+        arma::vec dt_vec_special = arma::vec(n_times);  // Specialized algorithm
 
         // Measures the time for the general algorithm
         for (int j = 0; j < n_times; j++) {
@@ -71,6 +75,7 @@ int main (){
             // Start measuring time
             clock_t t1 = clock();
 
+            // Forward substitution:
             gt(1) = g(1);
             bt(1) = b(1);
             for (int i = 2; i < n; i++ ){
@@ -80,6 +85,7 @@ int main (){
 
             v(n-1) = gt(n-1)/bt(n-1);
 
+            // Backward substitution
             for (int i = n-2; i > 0; i--){
                 v(i) = (gt(i) - c(i)*v(i+1))/bt(i);
             }
@@ -93,26 +99,14 @@ int main (){
 
         }
 
+        // Initialize arrays:
+        arma::vec g_tilde = arma::vec(n+1); // g-tilde
+        arma::vec v_ = arma::vec(n+1);      // v, for special algorithm
+        arma::vec b_tilde = arma::vec(n+1); // b-tilde
 
-        arma::vec g_tilde = arma::vec(n+1);
-        //arma::vec g_ = arma::vec(n+1);
-        arma::vec v_ = arma::vec(n+1);
-        arma::vec b_tilde = arma::vec(n+1);
-
+        // Boundary terms:
         v_(0) = 0;
         v_(n) = 0;
-
-        /*g_(0) = 0;
-        g_(n) = 0;
-        */
-
-        /*
-        for (int i = 0; i < n-1; i++)
-        {
-          // RHS of matrix equation:
-          g_(i) = f(x(i))*h*h;
-        }
-        */
 
         // Now for the special algorithm:
         for (int j = 0; j < n_times; j ++){
@@ -132,7 +126,7 @@ int main (){
             // Set last element of v:
             v_(n-1) = g_tilde(n-1) / b_tilde(n-1);
 
-            // Back substitution:
+            // Backward substitution:
             for (int i = n-2; i > 0; i--) {
                 v_(i) = (g_tilde(i) + v_(i+1)) / b_tilde(i);
             }
@@ -140,6 +134,7 @@ int main (){
             // Stop measuring time:
             clock_t t2 = clock();
 
+            // Elapsed time:
             double dt = ((double) (t2 - t1)) / CLOCKS_PER_SEC;
 
             dt_vec_special(j) = dt;
@@ -152,7 +147,7 @@ int main (){
         dt_mean_special = arma::mean(dt_vec_special); // Mean
         dt_stddev_special = arma::stddev(dt_vec_special); // Standard deviation
 
-        // Calculate the elapsed time.
+        // Calculate the elapsed time and print to terminal:
         std::cout << std::setw(width) << std::setprecision(prec) << std::scientific << dt_mean;
         std::cout << std::setw(width) << std::setprecision(prec) << std::scientific << dt_stddev;
         std::cout << std::setw(width) << std::setprecision(prec) << std::scientific << dt_mean_special;

@@ -86,3 +86,4 @@ build/
 
 # executables:
 *.exe
+main
