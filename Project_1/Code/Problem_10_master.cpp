@@ -2,6 +2,7 @@
 #include <armadillo>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 double f(double x){
     return 100*exp(-10*x);
