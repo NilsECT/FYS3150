@@ -17,7 +17,7 @@ The executable 'Problem_2.exe' will produce a .txt file named 'Problem_2.txt' wh
 #### 1. g++ Problem_2.cpp -o Problem_2.exe
 #### 2. ./Problem_2.exe
 #### 3. python3 Problem_2.py
-#### 4. xdg-open Problem_2_plot.svg
+#### 4. xdg-open Problem_2_plot.pdf
 
 ## Problem 7
 
@@ -26,17 +26,17 @@ Here we will create quite a few files, some are needed for this problem and othe
 #### 1. g++ Problem_7.cpp -o Problem_7.exe
 #### 2. ./Problem_7.exe
 #### 3. python3 Problem_7.py
-#### 4. xdg-open Problem_7_plot.svg
+#### 4. xdg-open Problem_7_plot.pdf
 
 ## Problem 8
 
 Here it's just to see the plots from the data created in the previous problem.
 
 #### 1. python3 Problem_8.py
-#### 2. xdg-open log10_abs_err.svg
-#### 3. xdg-open log10_rel_err.svg
+#### 2. xdg-open log10_abs_err.pdf
+#### 3. xdg-open log10_rel_err.pdf
 #### 4. python3 Problem_8_c.py
-#### 5. xdg-open Problem_8_c_plot.svg
+#### 5. xdg-open Problem_8_c_plot.pdf
 
 ## Problem 9
 
