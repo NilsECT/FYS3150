@@ -24,8 +24,10 @@ for i in range(1,8):
 x = np.logspace(1,7,7)
 
 plt.loglog(x,max_rel)
-plt.xlabel("n_step")
-plt.ylabel("relativ_error")
-plt.savefig("Problem_8_c_plot.svg")
+plt.title("Plot of the maximum relative error $\\max(\\epsilon_i)$ for each choice of $n_{steps}$")
+plt.xlabel("$n_{steps}$")
+plt.ylabel("relative_error")
+plt.savefig("Problem_8_c_plot.pdf")
+
 
 

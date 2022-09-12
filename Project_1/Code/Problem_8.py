@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 x,u = np.loadtxt("Problem_2.txt", unpack=True) #numpy's txt-reading
-x1, v1 = np.loadtxt("oute1.txt", unpack=True)
-x2, v2 = np.loadtxt("oute2.txt", unpack=True)
-x3, v3 = np.loadtxt("oute3.txt", unpack=True)
+x1, v1 = np.loadtxt("out_e1.txt", unpack=True)
+x2, v2 = np.loadtxt("out_e2.txt", unpack=True)
+x3, v3 = np.loadtxt("out_e3.txt", unpack=True)
 
 # Compute numpy arrays with the absolute error, relative error and log10(relative error)
 def error(d2u_approx, d2u_exact):
@@ -32,10 +32,11 @@ plt.plot(x_1, log10_abs_err_10,label="n=10")
 plt.plot(x_2, log10_abs_err_100,label="n=100")
 plt.plot(x_3, log10_abs_err_1000,label="n=1000")
 
+plt.title("Plot of $\\log_{10}(\\Delta_i) = \\log_{10} (\\vert u_i - v_i \\vert)$")
 plt.xlabel("x")
 plt.ylabel("log(abs(v-u))")
 plt.legend()
-plt.savefig("log10_abs_err.svg")
+plt.savefig("log10_abs_err.pdf")
 
 #Plot rel error:
 plt.figure(2)
@@ -43,9 +44,10 @@ plt.plot(x_1, log10_rel_err_10,label="n=10")
 plt.plot(x_2, log10_rel_err_100,label="n=100")
 plt.plot(x_3, log10_rel_err_1000,label="n=1000")
 
+plt.title("Plot of $\\log_{10}(\\epsilon_i) = \\log_{10} \\left( \\left \\vert \\frac{ u_i - v_i }{ u_i }\\right \\vert \\right)$")
 plt.xlabel("x")
 plt.ylabel("log(abs(v-u)/u))")
 plt.legend()
-plt.savefig("log10_rel_err.svg")
+plt.savefig("log10_rel_err.pdf")
 
 

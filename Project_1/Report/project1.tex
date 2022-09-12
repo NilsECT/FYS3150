@@ -29,7 +29,7 @@
 \author{Brage Andreas Trefjord,\\Sigurd Sønvisen Vargdal,\\Nils Enric Canut Taugbøl,\\Frida Oleivsgard Sørensen}
 \maketitle
 
-\textit{GitHub repository:} \texttt{\url{https://github.com/NilsECT/FYS3150}}
+\textit{GitHub repository:} \texttt{\url{https://github.com/NilsECT/FYS3150/tree/main/Project_1/Code}}
 
 \section*{Problem 1}
 
@@ -75,7 +75,15 @@
 
 \section*{Problem 2}
 
-See code in the repository.
+See code in the repository. You can see the resulting plot in \hyperref[fig:problem2]{figure
+\ref*{fig:problem2}}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\linewidth]{../Code/Problem_2_plot.pdf}
+  \caption{This is a plot of the exact solution to our differential equation.}
+  \label{fig:problem2}
+\end{figure}
 
 
 \section*{Problem 3: Deriving the discretized Poisson equation.}
@@ -161,7 +169,7 @@ See code in the repository.
         \end{bmatrix}
     \end{equation}
 
-    We can now by compute $\boldsymbol{A}\vec{v}$ and compare the each row to \hyperref[eq:second_derr]{equation \ref*{eq:second_derr}}. We can multiply \hyperref[eq:second_derr]{equation \ref*{eq:second_derr}} by $h^2$ on both sides and define the right-hand side to be $g_i$ defining $\vec{g}$ appropriately we get the following:
+    We can now compute $\boldsymbol{A}\vec{v}$ and compare each row to \hyperref[eq:second_derr]{equation \ref*{eq:second_derr}}. We can multiply \hyperref[eq:second_derr]{equation \ref*{eq:second_derr}} by $h^2$ on both sides and define the right-hand side to be $g_i$. Defining $\vec{g}$ appropriately we get the following:
 
     \begin{equation}\label{eq:mat_Vhf}
         \begin{bmatrix}
@@ -354,9 +362,52 @@ See code in the repository.
 
     We can see that \hyperref[eq:for]{algorithm \ref*{eq:for}} requires $2(n-1)$ floating point operations. $n-1$ FLOPs for \hyperref[line:for_b]{equation (\ref*{line:for_b})} and \hyperref[line:for_g]{equation (\ref*{line:for_g})} each. From \hyperref[eq:back]{equation \ref*{eq:back}} we can count $3(n-1) + 1$ FLOPs. This gives us a total of $5n - 4$ FLOPs to solve $\boldsymbol{A}\vec{v} = \vec{g}$ with a tridiagonal matrix of dimentions $n\times n$.
 
-\section*{Problems 7 and 8}
+\section*{Problem 7}
 
-See code in repository.
+See code in repository. The result is in \hyperref[fig:problem7]{figure \ref*{fig:problem7}}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\linewidth]{../Code/Problem_7_plot.pdf}
+  \caption{Plot of the solution to problem 7.}
+  \label{fig:problem7}
+\end{figure}
+
+\section*{Problem 8}
+
+See code in repository. The result for a), b) and c), is shown in
+\hyperref[fig:problem8a]{figure \ref*{fig:problem8a}},
+\hyperref[fig:problem8b]{figure \ref*{fig:problem8b}} and
+\hyperref[fig:problem8c]{figure \ref*{fig:problem8c}} respectively.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\linewidth]{../Code/log10_abs_err.pdf}
+  \caption{Plot of the solution to problem 8a).}
+  \label{fig:problem8a}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\linewidth]{../Code/log10_rel_err.pdf}
+  \caption{Plot of the solution to problem 8b).}
+  \label{fig:problem8b}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\linewidth]{../Code/Problem_8_c_plot.pdf}
+  \caption{Plot of the solution to problem 8c).}
+  \label{fig:problem8c}
+\end{figure}
+
+We see that we start off with a larger error, which then decreases when we
+increase the number of steps. This makes sense, because the truncation error
+gets smaller when $n_{steps}$ is large. After $n_{steps} = 10^4$ the maximum
+relative error increases. This is because the round-off error when computing
+numerically increases when we have to deal with small numbers. When $n_{steps}$
+becomes large, each step-length becomes smaller, and our computers can't
+represent these numbers well enough.
 
 \section*{Problem 9}
 
@@ -406,18 +457,17 @@ See code in repository.
 
     \subsection*{Implement algorithm in code}
 
-    Lastly, we write code that implements the algorithm. The code lies in \lstinline{Problem9.cpp}.
+    Lastly, we write code that implements the algorithm. See code in repository.
 
 \section*{Problem 10}
     
-    
-\begin{figure}[H]
-  \begin{center}
-    \includegraphics*[width=\linewidth]{plot_P10.png}
-    \caption{Logarithmic plot of the time each algorithm takes to compute the same equations with increasing number of steps. We see that the algorithms show a diverging tendency with an increasing number of steps.}
-    \label{fig:P10}
-  \end{center}
-\end{figure}
+% \begin{figure}[H]
+%   \begin{center}
+%     \includegraphics*[width=\linewidth]{plot_P10.pdf}
+%     \caption{Logarithmic plot of the time each algorithm takes to compute the same equations with increasing number of steps. We see that the algorithms show a diverging tendency with an increasing number of steps.}
+%     \label{fig:P10}
+%   \end{center}
+% \end{figure}
 
 We've run each algorithm 100 times for each number of steps growing exponentially from 10 to $10^6$. The plot in figure \hyperref[fig:P10]{figure \ref*{fig:P10}} shows the different times each algorithm takes with the standard errors of each mean. We can see that for greater and greater number of steps, the special algorithm proves more and more efficient.
 
