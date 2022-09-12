@@ -50,4 +50,4 @@ Here it is just if you need to, the code is written again in Problem_10_master.c
 Here we will create the tables wanted through a script that takes both problem 7 and 9. The output is printed to the terminal and commented in the .pdf we handed in.
 
 #### 1. g++ Problem_10_master.cpp -o Problem_10.exe
-#### 2. g++ Problem_10.exe
+#### 2. ./Problem_10.exe
