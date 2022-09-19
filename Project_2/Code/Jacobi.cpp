@@ -23,7 +23,7 @@ Jacobi::Jacobi(arma::mat matrix) {
 /**
  * @brief Diagonalizes the matrix A stored in the object using Jacobi's Rotation Method. Stops when the highest off-diagonal value is <= tol.
  * 
- * @param tol Tolerance for the highest off-diagonal value of A once diagonalized.
+ * @param double tol Tolerance for the highest off-diagonal value of A once diagonalized.
  * 
  * @return Nothing. Stores the updated diagonalised matrix A and the matrix containing the eigenvectors in the matrix S. They can be extracted through the get_A() and get_S() methods.
  */
@@ -32,6 +32,7 @@ void Jacobi::solve(double tol) {
         this->compute_trig();
         this->update_S();
         this->find_k_l();
+        sim_trans++;
     }
 }
 
@@ -251,4 +252,15 @@ void Jacobi::set_A(arma::mat matrix) {
 
     // starts by finding the first k_l, haven't written solve() yet.
     this->find_k_l();
+
+    sim_trans = 0;
+}
+
+/**
+ * @brief Gives the number of similarity transformations done when diagonalizing A.
+ * 
+ * @return int 
+ */
+int Jacobi::trans_count() {
+    return sim_trans;
 }

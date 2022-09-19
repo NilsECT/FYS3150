@@ -11,6 +11,7 @@ class Jacobi
         double tan;
         double cos;
         double sin;
+        int sim_trans = 0;
 
     protected:
 
@@ -43,6 +44,8 @@ class Jacobi
         arma::vec get_eigval();
 
         void set_A(arma::mat matrix);
+        
+        int trans_count();
 };
 
 
