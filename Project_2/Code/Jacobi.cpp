@@ -8,7 +8,7 @@
  * @param matrix A which you want to diagonalize.
  * 
  */
-Jacobi::Jacobi(arma::mat &matrix) {
+Jacobi::Jacobi(arma::mat matrix) {
     this->N = matrix.n_cols;
     this->A = matrix;
     this->max_val = matrix(1, 2);
@@ -157,7 +157,7 @@ void Jacobi::compute_trig() {
 /**
  * @brief Having found k and l for the highest value in the off diagonal entries of a symmetric matrix A. Computes the tau needed for the jacobi rotation matrix.
  * 
- * @param Uses the private variables of the object.
+ * @param Nothing Uses the private variables of the object.
  * 
  * @return updates the private variable tau.
  */
@@ -168,7 +168,7 @@ void Jacobi::compute_tau() {
 /**
  * @brief Having computed tau for the jacobi rotation matrix (compute_tau()), calculates the tan value need to find cosine and sine.
  * 
- * @param Takes the private tau variable within the object.
+ * @param Nothing Takes the private tau variable within the object.
  * 
  * @return Updates the private tan variable.
  * 
@@ -185,7 +185,7 @@ void Jacobi::compute_tan() {
 /**
  * @brief With the found tan value (compute_tau() then compute_tan()) computes the cosine value for the jacobi rotation matrix.
  * 
- * @param Takes the private tan variable within the object.
+ * @param Nothing Takes the private tan variable within the object.
  * 
  * @return Updates the private cos variable.
  * 
@@ -197,11 +197,58 @@ void Jacobi::compute_cos() {
 /**
  * @brief With the found cos value (compute_tau() then compute_tan() then compute_cos()) computes the sine value for the jacobi rotation matrix.
  * 
- * @param Takes the private cos and tan variables within the object.
+ * @param Nothing Takes the private cos and tan variables within the object.
  * 
  * @return Updates the private sin variable.
  * 
  */
 void Jacobi::compute_sin() {
     this->sin = this->cos * this->tan;
+}
+
+// get and set are reserved for the bottom!
+
+/**
+ * @brief Funcitonality to extract the matrix A.
+ * 
+ * @return arma::mat A
+ */
+arma::mat Jacobi::get_A() {
+    return this->A;
+}
+
+/**
+ * @brief Funcitonality to extract the eigenvectors. Every column is an eigenvector
+ * 
+ * @return arma::mat eigenvectors (S in the object)
+ */
+arma::mat Jacobi::get_eigvec() {
+    return this->S;
+}
+
+/**
+ * @brief Funcitonality to extract the eigenvalues of A once solved. It's the diagonal entries of A after having used the Jacobi Rotation Method.
+ * 
+ * @return arma::vec of eigenvalues.
+ */
+arma::vec Jacobi::get_eigval() {
+    return this->A.diag();
+}
+
+/**
+ * @brief Replaces the matrix A contained within the object with the one provided as a parameter. Usefull if you don't want to create a new object for every matrix you want to diagonalized.
+ * 
+ * @param arma::mat matrix to diagonalize.
+ * 
+ */
+void Jacobi::set_A(arma::mat matrix) {
+    this->N = matrix.n_cols;
+    this->A = matrix;
+    this->max_val = matrix(1, 2);
+
+    // initializes S as the I-matrix
+    this->S.eye(this->N, this->N);
+
+    // starts by finding the first k_l, haven't written solve() yet.
+    this->find_k_l();
 }

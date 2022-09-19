@@ -34,7 +34,7 @@ class Jacobi
     
     public:
 
-        Jacobi(arma::mat &matrix);
+        Jacobi(arma::mat matrix);
 
         void solve(double tol);
 
