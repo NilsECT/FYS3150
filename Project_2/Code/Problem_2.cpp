@@ -20,12 +20,13 @@ int main(){
         A(i+1,i) = -1;
     }
     std::cout << A << std::endl;
-
-    arma::vec eigval = ; 
+   
+    
+    arma::vec eigval; 
     arma::mat eigvec;
-    arma::eig_sym(eigval, eigvec, A);
+    arma::eig_sym(eigval, eigvec, A, "dc");
 
-    std::cout << eigval << std::endl;
-    std::cout << eigvec << std::endl;
+    //std::cout << eigval << std::endl;
+    //std::cout << eigvec << std::endl;
 
 }
