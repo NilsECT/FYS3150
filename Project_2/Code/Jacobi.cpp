@@ -209,7 +209,7 @@ void Jacobi::compute_sin() {
 // get and set are reserved for the bottom!
 
 /**
- * @brief Funcitonality to extract the matrix A.
+ * @brief Functionality to extract the matrix A.
  * 
  * @return arma::mat A
  */
@@ -218,7 +218,7 @@ arma::mat Jacobi::get_A() {
 }
 
 /**
- * @brief Funcitonality to extract the eigenvectors. Every column is an eigenvector
+ * @brief Functionality to extract the eigenvectors. Every column is an eigenvector
  * 
  * @return arma::mat eigenvectors (S in the object)
  */
@@ -227,7 +227,7 @@ arma::mat Jacobi::get_eigvec() {
 }
 
 /**
- * @brief Funcitonality to extract the eigenvalues of A once solved. It's the diagonal entries of A after having used the Jacobi Rotation Method.
+ * @brief Functionality to extract the eigenvalues of A once solved. It's the diagonal entries of A after having used the Jacobi Rotation Method.
  * 
  * @return arma::vec of eigenvalues.
  */
