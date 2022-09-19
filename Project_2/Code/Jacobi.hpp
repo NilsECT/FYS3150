@@ -39,12 +39,10 @@ class Jacobi
         void solve(double tol);
 
         arma::mat get_A();
-        arma::mat get_S();
-        arma::vec get_eigvec();
-        arma::vec get_egival();
-        arma::mat get_eig();
+        arma::mat get_eigvec();
+        arma::vec get_eigval();
 
-        arma::mat set_A();
+        void set_A(arma::mat matrix);
 };
 
 
