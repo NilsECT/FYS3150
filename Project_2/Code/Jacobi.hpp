@@ -4,6 +4,14 @@
 
 class Jacobi
 {
+    private:
+
+        int N;
+        double tau;
+        double tan;
+        double cos;
+        double sin;
+
     protected:
 
         int k;
@@ -12,22 +20,22 @@ class Jacobi
         arma::mat A;
         arma::mat S;
 
+        void compute_tau();
         void compute_tan();
         void compute_cos();
         void compute_sin();
-        //void compute_trig();
+        void compute_trig();
 
         void update_S();
         void update_A();
         //void update();
 
         void find_k_l();
-        void set_max();
         //void loop();
     
     public:
 
-        Jacobi(arma::mat A);
+        Jacobi(arma::mat &matrix);
 
         void solve();
 
