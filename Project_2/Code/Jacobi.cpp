@@ -13,6 +13,10 @@ Jacobi::Jacobi(arma::mat &matrix) {
     this->A = matrix;
     this->max_val = matrix(1, 2);
 
+    // initializes S as the I-matrix
+    this->S.eye(this->N, this->N);
+
+    // starts by finding the first k_l, haven't written solve() yet.
     this->find_k_l();
 }
 
@@ -39,6 +43,88 @@ void Jacobi::find_k_l() {
         }
     }
 }
+
+/**
+ * @brief Sets a temporary rotation matrix from the cosine and sine and rotates A locally. Then updates the S matrix that will eventually contain the eigenvectors.
+ * 
+ * @param Nothing Uses the matrices stored within the object. k, l, cos and sin have to be up to date.
+ * 
+ * @return Updates A and S locally.
+ * 
+ */
+void Jacobi::update_S() {
+
+    // to not call these a million times
+    int temp_k = this->k;
+    int temp_l = this->l;
+    double cosine = this->cos;
+    double sine = this->sin;
+
+    // creates a temporary rotation matrix Sm (called temp)
+    arma::mat temp;
+    temp.eye(this->N, this->N);
+    temp(temp_k, temp_k) = cosine;
+    temp(temp_k, temp_l) = sine;
+    temp(temp_l, temp_k) = - sine;
+    temp(temp_l, temp_l) = cosine;
+
+    // update A
+    this->update_A(temp);
+
+    // calculates the total S
+    for (int i = 0; i < this->N; i++) {
+        double temp_ik = S(i, k);
+
+        this->S(i, temp_k) = temp_ik * cosine - this->S(i, temp_l) * sine;
+        this->S(i, temp_l) = this->S(i, temp_l) * cosine + temp_ik * sine;
+    }
+
+}
+
+/**
+ * @brief Rotates the matrix A locally given the rotation matrix Sm.
+ * 
+ * @param Sm The rotation matrix found from the position of the highest off-diagonal value in A.
+ * 
+ * @return Updates A locally.
+ */
+void Jacobi::update_A(arma::mat &Sm) {
+    int temp_k = this->k;
+    int temp_l = this->l;
+
+    // updates the places where we want to diagonalise and the diagonal entries
+    double temp_kk = this->A(temp_k, temp_k);
+    double temp_ll = this->A(temp_l, temp_l);
+
+    double cosine = this->cos;
+    double sine = this->sin;
+
+    this->A(k, k) = temp_kk * cosine * cosine - 2 * this->A(k, l) * cosine * sine + temp_ll * sine * sine;
+    this->A(l, l) = temp_ll * cosine * cosine + 2 * this->A(k, l) * cosine * sine + temp_kk * sine * sine;
+
+    this->A(k, l) = 0;
+    this->A(l, k) = 0;
+
+    // updates the rest of the matrix
+    for (int i = 0; i < this->N; i++) {
+
+        // we don't want to update kk, ll, kl, lk.
+        if ((i == temp_k) || (i == temp_l)) {
+            continue;
+        }
+
+        double temp_ik = this->A(i, temp_k);
+        double temp_il = this->A(i, temp_l);
+
+        this->A(i, temp_k) = temp_ik * cosine - temp_il * sine;
+        this->A(temp_k, i) = this->A(i, temp_k);
+
+        this->A(i, temp_l) = temp_il * cosine + temp_ik * sine;
+        this->A(temp_l, i) = this->A(i, temp_l);
+    }
+}
+
+
 
 /**
  * @brief Computes the cos and sin values to set in the Jacobi rotation matrix and stores them within the object.

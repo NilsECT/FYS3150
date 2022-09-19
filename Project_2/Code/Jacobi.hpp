@@ -27,8 +27,8 @@ class Jacobi
         void compute_trig();
 
         void update_S();
-        void update_A();
-        //void update();
+        void update_A(arma::mat &Sm);
+        void update();
 
         void find_k_l();
         //void loop();
