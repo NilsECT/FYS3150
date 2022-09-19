@@ -28,7 +28,6 @@ class Jacobi
 
         void update_S();
         void update_A(arma::mat &Sm);
-        void update();
 
         void find_k_l();
         //void loop();

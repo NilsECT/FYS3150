@@ -21,6 +21,21 @@ Jacobi::Jacobi(arma::mat &matrix) {
 }
 
 /**
+ * @brief Diagonalizes the matrix A stored in the object using Jacobi's Rotation Method. Stops when the highest off-diagonal value is <= tol.
+ * 
+ * @param tol Tolerance for the highest off-diagonal value of A once diagonalized.
+ * 
+ * @return Nothing. Stores the updated diagonalised matrix A and the matrix containing the eigenvectors in the matrix S. They can be extracted through the get_A() and get_S() methods.
+ */
+void Jacobi::solve(double tol) {
+    while (this->max_val > tol) {
+        this->compute_trig();
+        this->update_S();
+        this->find_k_l();
+    }
+}
+
+/**
  * @brief Given a matrix to diagonalize, find the position (k, l) of the highest off-diagonal value in the upper triagonal part of a symmetric matrix.
  * 
  * @param Nothing Uses the internally stored variables of the object
@@ -123,8 +138,6 @@ void Jacobi::update_A(arma::mat &Sm) {
         this->A(temp_l, i) = this->A(i, temp_l);
     }
 }
-
-
 
 /**
  * @brief Computes the cos and sin values to set in the Jacobi rotation matrix and stores them within the object.
