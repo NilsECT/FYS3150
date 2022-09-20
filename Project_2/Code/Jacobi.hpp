@@ -13,6 +13,8 @@ class Jacobi
         double sin;
         int sim_trans = 0;
 
+        void test_find_k_l();
+
     protected:
 
         int k;
@@ -32,7 +34,9 @@ class Jacobi
 
         void find_k_l();
         //void loop();
-    
+
+
+
     public:
 
         Jacobi(arma::mat matrix);
@@ -44,8 +48,9 @@ class Jacobi
         arma::vec get_eigval();
 
         void set_A(arma::mat matrix);
-        
+
         int trans_count();
+
 };
 
 
