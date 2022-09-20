@@ -3,30 +3,31 @@
 #include <iostream>
 #include <iomanip>
 #include <unistd.h>
+#include <assert.h>
 
 /**
  * @brief Construct a new Jacobi:: Jacobi object. Finds k and l immediately.
  * 
  * @param matrix A which you want to diagonalize.
- * 
+ *
  */
 Jacobi::Jacobi(arma::mat &matrix) {
+    // runs test function
+    this->test_find_k_l();
+
     this->N = matrix.n_cols;
     this->A = matrix;
     this->find_k_l();
 
     // initializes S as the I-matrix
     this->S.eye(this->N, this->N);
-
-    // starts by finding the first k_l, haven't written solve() yet.
-    // this->find_k_l();
 }
 
 /**
  * @brief Diagonalizes the matrix A stored in the object using Jacobi's Rotation Method. Stops when the highest off-diagonal value is <= tol.
- * 
+ *
  * @param double tol Tolerance for the highest off-diagonal value of A once diagonalized.
- * 
+ *
  * @return Nothing. Stores the updated diagonalised matrix A and the matrix containing the eigenvectors in the matrix S. They can be extracted through the get_A() and get_S() methods.
  */
 void Jacobi::solve(double tol) {
@@ -40,11 +41,11 @@ void Jacobi::solve(double tol) {
 
 /**
  * @brief Given a matrix to diagonalize, find the position (k, l) of the highest off-diagonal value in the upper triagonal part of a symmetric matrix.
- * 
+ *
  * @param Nothing Uses the internally stored variables of the object
- * 
+ *
  * @return Updates the k and l values.
- * 
+ *
  */
 void Jacobi::find_k_l() {
     this->k = 0;
@@ -66,12 +67,33 @@ void Jacobi::find_k_l() {
 }
 
 /**
+ * @brief Sets the A matrix to be an arbitrary symmetric matric given in problem set 2 and checks whether find_k_l() finds correct k, l
+ *
+ * @param Nothing
+ *
+ * @return Nothing. Causes assertion error and terminates program if find_k_l() fails
+ *
+ */
+
+void Jacobi::test_find_k_l() {
+  arma::mat test_mat = arma::mat(4, 4, arma::fill::eye);
+  test_mat(1, 2) = -0.7;
+  test_mat(2, 1) = -0.7;
+  test_mat(0, 3) = 0.5;
+  test_mat(3, 0) = 0.5;
+
+  this->set_A(test_mat);
+
+  assert(this->k == 1 && this->l == 2);
+}
+
+/**
  * @brief Sets a temporary rotation matrix from the cosine and sine and rotates A locally. Then updates the S matrix that will eventually contain the eigenvectors.
- * 
+ *
  * @param Nothing Uses the matrices stored within the object. k, l, cos and sin have to be up to date.
- * 
+ *
  * @return Updates A and S locally.
- * 
+ *
  */
 void Jacobi::update_S() {
 
@@ -140,11 +162,11 @@ void Jacobi::update_A() {
 
 /**
  * @brief Computes the cos and sin values to set in the Jacobi rotation matrix and stores them within the object.
- * 
+ *
  * @param Nothing Uses the private variables within the object. Must have found k and l!
- * 
+ *
  * @return Updates the values for tau, tan, cos and sin within the object.
- * 
+ *
  */
 void Jacobi::compute_trig() {
     this->compute_tau();
@@ -155,9 +177,9 @@ void Jacobi::compute_trig() {
 
 /**
  * @brief Having found k and l for the highest value in the off diagonal entries of a symmetric matrix A. Computes the tau needed for the jacobi rotation matrix.
- * 
+ *
  * @param Nothing Uses the private variables of the object.
- * 
+ *
  * @return updates the private variable tau.
  */
 void Jacobi::compute_tau() {
@@ -166,11 +188,11 @@ void Jacobi::compute_tau() {
 
 /**
  * @brief Having computed tau for the jacobi rotation matrix (compute_tau()), calculates the tan value need to find cosine and sine.
- * 
+ *
  * @param Nothing Takes the private tau variable within the object.
- * 
+ *
  * @return Updates the private tan variable.
- * 
+ *
  */
 void Jacobi::compute_tan() {
     if (this->tau > 0){
@@ -183,11 +205,11 @@ void Jacobi::compute_tan() {
 
 /**
  * @brief With the found tan value (compute_tau() then compute_tan()) computes the cosine value for the jacobi rotation matrix.
- * 
+ *
  * @param Nothing Takes the private tan variable within the object.
- * 
+ *
  * @return Updates the private cos variable.
- * 
+ *
  */
 void Jacobi::compute_cos() {
     this->cos = 1 / std::sqrt(1 + this->tan * this->tan);
@@ -195,11 +217,11 @@ void Jacobi::compute_cos() {
 
 /**
  * @brief With the found cos value (compute_tau() then compute_tan() then compute_cos()) computes the sine value for the jacobi rotation matrix.
- * 
+ *
  * @param Nothing Takes the private cos and tan variables within the object.
- * 
+ *
  * @return Updates the private sin variable.
- * 
+ *
  */
 void Jacobi::compute_sin() {
     this->sin = this->cos * this->tan;
@@ -209,7 +231,7 @@ void Jacobi::compute_sin() {
 
 /**
  * @brief Functionality to extract the matrix A.
- * 
+ *
  * @return arma::mat A
  */
 arma::mat Jacobi::get_A() {
@@ -218,7 +240,7 @@ arma::mat Jacobi::get_A() {
 
 /**
  * @brief Functionality to extract the eigenvectors. Every column is an eigenvector
- * 
+ *
  * @return arma::mat eigenvectors (S in the object)
  */
 arma::mat Jacobi::get_eigvec() {
@@ -227,7 +249,7 @@ arma::mat Jacobi::get_eigvec() {
 
 /**
  * @brief Functionality to extract the eigenvalues of A once solved. It's the diagonal entries of A after having used the Jacobi Rotation Method.
- * 
+ *
  * @return arma::vec of eigenvalues.
  */
 arma::vec Jacobi::get_eigval() {
@@ -236,20 +258,17 @@ arma::vec Jacobi::get_eigval() {
 
 /**
  * @brief Replaces the matrix A contained within the object with the one provided as a parameter. Usefull if you don't want to create a new object for every matrix you want to diagonalized.
- * 
+ *
  * @param arma::mat matrix to diagonalize.
- * 
+ *
  */
 void Jacobi::set_A(arma::mat matrix) {
     this->N = matrix.n_cols;
     this->A = matrix;
-    this->max_val = matrix(1, 2);
+    this->find_k_l();
 
     // initializes S as the I-matrix
     this->S.eye(this->N, this->N);
-
-    // starts by finding the first k_l, haven't written solve() yet.
-    this->find_k_l();
 
     sim_trans = 0;
 }
@@ -272,8 +291,8 @@ double Jacobi::get_max_val() {
 
 /**
  * @brief Gives the number of similarity transformations done when diagonalizing A.
- * 
- * @return int 
+ *
+ * @return int
  */
 int Jacobi::trans_count() {
     return sim_trans;
