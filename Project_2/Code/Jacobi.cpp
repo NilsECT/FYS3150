@@ -1,23 +1,25 @@
 #include "Jacobi.hpp"
 #include <armadillo>
 #include <iostream>
+#include <iomanip>
+#include <unistd.h>
 
 /**
- * @brief Construct a new Jacobi:: Jacobi object.
+ * @brief Construct a new Jacobi:: Jacobi object. Finds k and l immediately.
  * 
  * @param matrix A which you want to diagonalize.
  * 
  */
-Jacobi::Jacobi(arma::mat matrix) {
+Jacobi::Jacobi(arma::mat &matrix) {
     this->N = matrix.n_cols;
     this->A = matrix;
-    this->max_val = matrix(1, 2);
+    this->find_k_l();
 
     // initializes S as the I-matrix
     this->S.eye(this->N, this->N);
 
     // starts by finding the first k_l, haven't written solve() yet.
-    this->find_k_l();
+    // this->find_k_l();
 }
 
 /**
@@ -45,14 +47,17 @@ void Jacobi::solve(double tol) {
  * 
  */
 void Jacobi::find_k_l() {
+    this->k = 0;
+    this->l = 1;
+    this->max_val = std::abs(this->A(this->k, this->l));
 
     for(int i = 0; i < this->N; i++){
 
         for(int j = i+1; j < this->N; j++){
 
-            if (std::abs(A(i,j)) > this->max_val){
+            if (std::abs(this->A(i,j)) > this->max_val){
 
-                this->max_val = A(i,j);
+                this->max_val = std::abs(this->A(i,j));
                 this->k = i;
                 this->l = j;
             }
@@ -76,16 +81,8 @@ void Jacobi::update_S() {
     double cosine = this->cos;
     double sine = this->sin;
 
-    // creates a temporary rotation matrix Sm (called temp)
-    arma::mat temp;
-    temp.eye(this->N, this->N);
-    temp(temp_k, temp_k) = cosine;
-    temp(temp_k, temp_l) = sine;
-    temp(temp_l, temp_k) = - sine;
-    temp(temp_l, temp_l) = cosine;
-
     // update A
-    this->update_A(temp);
+    this->update_A();
 
     // calculates the total S
     for (int i = 0; i < this->N; i++) {
@@ -100,17 +97,15 @@ void Jacobi::update_S() {
 /**
  * @brief Rotates the matrix A locally given the rotation matrix Sm.
  * 
- * @param Sm The rotation matrix found from the position of the highest off-diagonal value in A.
- * 
  * @return Updates A locally.
  */
-void Jacobi::update_A(arma::mat &Sm) {
+void Jacobi::update_A() {
     int temp_k = this->k;
     int temp_l = this->l;
 
     // updates the places where we want to diagonalise and the diagonal entries
-    double temp_kk = this->A(temp_k, temp_k);
-    double temp_ll = this->A(temp_l, temp_l);
+    static double temp_kk = this->A(temp_k, temp_k);
+    static double temp_ll = this->A(temp_l, temp_l);
 
     double cosine = this->cos;
     double sine = this->sin;
@@ -129,13 +124,16 @@ void Jacobi::update_A(arma::mat &Sm) {
             continue;
         }
 
-        double temp_ik = this->A(i, temp_k);
-        double temp_il = this->A(i, temp_l);
+        static double temp_ik = this->A(i, temp_k);
+        static double temp_il = this->A(i, temp_l);
+
 
         this->A(i, temp_k) = temp_ik * cosine - temp_il * sine;
+
         this->A(temp_k, i) = this->A(i, temp_k);
 
         this->A(i, temp_l) = temp_il * cosine + temp_ik * sine;
+
         this->A(temp_l, i) = this->A(i, temp_l);
     }
 }
@@ -254,6 +252,22 @@ void Jacobi::set_A(arma::mat matrix) {
     this->find_k_l();
 
     sim_trans = 0;
+}
+
+int Jacobi::get_N() {
+    return this->N;
+}
+
+int Jacobi::get_k() {
+    return this->k;
+}
+
+int Jacobi::get_l() {
+    return this->l;
+}
+
+double Jacobi::get_max_val() {
+    return this->max_val;
 }
 
 /**

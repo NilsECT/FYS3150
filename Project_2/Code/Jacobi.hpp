@@ -28,24 +28,29 @@ class Jacobi
         void compute_trig();
 
         void update_S();
-        void update_A(arma::mat &Sm);
+        void update_A();
 
         void find_k_l();
         //void loop();
     
     public:
 
-        Jacobi(arma::mat matrix);
+        Jacobi(arma::mat &matrix);
 
-        void solve(double tol);
+        void solve(double tol=1e-10);
 
         arma::mat get_A();
         arma::mat get_eigvec();
         arma::vec get_eigval();
 
         void set_A(arma::mat matrix);
-        
+
         int trans_count();
+
+        int get_N();
+        int get_k();
+        int get_l();
+        double get_max_val();
 };
 
 
