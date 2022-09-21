@@ -23,33 +23,8 @@ arma::mat find_A(int N) {
     return A;
 }
 
-bool compare(arma::mat A, arma::mat B, double tol) {
-    // Compares two square matrices A and B to check if they are the same,
-    // within a tolerance tol. Returns true if all elements in A are equal to
-    // the corresponding elements in B. This method will be used for comparing
-    // the analytical and the numerical eigenvectors.
-
-    arma::SizeMat mat_size = arma::size(A);
-    int N = mat_size(0);
-
-    for (int i=0; i < N; i++) {
-        for (int j=0; j < N; j++) {
-            bool diff_minus = std::abs(A(i,j)-B(i,j)) > tol;
-            
-            // We add this part so that the method still returns true if two
-            // eigenvectors are equal, but with opposite signs.
-            bool diff_plus = std::abs(A(i,j)+B(i,j)) > tol;
-
-            if (diff_minus && diff_plus) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-int main() {
-    int N = 6;
+int main() {    
+    int N = 99;
     arma::mat A = find_A(N);  
     // Symmetrize the matrix by reflecting the upper triangle to lower triangle
     A = arma::symmatu(A);  
@@ -58,7 +33,7 @@ int main() {
     // cout << jacobi.get_k() << endl;
     // cout << jacobi.get_l() << endl;
     // cout << A(jacobi.get_k(), jacobi.get_l()) << endl;
-    jacobi.solve();
+    int num_trans = jacobi.solve();
 
     arma::mat Aj = jacobi.get_A();
     arma::mat Sj = jacobi.get_eigvec();
@@ -71,7 +46,6 @@ int main() {
     arma::eig_sym(eigval, eigvec, A);
     //cout << eigval << endl;
     //cout << eigvec << endl;
-
 
     // Setting new vectors for sorting and plotting 
     arma::vec eigval_sort = arma::diagvec(Aj);
@@ -93,16 +67,20 @@ int main() {
         eigval_sort(i) = min;
         eigvec_sort.swap_cols(i, min_ind);
     }
+    
+    arma::mat output = arma::mat(N,6);
+    output.col(0) = eigvec_sort.col(0);
+    output.col(1) = eigvec_sort.col(1);
+    output.col(2) = eigvec_sort.col(2);
+    
+    output.col(3) = eigvec.col(0);
+    output.col(4) = eigvec.col(1);
+    cout << "HOla" << endl;
+    output.col(5) = eigvec.col(2);
+    cout << "Hola" << endl;
 
-    double tol = 1e-7;
-
-    // True if the numerical and analytical eigenvalues are consisten with each
-    // other within the tolerance tol
-    bool consistent = compare(eigvec_sort, eigvec, tol);
-
-    if (consistent) {
-        std::cout << "Numerical and analytical matrices are consistent!" << std::endl;
-    } else {
-        std::cout << "Numerical and analytical matrices are NOT consistent!" << std::endl;
-    }
+    
+    ofstream MyFile("Problem_6_b.txt"); // "(o)fstream" writes to file
+    MyFile << output << endl; //What we want in the file
+    MyFile.close(); //Wlose the file
 }
