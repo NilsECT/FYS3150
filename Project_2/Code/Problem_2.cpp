@@ -5,13 +5,11 @@
 #define pi 3.14159265
 
 double lambda_anal(int i, int N){
-    // Calculates analytical eigenvalues using the formula in the problem text
     double eig = 2. + 2. * cos((2*i*pi)/(N+1));
     return eig;
 }
 
 arma::mat v_anal(int N) {
-    // Calculates analytical eigenvectors using the formula in the problem text
     arma::mat v_anal = arma::mat(N, N);
 
     for (int i = 1; i <= N; i++) {
@@ -27,69 +25,48 @@ arma::mat v_anal(int N) {
     return v_anal;
 }
 
-arma::mat find_A(int N, double h) {
-    // Creates the NxN tridiagonal matrix A, with subdiagonal and superdiagonal
-    // -1/h^2 and diagonal 2/h^2
+arma::mat find_A(int N) {
     arma::mat A = arma::mat(N,N).fill(0);
-    double k = 1/(h*h);
 
     for(int i = 0; i<N; i++){
-        A(i,i) = 2*k;
+        A(i,i) = 2;
     }
 
     for(int i = 0; i<N-1; i++){
-        A(i,i+1) = -1*k;
-        A(i+1,i) = -1*k;
+        A(i,i+1) = -1;
+        A(i+1,i) = -1;
     }
 
     return A;
 }
 
 bool compare(arma::mat A, arma::mat B, double tol) {
-    // Compares two square matrices A and B to check if they are the same,
-    // within a tolerance tol. Returns true if all elements in A are equal to
-    // the corresponding elements in B. This method will be used for comparing
-    // the analytical and the numerical eigenvectors.
-
-    arma::SizeMat mat_size = arma::size(A);
-    int N = mat_size(0);
-
-    for (int i=0; i < N; i++) {
-        for (int j=0; j < N; j++) {
-            bool diff_minus = std::abs(A(i,j)-B(i,j)) > tol;
-            
-            // We add this part so that the method still returns true if two
-            // eigenvectors are equal, but with opposite signs.
-            bool diff_plus = std::abs(A(i,j)+B(i,j)) > tol;
-
-            if (diff_minus && diff_plus) {
-                return false;
-            }
-        }
+    arma::mat diff_mat = A - B;
+    double diff = arma::mean(arma::mean(diff_mat));
+    bool nice_diff = diff < tol;
+    if (nice_diff) {
+        return true;
+    } else {
+        return false;
     }
-    return true;
 }
 
 
 int main(){
     int N = 6;
-    double n_steps = N+1;
-    double h = 1/n_steps;
-    arma::mat A = find_A(N, h);
+    arma::mat A = find_A(N);
+
+    std::cout << A << std::endl;
+   
     
     arma::vec eigval; 
     arma::mat eigvec;
     arma::eig_sym(eigval, eigvec, A, "dc");
 
-    double tol = 1e-7;
+    std::cout << eigval << std::endl;
+    std::cout << eigvec << std::endl;
 
-    // True if the numerical and analytical eigenvalues are consisten with each
-    // other within the tolerance tol
-    bool consistent = compare(v_anal(N), eigvec, tol);
+    std::cout << v_anal(N) << std::endl;
 
-    if (consistent) {
-        std::cout << "Numerical and analytical matrices are consistent!" << std::endl;
-    } else {
-        std::cout << "Numerical and analytical matrices are NOT consistent!" << std::endl;
-    }
+    std::cout << "Numerical and analytical matrices are consistent: " << compare(v_anal(N), eigvec, 1e-5) << std::endl;
 }
