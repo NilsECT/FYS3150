@@ -122,8 +122,8 @@ void Jacobi::update_A() {
     double temp_kk = this->A(this->k, this->k);
     double temp_ll = this->A(this->l, this->l);
 
-    this->A(this->k, this->k) = temp_kk * this->cos * this->cos - 2 * this->A(this->k, this->l) * this->cos * this->sin + temp_ll * this->sin * this->sin;
-    this->A(this->l, this->l) = temp_ll * this->cos * this->cos + 2 * this->A(this->k, this->l) * this->cos * this->sin + temp_kk * this->sin * this->sin;
+    this->A(this->k, this->k) = temp_kk * this->cos * this->cos - 2. * this->A(this->k, this->l) * this->cos * this->sin + temp_ll * this->sin * this->sin;
+    this->A(this->l, this->l) = temp_ll * this->cos * this->cos + 2. * this->A(this->k, this->l) * this->cos * this->sin + temp_kk * this->sin * this->sin;
 
     this->A(this->k, this->l) = 0.;
     this->A(this->l, this->k) = 0.;
@@ -163,6 +163,10 @@ void Jacobi::compute_trig() {
     this->compute_tan();
     this->compute_cos();
     this->compute_sin();
+    assert(is_valid_double(this->tau));
+    assert(is_valid_double(this->tan));
+    assert(is_valid_double(this->cos));
+    assert(is_valid_double(this->sin));
 }
 
 /**
@@ -189,7 +193,7 @@ void Jacobi::compute_tan() {
         this->tan = 1. / ( this->tau + std::sqrt(1. + this->tau * this->tau) );
     }
     else {
-        this->tan = -1. / ( -this->tau - std::sqrt(1. + this->tau * this->tau) );
+        this->tan = -1. / ( -this->tau + std::sqrt(1. + this->tau * this->tau) );
     }
 }
 
@@ -287,4 +291,8 @@ double Jacobi::get_max_val() {
  */
 int Jacobi::trans_count() {
     return sim_trans;
+}
+
+bool Jacobi::is_valid_double(double x) {
+    return x*0.0==0.0;
 }

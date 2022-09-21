@@ -14,6 +14,7 @@ class Jacobi
         int sim_trans = 0;
 
         void test_find_k_l();
+        bool is_valid_double(double x);
 
     protected:
 
