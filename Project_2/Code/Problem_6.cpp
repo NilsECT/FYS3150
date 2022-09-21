@@ -24,7 +24,10 @@ arma::mat find_A(int N) {
 }
 
 int main() {
-    int N = 6;
+    for (int i = 2; i<7; i++){
+
+    
+    int N = i;
     arma::mat A = find_A(N);  
     // Symmetrize the matrix by reflecting the upper triangle to lower triangle
     A = arma::symmatu(A);  
@@ -33,7 +36,7 @@ int main() {
     // cout << jacobi.get_k() << endl;
     // cout << jacobi.get_l() << endl;
     // cout << A(jacobi.get_k(), jacobi.get_l()) << endl;
-    jacobi.solve();
+    int num_trans = jacobi.solve();
 
     arma::mat Aj = jacobi.get_A();
     arma::mat Sj = jacobi.get_eigvec();
@@ -67,5 +70,6 @@ int main() {
         eigval_sort(i) = min;
         eigvec_sort.swap_cols(i, min_ind);
     }
-    std::cout << Aj << std::endl << Sj << std::endl << eigval_sort << std::endl << eigvec_sort << std::endl;
+    
+    }
 }

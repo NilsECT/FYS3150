@@ -29,15 +29,18 @@ Jacobi::Jacobi(arma::mat &matrix) {
  *
  * @param double tol Tolerance for the highest off-diagonal value of A once diagonalized.
  *
- * @return Nothing. Stores the updated diagonalised matrix A and the matrix containing the eigenvectors in the matrix S. They can be extracted through the get_A() and get_S() methods.
+ * @return Number of transformations used to solve eq. Stores the updated diagonalised matrix A and the matrix containing the eigenvectors in the matrix S. They can be extracted through the get_A() and get_S() methods.
  */
-void Jacobi::solve(double tol) {
+int Jacobi::solve(double tol) {
+    int num_trans = 0;
     while (this->max_val > tol) {
         this->compute_trig();
         this->update_S();
         this->find_k_l();
         sim_trans++;
+        num_trans++;
     }
+    return  num_trans;
 }
 
 /**

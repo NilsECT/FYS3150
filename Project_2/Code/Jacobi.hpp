@@ -42,7 +42,7 @@ class Jacobi
 
         Jacobi(arma::mat &matrix);
 
-        void solve(double tol=1e-10);
+        int solve(double tol=1e-10);
 
         arma::mat get_A();
         arma::mat get_eigvec();
