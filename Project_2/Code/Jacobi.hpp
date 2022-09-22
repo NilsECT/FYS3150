@@ -11,7 +11,6 @@ class Jacobi
         double tan;
         double cos;
         double sin;
-        int sim_trans = 0;
 
         void test_find_k_l();
         bool is_valid_double(double x);
@@ -33,16 +32,18 @@ class Jacobi
         void update_S();
         void update_A();
 
+
         void find_k_l();
         //void loop();
 
+        int sim_trans = 0;
 
 
     public:
 
         Jacobi(arma::mat &matrix);
 
-        int solve(double tol=1e-10);
+        void solve(double tol=1e-10);
 
         arma::mat get_A();
         arma::mat get_eigvec();
@@ -56,6 +57,7 @@ class Jacobi
         int get_k();
         int get_l();
         double get_max_val();
+        int get_sim_trans();
 };
 
 /**

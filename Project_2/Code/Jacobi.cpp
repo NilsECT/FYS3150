@@ -31,16 +31,13 @@ Jacobi::Jacobi(arma::mat &matrix) {
  *
  * @return Number of transformations used to solve eq. Stores the updated diagonalised matrix A and the matrix containing the eigenvectors in the matrix S. They can be extracted through the get_A() and get_S() methods.
  */
-int Jacobi::solve(double tol) {
-    int num_trans = 0;
+void Jacobi::solve(double tol) {
     while (this->max_val > tol) {
         this->compute_trig();
         this->update_S();
         this->find_k_l();
         sim_trans++;
-        num_trans++;
     }
-    return  num_trans;
 }
 
 /**
@@ -298,4 +295,8 @@ int Jacobi::trans_count() {
 
 bool Jacobi::is_valid_double(double x) {
     return x*0.0==0.0;
+}
+
+int Jacobi::get_sim_trans(){
+    return this->sim_trans;
 }

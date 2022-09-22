@@ -33,7 +33,7 @@ int main() {
     // cout << jacobi.get_k() << endl;
     // cout << jacobi.get_l() << endl;
     // cout << A(jacobi.get_k(), jacobi.get_l()) << endl;
-    int num_trans = jacobi.solve();
+    jacobi.solve();
 
     arma::mat Aj = jacobi.get_A();
     arma::mat Sj = jacobi.get_eigvec();

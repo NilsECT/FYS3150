@@ -2,29 +2,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def plot_stuf(name,N):
-    lambda_1, lambda_2, lambda_3, anal_1, anal_2 ,anal_3 = np.loadtxt(f"{name}.txt", unpack=True)
-
-    np.insert(lambda_1,0,0)
-    np.insert(lambda_2,0,0)
-    np.insert(lambda_3,0,0)
-    np.insert(anal_1,0,0)
-    np.insert(anal_1,0,0)
-    np.insert(anal_1,0,0)
-
-    np.insert(lambda_1,-1,0)
-    np.insert(lambda_2,-1,0)
-    np.insert(lambda_3,-1,0)
-    np.insert(anal_1,-1,0)
-    np.insert(anal_1,-1,0)
-    np.insert(anal_1,-1,0)
+    data = np.loadtxt(f"{name}.txt")
+    for i in data.T:
+        np.insert(i, 0, 0)
+        np.insert(i, -1, 0)
     plt.figure(N)
     plt.title(f"3 lowest eigen values for {N+1} steps:")
-    plt.plot(lambda_1, label="lambda_1")
-    plt.plot(anal_1, label="anal_1")
-    plt.plot(lambda_2, label="lambda_2")
-    plt.plot(anal_2, label="anal_2")
-    plt.plot(lambda_3, label="lambda_3")
-    plt.plot(anal_3, label="anal_3")
+    for i in range(0,3):
+        plt.plot(data.T[i], label=f"lambda_{i+1}")
+        plt.plot(data.T[i+3], label=f"anal_{i+1}")
     plt.xlabel("x")
     plt.ylabel("y")
     plt.legend()

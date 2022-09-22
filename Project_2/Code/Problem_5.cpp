@@ -32,7 +32,8 @@ int main() {
         int N = i;
         arma::mat A = find_A(N);  
         Jacobi jacobi = Jacobi(A);
-        int num_trans = jacobi.solve();
+        jacobi.solve();
+        int num_trans = jacobi.get_sim_trans();
         num(i-2) = num_trans;
     }
 
