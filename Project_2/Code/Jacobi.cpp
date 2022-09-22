@@ -20,7 +20,8 @@ Jacobi::Jacobi(arma::mat &matrix) {
     this->find_k_l();
 
     // initializes S as the I-matrix
-    this->S.eye(this->N, this->N);
+    this->S = arma::mat(this->N, this->N).fill(0.0);
+    this->S.diag() += 1.;
 }
 
 /**
@@ -28,15 +29,18 @@ Jacobi::Jacobi(arma::mat &matrix) {
  *
  * @param double tol Tolerance for the highest off-diagonal value of A once diagonalized.
  *
- * @return Nothing. Stores the updated diagonalised matrix A and the matrix containing the eigenvectors in the matrix S. They can be extracted through the get_A() and get_S() methods.
+ * @return Number of transformations used to solve eq. Stores the updated diagonalised matrix A and the matrix containing the eigenvectors in the matrix S. They can be extracted through the get_A() and get_S() methods.
  */
-void Jacobi::solve(double tol) {
+int Jacobi::solve(double tol) {
+    int num_trans = 0;
     while (this->max_val > tol) {
         this->compute_trig();
         this->update_S();
         this->find_k_l();
         sim_trans++;
+        num_trans++;
     }
+    return  num_trans;
 }
 
 /**
@@ -97,12 +101,6 @@ void Jacobi::test_find_k_l() {
  */
 void Jacobi::update_S() {
 
-    // to not call these a million times
-    int temp_k = this->k;
-    int temp_l = this->l;
-    double cosine = this->cos;
-    double sine = this->sin;
-
     // update A
     this->update_A();
 
@@ -110,8 +108,8 @@ void Jacobi::update_S() {
     for (int i = 0; i < this->N; i++) {
         double temp_ik = S(i, k);
 
-        this->S(i, temp_k) = temp_ik * cosine - this->S(i, temp_l) * sine;
-        this->S(i, temp_l) = this->S(i, temp_l) * cosine + temp_ik * sine;
+        this->S(i, this->k) = temp_ik * this->cos - this->S(i, this->l) * this->sin;
+        this->S(i, this->l) = this->S(i, this->l) * this->cos + temp_ik * this->sin;
     }
 
 }
@@ -122,41 +120,36 @@ void Jacobi::update_S() {
  * @return Updates A locally.
  */
 void Jacobi::update_A() {
-    int temp_k = this->k;
-    int temp_l = this->l;
 
     // updates the places where we want to diagonalise and the diagonal entries
-    static double temp_kk = this->A(temp_k, temp_k);
-    static double temp_ll = this->A(temp_l, temp_l);
+    double temp_kk = this->A(this->k, this->k);
+    double temp_ll = this->A(this->l, this->l);
 
-    double cosine = this->cos;
-    double sine = this->sin;
+    this->A(this->k, this->k) = temp_kk * this->cos * this->cos - 2. * this->A(this->k, this->l) * this->cos * this->sin + temp_ll * this->sin * this->sin;
+    this->A(this->l, this->l) = temp_ll * this->cos * this->cos + 2. * this->A(this->k, this->l) * this->cos * this->sin + temp_kk * this->sin * this->sin;
 
-    this->A(k, k) = temp_kk * cosine * cosine - 2 * this->A(k, l) * cosine * sine + temp_ll * sine * sine;
-    this->A(l, l) = temp_ll * cosine * cosine + 2 * this->A(k, l) * cosine * sine + temp_kk * sine * sine;
-
-    this->A(k, l) = 0;
-    this->A(l, k) = 0;
+    this->A(this->k, this->l) = 0.;
+    this->A(this->l, this->k) = 0.;
 
     // updates the rest of the matrix
     for (int i = 0; i < this->N; i++) {
 
         // we don't want to update kk, ll, kl, lk.
-        if ((i == temp_k) || (i == temp_l)) {
+        if ((i == this->k) || (i == this->l)) {
             continue;
         }
 
-        static double temp_ik = this->A(i, temp_k);
-        static double temp_il = this->A(i, temp_l);
+        double temp_ik = this->A(i, this->k);
+        double temp_il = this->A(i, this->l);
 
 
-        this->A(i, temp_k) = temp_ik * cosine - temp_il * sine;
+        this->A(i, this->k) = temp_ik * this->cos - temp_il * this->sin;
 
-        this->A(temp_k, i) = this->A(i, temp_k);
+        this->A(this->k, i) = this->A(i, this->k);
 
-        this->A(i, temp_l) = temp_il * cosine + temp_ik * sine;
+        this->A(i, this->l) = temp_il * this->cos + temp_ik * this->sin;
 
-        this->A(temp_l, i) = this->A(i, temp_l);
+        this->A(this->l, i) = this->A(i, this->l);
     }
 }
 
@@ -173,6 +166,10 @@ void Jacobi::compute_trig() {
     this->compute_tan();
     this->compute_cos();
     this->compute_sin();
+    assert(is_valid_double(this->tau));
+    assert(is_valid_double(this->tan));
+    assert(is_valid_double(this->cos));
+    assert(is_valid_double(this->sin));
 }
 
 /**
@@ -183,7 +180,7 @@ void Jacobi::compute_trig() {
  * @return updates the private variable tau.
  */
 void Jacobi::compute_tau() {
-    this->tau = ( this->A(this->l, this->l)- this->A(this->k, this->k) ) / ( 2 * this->A(this->k,this->l) );
+    this->tau = ( this->A(this->l, this->l)- this->A(this->k, this->k) ) / ( 2. * this->A(this->k,this->l) );
 }
 
 /**
@@ -195,11 +192,11 @@ void Jacobi::compute_tau() {
  *
  */
 void Jacobi::compute_tan() {
-    if (this->tau > 0){
-        this->tan = 1 / ( this->tau + std::sqrt(1 + this->tau * this->tau) );
+    if (this->tau > 0.){
+        this->tan = 1. / ( this->tau + std::sqrt(1. + this->tau * this->tau) );
     }
     else {
-        this->tan = -1 / ( -this->tau + std::sqrt(1 + this->tau * this->tau) );
+        this->tan = -1. / ( -this->tau + std::sqrt(1. + this->tau * this->tau) );
     }
 }
 
@@ -212,7 +209,7 @@ void Jacobi::compute_tan() {
  *
  */
 void Jacobi::compute_cos() {
-    this->cos = 1 / std::sqrt(1 + this->tan * this->tan);
+    this->cos = 1. / std::sqrt(1. + this->tan * this->tan);
 }
 
 /**
@@ -268,7 +265,8 @@ void Jacobi::set_A(arma::mat matrix) {
     this->find_k_l();
 
     // initializes S as the I-matrix
-    this->S.eye(this->N, this->N);
+    this->S = arma::mat(this->N, this->N).fill(0.0);
+    this->S.diag() += 1.;
 
     sim_trans = 0;
 }
@@ -296,4 +294,8 @@ double Jacobi::get_max_val() {
  */
 int Jacobi::trans_count() {
     return sim_trans;
+}
+
+bool Jacobi::is_valid_double(double x) {
+    return x*0.0==0.0;
 }
