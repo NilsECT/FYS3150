@@ -24,6 +24,8 @@ arma::mat find_A(int N) {
 }
 
 int main() {
+    // Defining a matrix for every N form 2 to reps and adding number of transformation 
+    // per N and outing it to a txt file.
     int reps = 100;
     arma::vec num = arma::vec(reps);
     arma::vec i_values = arma::linspace(2, reps+1, reps);

@@ -72,21 +72,26 @@ bool compare(arma::mat A, arma::mat B, double tol) {
 
 
 int main(){
+    // Defining the A matrix :
     int N = 6;
     double n_steps = N+1;
     double h = 1/n_steps;
     arma::mat A = find_A(N, h);
     
+
+    // Getting eigenvalues and eigenvectors from Armadillos module:
     arma::vec eigval; 
     arma::mat eigvec;
     arma::eig_sym(eigval, eigvec, A, "dc");
 
-    double tol = 1e-7;
+    double tol = 1e-7; //Defining a tollerance for where we are happy with the matrix.
 
     // True if the numerical and analytical eigenvalues are consisten with each
     // other within the tolerance tol
     bool consistent = compare(v_anal(N), eigvec, tol);
 
+
+    // Printing a statment telling us if the matrix is correct to some tollerance:
     if (consistent) {
         std::cout << "Numerical and analytical matrices are consistent!" << std::endl;
     } else {

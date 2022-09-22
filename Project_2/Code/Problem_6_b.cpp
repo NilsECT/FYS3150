@@ -28,24 +28,15 @@ int main() {
     arma::mat A = find_A(N);  
     // Symmetrize the matrix by reflecting the upper triangle to lower triangle
     A = arma::symmatu(A);  
-    //cout << A << endl;
     Jacobi jacobi = Jacobi(A);
-    // cout << jacobi.get_k() << endl;
-    // cout << jacobi.get_l() << endl;
-    // cout << A(jacobi.get_k(), jacobi.get_l()) << endl;
     jacobi.solve();
 
     arma::mat Aj = jacobi.get_A();
     arma::mat Sj = jacobi.get_eigvec();
 
-    //cout << "A:" << Aj << endl;
-    //cout << "S:" << Sj << endl;
-    
     arma::vec eigval;
     arma::mat eigvec;
     arma::eig_sym(eigval, eigvec, A);
-    //cout << eigval << endl;
-    //cout << eigvec << endl;
 
     // Setting new vectors for sorting and plotting 
     arma::vec eigval_sort = arma::diagvec(Aj);
@@ -75,9 +66,7 @@ int main() {
     
     output.col(3) = eigvec.col(0);
     output.col(4) = eigvec.col(1);
-    cout << "HOla" << endl;
     output.col(5) = eigvec.col(2);
-    cout << "Hola" << endl;
 
     
     ofstream MyFile("Problem_6_b.txt"); // "(o)fstream" writes to file
