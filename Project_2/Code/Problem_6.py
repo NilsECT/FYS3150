@@ -10,10 +10,10 @@ def plot_stuf(name,N):
     
     #Plotting:
     plt.figure(N)
-    plt.title(f"3 lowest eigen values for {N+1} steps:")
+    plt.title(f"Eigenvectors v corresponding to the 3 lowest eigenvalues for {N+1} steps:")
     for i in range(0,3):
-        plt.plot(data_new[:,i], label=f"lambda_{i+1}")
-        plt.plot(data_new[:,i+3], label=f"anal_{i+1}")
+        plt.plot(data_new[:,i], label=f"v_num_{i+1}")
+        plt.plot(data_new[:,i+3], label=f"v_anal_{i+1}")
     plt.xlabel("x")
     plt.ylabel("y")
     plt.legend()
