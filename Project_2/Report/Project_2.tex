@@ -91,7 +91,10 @@ those found analytically.
 See code in repository.
 
 \subsection*{b)}
-To test the solving method we write a program generating the test matrix. We use Armadillos eigsym to test against. The code sortes the eigenvectors in order of raising eigenvalue. Then checks if the two matrices are equal with a tolerance of $1e-7$. The code prints a statment telling us if the two matrices are equal.
+To test the solving method we write a program generating the test matrix. We use
+Armadillos eigsym to test against. The code sorts the eigenvectors in order of
+rising eigenvalue. It then checks if the two matrices are equal, within a tolerance
+of $1e-7$. The code prints a statement telling us if the two matrices are equal.
 
 \section*{Problem 4}
 
@@ -126,10 +129,10 @@ other values in the matrix, not just the ones we want to change. When trying to
 zero out one element, another element goes from zero to something. After enough
 transformations this still converges to a diagonal matrix, where all other
 elements are approximately zero. In the process of the transformations however,
-the non-zero values of our tridiagonal matrix becomes non-zero. Our matrix can
+the zero-values of our tridiagonal matrix becomes non-zero. Our matrix can
 therefore, after a certain amount of transformations, be seen as a dense matrix.
 Since our tridiagonal matrix becomes dense in the process of the algorithm, we
-assume that using this algorithm on a non-dense matrix would require an
+assume that using this algorithm on a dense matrix would require an
 approximately equal amount of transformations as the tridiagonal case.
 
 \section*{Problem 6}
@@ -139,7 +142,7 @@ See code in repository.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{../Code/Problem_6_a_plot.pdf}
-    \caption{Plot of the 3 lowest eigen vectors with the boundary conditions 0 at the start and the beginning for $n=10=>N=9$.}
+    \caption{Plot of the 3 lowest eigenvectors with the boundary conditions 0 at the start and the beginning for $n=10=>N=9$.}
     \label{fig:6aplot}
 \end{figure}
 
@@ -148,7 +151,7 @@ See code in repository.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{../Code/Problem_6_b_plot.pdf}
-    \caption{Plot of the 3 lowest eigen vectors with the boundary conditions 0 at the start and the beginning for $n=100=>N=99$.}
+    \caption{Plot of the 3 lowest eigenvectors with the boundary conditions 0 at the start and the beginning for $n=100=>N=99$.}
     \label{fig:6bplot}
 \end{figure}
 
