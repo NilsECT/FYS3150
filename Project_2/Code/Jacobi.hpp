@@ -12,7 +12,6 @@ class Jacobi
         double cos;
         double sin;
 
-        void test_find_k_l();
         bool is_valid_double(double x);
 
     protected:
@@ -40,6 +39,7 @@ class Jacobi
 
 
     public:
+        void test_find_k_l();
 
         Jacobi(arma::mat &matrix);
 
