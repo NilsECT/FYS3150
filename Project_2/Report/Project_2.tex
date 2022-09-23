@@ -106,12 +106,31 @@ We have an $N \times N$ tridiagonal matrix.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{../Code/Problem_5_plot.pdf}
-    \caption{Loglog plot of the number of transformations needed to compute the eigen values for an $N \times N$ matrix with a tolerance of 1e-10.}
+    \caption{Loglog plot of the number of transformations needed to compute the eigenvalues for an $N \times N$ tridiagonal matrix with a tolerance of 1e-10. We see that the curve is linear after a certain $N$, and therefore construct a linear regression for the curve after this $N$-value. The green line shows where we started our linear regression of the curve.}
     \label{fig:5plot}
 \end{figure}
 
+In \hyperref[fig:5plot]{Figure \ref*{fig:5plot}} we have plotted the number of
+transformations used by the algorithm when we calculated the eigenvectors of
+tridiagonal $N \times N$ matrices. The plot is logarithmic, and after a certain
+$N$ the curve looks linear. Since it is linear we have made a linear regression
+for the curve for high values of $N$, and plotted this line together with our
+curve. We get that the linear regression has a slope of $2.02$. Since the plot
+is logarithmic, this tells us that the number of transformations is
+approximately of order $O(N^2)$.
+
+
 \subsection*{b)}
-For a Dense matrix we expect.. scaling behavior.
+During our transformations in the Jacobi method, we mess around with all the
+other values in the matrix, not just the ones we want to change. When trying to
+zero out one element, another element goes from zero to something. After enough
+transformations this still converges to a diagonal matrix, where all other
+elements are approximately zero. In the process of the transformations however,
+the non-zero values of our tridiagonal matrix becomes non-zero. Our matrix can
+therefore, after a certain amount of transformations, be seen as a dense matrix.
+Since our tridiagonal matrix becomes dense in the process of the algorithm, we
+assume that using this algorithm on a non-dense matrix would require an
+approximately equal amount of transformations as the tridiagonal case.
 
 \section*{Problem 6}
 \subsection*{a)}
