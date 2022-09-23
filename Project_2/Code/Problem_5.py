@@ -17,6 +17,6 @@ plt.loglog(N_val, np.exp(linreg_model.intercept)*N_val**linreg_model.slope, '--'
 plt.xlabel('$N$')
 plt.title(f'Number of similarity transformations \nneeded for an NxN tridiagonal matrix')
 plt.ylabel('Number of transformations')
-plt.savefig('Problem_5_plot.pdf')
 plt.legend()
-plt.show()
+plt.savefig('Problem_5_plot.pdf')
+# plt.show()
