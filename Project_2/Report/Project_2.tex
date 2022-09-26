@@ -31,7 +31,7 @@
 \begin{document}
 
 \maketitle
-\textit{GitHub repository:} \texttt{\url{https://github.com/NilsECT/FYS3150/tree/main/Project_2/Code}}
+\textit{Here is the link to the GitHub repository:} \texttt{\url{https://github.com/NilsECT/FYS3150/tree/main/Project_2/Code}}
 
 
 \section*{Problem 1:}
@@ -101,6 +101,7 @@ To test the \lstinline{find_k_l}-method, we implement a test function \lstinline
   0.5 & 0 & 0 & 1 \end{bmatrix}
 \end{equation}
 
+which means that the row and column index corresponding to the maximum off-diagonal element are \lstinline{k=1} and \lstinline{2} respectively (with indices starting at 0). Each time a \lstinline{Jacobi} instance is created, the test method is run, and causes an assertion error if the indices are incorrect.
 The code is in the repository.
 
 \section*{Problem 4}
@@ -162,7 +163,7 @@ See \hyperref[fig:6aplot]{figure \ref*{fig:6aplot}} for the plot. The code for t
 
 \subsection*{b)}
 
-We do the same, this time using $n=100$ steps. See \hyperref[fig:6bplot]{figure \ref*{fig:6bplot}} for the plot.
+We do the same, this time using $n=100$ steps. See \hyperref[fig:6bplot]{figure \ref*{fig:6bplot}} for the plot. Again, we see that the signs of eigenvector $\vec{v}_2$ are opposite in the numerical and analytical vectors.
 
 \begin{figure}[H]
     \centering

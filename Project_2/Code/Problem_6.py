@@ -16,14 +16,15 @@ def plot_stuff(name,N):
 
     # plotting the eigenvectors:
     plt.figure()
-    plt.title(f"Eigenvectors v corresponding to the 3 lowest eigenvalues for {N+1} steps:")
+    plt.title(f"Eigenvectors v corresponding to the 3 lowest eigenvalues for {N+1} steps")
     for i in range(0,3):
-        plt.plot(xaxis, data_new[:,i], label=f"$v_{i+1}$, numerical")
-        plt.plot(xaxis, data_new[:,i+3], label=f"$v_{i+1}$, analytic")
+        plt.plot(xaxis, data_new[:,i+3], alpha=.4, label=f"$v_{i+1}$, analytic")
+        plt.plot(xaxis, data_new[:,i], '--', label=f"$v_{i+1}$, numerical")
     plt.xlabel("$x$")
     plt.ylabel("$v$")
     plt.legend()
     plt.savefig(f"{name}_plot.pdf")
+    plt.show()
 
 plot_stuff("Problem_6_a",9)
 plot_stuff("Problem_6_b",99)
