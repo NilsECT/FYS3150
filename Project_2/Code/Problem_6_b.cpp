@@ -23,11 +23,11 @@ arma::mat find_A(int N) {
     return A;
 }
 
-int main() {    
+int main() {
     int N = 99;
-    arma::mat A = find_A(N);  
+    arma::mat A = find_A(N);
     // Symmetrize the matrix by reflecting the upper triangle to lower triangle
-    A = arma::symmatu(A);  
+    A = arma::symmatu(A);
     Jacobi jacobi = Jacobi(A);
     jacobi.solve();
 
@@ -38,11 +38,11 @@ int main() {
     arma::mat eigvec;
     arma::eig_sym(eigval, eigvec, A);
 
-    // Setting new vectors for sorting and plotting 
+    // Setting new vectors for sorting and plotting
     arma::vec eigval_sort = arma::diagvec(Aj);
     arma::mat eigvec_sort = Sj;
 
-    // sorting
+    // Sort eigenvectors after lowest eigenvalue
     for (int i=0; i<N-1; i++){
         double min = eigval_sort(i);
         int min_ind = i;
@@ -58,18 +58,19 @@ int main() {
         eigval_sort(i) = min;
         eigvec_sort.swap_cols(i, min_ind);
     }
-    
+
     arma::mat output = arma::mat(N,6);
     output.col(0) = eigvec_sort.col(0);
     output.col(1) = eigvec_sort.col(1);
     output.col(2) = eigvec_sort.col(2);
-    
+
     output.col(3) = eigvec.col(0);
     output.col(4) = eigvec.col(1);
     output.col(5) = eigvec.col(2);
 
-    
-    ofstream MyFile("Problem_6_b.txt"); // "(o)fstream" writes to file
-    MyFile << output << endl; //What we want in the file
-    MyFile.close(); //Wlose the file
+
+    // Write to file:
+    ofstream MyFile("Problem_6_b.txt");
+    MyFile << output << endl;
+    MyFile.close();
 }

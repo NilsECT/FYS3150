@@ -18,6 +18,7 @@
 \usepackage{float}
 \usepackage{circuitikz}
 \usepackage{listings}
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
 
 \usepackage{csquotes}
 \usepackage[backend=biber,style=alphabetic,sorting=ynt]{biblatex} %Imports biblatex package
@@ -80,7 +81,7 @@ We solve the equation
     A \vec{v} = \lambda \vec{v}
 \end{equation*}
 
-both analytically and using armadillo in C++. Here $\lambda$ are the
+both analytically and using armadillo in \lstinline{C++}. Here $\lambda$ are the
 eigenvalues, and $\vec{v}$ are the corresponding eigenvectors of $A$. See code
 in repository. We find that the eigenvectors from armadillo are consistent with
 those found analytically.
@@ -88,7 +89,23 @@ those found analytically.
 
 \section*{Problem 3}
 \subsection*{a)}
-See code in repository.
+We implement a method that identifies the indices of the largest off-diagonal element of a matrix. This method is in the GitHub repository, implemented as a class method \lstinline{find_k_l} in the \lstinline{Jacobi} class. This class is used for using Jacobi's rotation method for finding the eigenvalues and -vectors of $A$.
+
+\subsection*{b)}
+To test the \lstinline{find_k_l}-method, we implement a test function \lstinline{test_find_k_l} that asserts whether the method finds the correct indices for a test matrix. Our test matrix is
+
+\begin{equation}
+  A = \begin{bmatrix}1 & 0 & 0 & 0.5 \\
+  0 & 1 & -0.7 & 0 \\
+  0 & -0.7 & 1 & 0 \\
+  0.5 & 0 & 0 & 1 \end{bmatrix}
+\end{equation}
+
+The code is in the repository.
+
+\section*{Problem 4}
+\subsection*{a)}
+We write a code implementation of Jacobi's rotation algorithm by creating a class \lstinline{Jacobi} in \lstinline{C++}.
 
 \subsection*{b)}
 To test the solving method we write a program generating the test matrix. We use
@@ -96,20 +113,15 @@ Armadillos eigsym to test against. The code sorts the eigenvectors in order of
 rising eigenvalue. It then checks if the two matrices are equal, within a tolerance
 of $1e-7$. The code prints a statement telling us if the two matrices are equal.
 
-\section*{Problem 4}
-
-See code in repository.
-
-
 \section*{Problem 5}
 \subsection*{a)}
-(See code in repository.)\\
-We have an $N \times N$ tridiagonal matrix. 
+The code for this problem is in the repository.
+We have an $N \times N$ tridiagonal matrix.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{../Code/Problem_5_plot.pdf}
-    \caption{Loglog plot of the number of transformations needed to compute the eigenvalues for an $N \times N$ tridiagonal matrix with a tolerance of 1e-10. We see that the curve is linear after a certain $N$, and therefore construct a linear regression for the curve after this $N$-value. The green line shows where we started our linear regression of the curve.}
+    \caption{Logarithmic plot of the number of transformations needed to compute the eigenvalues for an $N \times N$ tridiagonal matrix with a tolerance of 1e-10. We see that the curve is linear after a certain $N$, and therefore construct a linear regression for the curve after this $N$-value. The green line shows where we started our linear regression of the curve.}
     \label{fig:5plot}
 \end{figure}
 
@@ -137,21 +149,25 @@ approximately equal amount of transformations as the tridiagonal case.
 
 \section*{Problem 6}
 \subsection*{a)}
-See code in repository.
+We use a discretization with $n=10$ steps, and plot the three eigenvectors $\vec{v}$ corresponding to the lowest three eigenvalues. Our solver yields the discretized eigenvectors $\vec{v} = [ v_1, v_2, ..., v_{N} ]$ where $N=n-1$ and $n$ is the number of steps in the discretization. As this vector only contains the inner points of the solution, we include the boundary points $v_0 = 0$ and $v_n = 0$ by adding these manually before plotting.
+
+See \hyperref[fig:6aplot]{figure \ref*{fig:6aplot}} for the plot. The code for this is in the repository. We see that for the eigenvector $\vec{v}_1$, the analytical and the numerical differ by a factor of $-1$ (meaning the signs are opposite). We assume this may be due to \lstinline{Armadillo}'s \lstinline{eig_sym}-function
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{../Code/Problem_6_a_plot.pdf}
-    \caption{Plot of the eigenvectors v corresponding to the 3 lowest eigenvalues with the boundary conditions 0 at the start and the beginning for $n=10=>N=9$.}
+    \caption{Plot of the eigenvectors $\vec{v}$ corresponding to the 3 lowest eigenvalues, including the boundary conditions 0 at the start and the beginning. A discretization of $n=10$ steps is used.}
     \label{fig:6aplot}
 \end{figure}
 
 \subsection*{b)}
 
+We do the same, this time using $n=100$ steps. See \hyperref[fig:6bplot]{figure \ref*{fig:6bplot}} for the plot.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{../Code/Problem_6_b_plot.pdf}
-    \caption{Plot of the eigenvectors v cooresponding to the 3 lowest eigenvalues with the boundary conditions 0 at the start and the beginning for $n=100=>N=99$.}
+    \caption{Plot of the eigenvectors $\vec{v}$ corresponding to the 3 lowest eigenvalues, including the boundary conditions 0 at the start and the beginning. A discretization of $n=100$ steps is used.}
     \label{fig:6bplot}
 \end{figure}
 
