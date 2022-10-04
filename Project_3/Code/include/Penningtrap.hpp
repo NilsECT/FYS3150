@@ -14,7 +14,9 @@ class Penningtrap{
     std::vector<Particle> particles;
     Penningtrap(double B_0, double V_0, double d, std::vector<Particle> particles);
 
-    void find_force();
+    void find_force(bool particle_interactions);
+
+    int num_particles_inside();
 
     //arma::mat forward_euler(arma::mat r, arma::mat v);
 

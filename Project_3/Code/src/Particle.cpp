@@ -1,5 +1,4 @@
 #include "Particle.hpp"
-#include "Penningtrap.hpp"
 #include <armadillo>
 #include <iostream>
 #include <iomanip>

@@ -22,9 +22,9 @@ int main(){
     double d = 1;
     Penningtrap penningtrap = Penningtrap(B_0, V_0, d, particles);
 
-    penningtrap.find_force();
+    penningtrap.find_force(true);
 
     for (Particle p : penningtrap.particles) {
         p.print();
     }
-} 
+}

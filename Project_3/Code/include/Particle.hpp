@@ -12,8 +12,6 @@ class Particle{
     
     double ke;
 
-    protected:
-
     public:
     Particle(const double q, const double m, arma::vec r, arma::vec v);
     arma::vec get_r();

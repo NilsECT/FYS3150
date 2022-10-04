@@ -28,9 +28,14 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d, std::vector<Particle>
  * @param 
  *
  */
-void Penningtrap::find_force() {
+void Penningtrap::find_force(bool particle_interactions) {
     for (Particle &particle : this->particles) {
-        arma::vec C = particle.find_coulomb_force(this->particles);
+        arma::vec C = arma::vec(3).fill(0);
+
+        if (particle_interactions) {
+            C = particle.find_coulomb_force(this->particles);
+        }
+
         arma::vec E = particle.find_E_field(this->V_0, this->d);
         arma::vec B = particle.find_B_field(this->B_0);
 
@@ -38,6 +43,19 @@ void Penningtrap::find_force() {
         std::cout << C << E << B << F << std::endl;
         particle.set_force(F);
     }
+}
+
+int Penningtrap::num_particles_inside() {
+    int counter = 0;
+    for (Particle p : this->particles) {
+        arma::vec r = p.get_r();
+        double r_norm = arma::norm(r);
+
+        if (r_norm < this->d) {
+            counter++;
+        }
+    }
+    return counter;
 }
 
 /**
