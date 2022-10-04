@@ -7,7 +7,7 @@
 #include <assert.h>
 
 
-
+ 
 /**
  * @brief What it does.
  *
@@ -21,15 +21,22 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d, std::vector<Particle>
     this->particles = particles;
 }
 
+
 /**
  * @brief 
  *
  * @param 
  *
  */
-void Penningtrap::find_coulomb_force() {
-    for (Particle particle : this->particles) {
-        particle.find_coulomb_force(this->particles);
+void Penningtrap::find_force() {
+    for (Particle &particle : this->particles) {
+        arma::vec C = particle.find_coulomb_force(this->particles);
+        arma::vec E = particle.find_E_field(this->V_0, this->d);
+        arma::vec B = particle.find_B_field(this->B_0);
+
+        arma::vec F = C + E + B;
+        std::cout << C << E << B << F << std::endl;
+        particle.set_force(F);
     }
 }
 
@@ -39,8 +46,8 @@ void Penningtrap::find_coulomb_force() {
  * @param 
  *
  */
- /*
-void Penningtrap::E_field(){
+/* 
+arma::vec Penningtrap::find_E_field(){
     double V_d = this->V_d;
     this->E = arma::vec(3).fill(0.);
     this->E(0) = -this->r(this->i,0)*V_d;
