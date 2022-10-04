@@ -42,8 +42,13 @@ void Particle::find_coulomb_force(std::vector<Particle> particles) {
     arma::vec E_ke = arma::vec(3).fill(0.); // Total electric field over ke.
 
     for (Particle p : particles){
-        arma::vec r_diff = this->r -p.r;
+        arma::vec r_diff = this->r - p.r;
         double r_norm = arma::norm(r_diff);
+
+        double tol = 1e-6;
+        if (r_norm < tol) {
+            continue;
+        }
         double r_3 = std::pow(r_norm,3);
         E_ke = E_ke + r_diff/r_3;
     }

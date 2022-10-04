@@ -1,4 +1,4 @@
-#ifndef __Paennigtrap__
+#ifndef __Penningtrap__
 #define __Penningtrap__
 #include <armadillo>
 #include <Particle.hpp>
