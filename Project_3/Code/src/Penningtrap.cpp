@@ -64,4 +64,3 @@ int Penningtrap::num_particles_inside() {
  * @param 
  *
  */
-/* 
