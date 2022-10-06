@@ -14,30 +14,6 @@ Particle::Particle(double q, double m, arma::vec r, arma::vec v){
     this->force = arma::vec(3).fill(0); // Zero until we find it using find_coulomb_force()
 }
 
-arma::vec Particle::get_r(){
-    return this->r;
-}
-
-arma::vec Particle::get_v(){
-    return this->v;
-}
-
-void Particle::set_r(arma::vec r_new){
-    this->r = r_new;
-}
-
-void Particle::set_v(arma::vec v_new){
-    this->v = v_new;
-}
-
-double Particle::get_q(){
-    return this->q;
-}
-
-double Particle::get_m(){
-    return this->m;
-}
-
 arma::vec Particle::find_coulomb_force(std::vector<Particle> particles) {
     arma::vec E_ke = arma::vec(3).fill(0.); // Total electric field over ke.
 
@@ -69,17 +45,23 @@ arma::vec Particle::find_B_field(double B_0){
     return B;
 }
 
-void Particle::set_force(arma::vec F){
-    //std::cout << "FFF " << F << std::endl;
-    this->force = F;
-    //std::cout << "this " << this->force << std::endl;
+arma::vec Particle::find_Lorentz_force(double V_0, double B_0, double d) {
+    arma::vec E = this->find_E_field(V_0, d);
+    arma::vec B = this->find_B_field(B_0);
+
+    arma::vec FE = this->q * E;
+    arma::vec FB = this->q * arma::cross(this->v, B);
+
+    arma::vec lorentz_force = FE + FB;
+
+    return lorentz_force;
 }
 
 void Particle::print(){
-    //std::cout << "q = " << this->q << std::endl;
-    //std::cout << "m = " << this->m << std::endl;
-    //std::cout << "ke = " << this->ke << std::endl;
+    std::cout << "q = " << this->q << std::endl;
+    std::cout << "m = " << this->m << std::endl;
+    std::cout << "ke = " << this->ke << std::endl;
     std::cout << "r = " << this->r << std::endl;
-    //std::cout << "v = " << this->v << std::endl;
-    //std::cout << "force = " << this->force << std::endl;
+    std::cout << "v = " << this->v << std::endl;
+    std::cout << "force = " << this->force << std::endl;
 }
