@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <unistd.h>
 #include <assert.h>
+#include <string>
 
 
  
@@ -64,17 +65,15 @@ int Penningtrap::num_particles_inside() {
  * @param 
  *
 
-/*
-#include <string>
-
-void write_to_file(std::vector<arma::vec> particles){
+*/
+void write_to_file() {
     std::vector<std::string> name =  {"x", "y", "z", "vx", "vy", "vz"};
     for (int i = 0; i<3;i++){
         std::ofstream name[i]_outfile;
         std::ofstream name[i+3]_outfile;
         name[i]_outfile.open(name[i]".txt", std::ios_base::app); // append instead of overwrite
         name[i+3]_outfile.open(name[i+3]".txt", std::ios_base::app); // append instead of overwrite
-        for (Particle p : particles) {  // particle number
+        for (Particle p : this->particles) {  // particle number
             name[i]_outfile << p.r[i] << "   "; 
             name[i+3]_outfile << p.v[i] << "   "; 
 
@@ -83,5 +82,5 @@ void write_to_file(std::vector<arma::vec> particles){
         name[i+3]_outfile << "\n";
     }
 }
-*/
+
 

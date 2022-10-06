@@ -46,8 +46,6 @@ int main(){
         penningtrap.Forward_Euler(dt);
         */ 
 
-
-
         // Runge-Kutta
         /*
         penningtrap.Runge_kutta_4(dt);
