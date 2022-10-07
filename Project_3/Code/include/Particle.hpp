@@ -19,7 +19,7 @@ class Particle{
     arma::vec find_coulomb_force(std::vector<Particle> particles);
     arma::vec find_E_field(double V_0, double d);
     arma::vec find_B_field(double B_0);
-    arma::vec find_Lorentz_force(double V_0, double B_0, double d);
+    arma::vec find_Lorentz_force(arma::vec E, arma::vec B);
 
     void print();
 }; 

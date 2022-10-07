@@ -90,16 +90,16 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
  *
 */
 
-void write_to_file(std::string h, std::string inter){  
+void Penningtrap::write_to_file(std::string h, std::string inter){  
     std::string N = std::to_string(this->num_particles_inside);
         
     std::ofstream r_outfile;
     std::ofstream v_outfile;
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
     
-    for (int i = 0: i<3;i++) {
-        r_outfile.open(N+"_"+inter+"_"+h+"_"+name[i]+".txt", std::ios_base::app); // append instead of overwrite
-        v_outfile.open(N+"_"+inter+"_"+h+"_"+name[i+3]+".txt", std::ios_base::app); // append instead of overwrite
+    for (int i = 0; i < 3; i++) {
+        r_outfile.open(N+"_"+inter+"_"+h+"_"+names[i]+".txt", std::ios_base::app); // append instead of overwrite
+        v_outfile.open(N+"_"+inter+"_"+h+"_"+names[i+3]+".txt", std::ios_base::app); // append instead of overwrite
         for (Particle p : this->particles) {  // particle number
             r_outfile << p.r(i) << "   "; 
             v_outfile << p.v(i) << "   "; 
@@ -118,11 +118,11 @@ void write_to_file(std::string h, std::string inter){
  *
 */
 
-void evolve_forwardeuler(double dt, bool particle_interaction) {
+void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field) {
 
   for (Particle p : this->particles) {  // Iterate through particles
       p.r = p.r + p.v * dt;
-      p.v = p.v + dt * p.find_force(particle_interaction) / p.m;
+      p.v = p.v + dt * p.find_force(has_coulomb_force, has_E_field, has_B_field) / p.m;
   }
 
 }
@@ -135,34 +135,34 @@ void evolve_forwardeuler(double dt, bool particle_interaction) {
  *
 */
 
-void evolve_forwardeuler(double dt, bool particle_interaction) {
+void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field) {
 
   for (Particle p : this->particles) {  // Iterate through particles
 
       // Store current position and velocity:
-      r_temp = p.r;
-      v_temp = p.v;
+      arma::vec r_temp = p.r;
+      arma::vec v_temp = p.v;
 
       arma::vec k1_r = dt * p.v;
-      arma::vec k1_v = dt * p.find_force()/p.m;
+      arma::vec k1_v = dt * p.find_force(has_coulomb_force, has_E_field, has_B_field)/p.m;
 
       p.r = p.r + k1_r/2;
       p.v = p.v + k1_v/2;
 
       arma::vec k2_r = dt*p.v;
-      arma::vec k2_v = dt*p.find_force()/p.m;
+      arma::vec k2_v = dt*p.find_force(has_coulomb_force, has_E_field, has_B_field)/p.m;
 
       p.r = r_temp + k2_r/2;
       p.v = v_temp + k2_v/2;
 
       arma::vec k3_r = dt*p.v;
-      arma::vec k3_v = dt*p.find_force()/p.m;
+      arma::vec k3_v = dt*p.find_force(has_coulomb_force, has_E_field, has_B_field)/p.m;
 
       p.r = r_temp + k3_r;
       p.v = v_temp + k3_v;
 
       arma::vec k4_r = dt*p.v;
-      arma::vec k4_v = dt*p.find_force()/p.m;
+      arma::vec k4_v = dt*p.find_force(has_coulomb_force, has_E_field, has_B_field)/p.m;
 
       // Update position and velocity:
       p.r = r_temp + (1/6.0) * (k1_r + 2.0*k2_r + 2.0*k3_r + k4_r);

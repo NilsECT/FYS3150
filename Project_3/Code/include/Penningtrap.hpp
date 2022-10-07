@@ -15,12 +15,12 @@ class Penningtrap{
     Penningtrap(double B_0, double V_0, double d);
     void find_force(bool has_coloumb_force, bool has_E_field, bool has_B_field);
     void add_particle(Particle particle);
-    void generate_particles(int N, double q, double m, int seed k);
+    void generate_particles(int N, double q, double m, int seed);
 
-    void evolve_forwardeuler(double dt, bool particle_interaction);
-    void evolve_rk4(double dt, bool particle_interaction);
+    void evolve_forwardeuler(double dt, bool particle_interaction, bool has_E_field, bool has_B_field);
+    void evolve_RK4(double dt, bool particle_interaction, bool has_E_field, bool has_B_field);
 
-    void write_to_file();
+    void write_to_file(std::string h, std::string inter);
 };
 
 #endif
