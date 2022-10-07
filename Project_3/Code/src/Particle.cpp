@@ -45,14 +45,12 @@ arma::vec Particle::find_B_field(double B_0){
     return B;
 }
 
-arma::vec Particle::find_Lorentz_force(double V_0, double B_0, double d) {
-    arma::vec E = this->find_E_field(V_0, d);
-    arma::vec B = this->find_B_field(B_0);
+arma::vec Particle::find_Lorentz_force(arma::vec E, arma::vec B) {
 
-    arma::vec FE = this->q * E;
-    arma::vec FB = this->q * arma::cross(this->v, B);
+    arma::vec FE = this->q * E; // Force from E-field
+    arma::vec FB = this->q * arma::cross(this->v, B); // Force from B-field
 
-    arma::vec lorentz_force = FE + FB;
+    arma::vec lorentz_force = FE + FB; // Sum of forces from E-field and B-field
 
     return lorentz_force;
 }

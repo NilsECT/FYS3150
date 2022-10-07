@@ -13,7 +13,7 @@ int main(){
     double d = 1;
     
     // Initializing A Penningtrap:
-    Penningtrap penningtrap(B_0, V_0,d);
+    Penningtrap penningtrap = Penningtrap(B_0, V_0,d);
 
 
 
