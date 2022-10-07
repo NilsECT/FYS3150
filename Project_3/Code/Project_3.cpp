@@ -18,7 +18,7 @@ int main(){
 
 
     // Creating random particles in the Penningtrap:
-    int N = 1 // Numbers of particles:
+    int N = 1; // Numbers of particles:
     penningtrap.generate_particles(N,q,m);
 
 
@@ -34,7 +34,7 @@ int main(){
     // Defining simulation variables:
     double t = 1; // Total runtime of simulation in seconds
     double n_step = 10; // Number of time steps
-    double dt = t/n_step // time step size
+    double dt = t/n_step; // time step size
 
 
     // Simulation:
