@@ -8,7 +8,7 @@
 #include <string>
 
 
- 
+
 /**
  * @brief What it does.
  *
@@ -25,9 +25,9 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d){
 
 
 /**
- * @brief 
+ * @brief
  *
- * @param particle_interactions 
+ * @param particle_interactions
  *
  */
 void Penningtrap::find_force(bool particle_interactions) {
@@ -79,15 +79,14 @@ void Penningtrap::generate_particles(int N, double q, double m) {
 }
 
 /**
- * @brief 
+ * @brief
  *
- * @param 
+ * @param
  *
 */
 
-void write_to_file(std::string h, std::string inter){
 
-        
+void write_to_file(std::string h, std::string inter){  
     std::string N = std::to_string(this->num_particles_inside);
         
     std::ofstream r_outfile;
@@ -108,4 +107,63 @@ void write_to_file(std::string h, std::string inter){
 
 }
 
+/**
+ * @brief Evolves the position and velocity of each particle one step in time using Forward Euler.
+ *
+ * @param Length of time step dt, booleans indicating which forces to consider.
+ *
+*/
 
+void evolve_forwardeuler(double dt, bool particle_interaction) {
+
+  for (Particle p : this->particles) {  // Iterate through particles
+      p.r = p.r + p.v * dt;
+      p.v = p.v + dt * p.find_force(particle_interaction) / p.m;
+  }
+
+}
+
+
+/**
+ * @brief Evolves the position and velocity of each particle one step in time using Runge-Kutta 4.
+ *
+ * @param Length of time step dt, booleans indicating which forces to consider.
+ *
+*/
+
+void evolve_forwardeuler(double dt, bool particle_interaction) {
+
+  for (Particle p : this->particles) {  // Iterate through particles
+
+      // Store current position and velocity:
+      r_temp = p.r;
+      v_temp = p.v;
+
+      arma::vec k1_r = dt * p.v;
+      arma::vec k1_v = dt * p.find_force()/p.m;
+
+      p.r = p.r + k1_r/2;
+      p.v = p.v + k1_v/2;
+
+      arma::vec k2_r = dt*p.v;
+      arma::vec k2_v = dt*p.find_force()/p.m;
+
+      p.r = r_temp + k2_r/2;
+      p.v = v_temp + k2_v/2;
+
+      arma::vec k3_r = dt*p.v;
+      arma::vec k3_v = dt*p.find_force()/p.m;
+
+      p.r = r_temp + k3_r;
+      p.v = v_temp + k3_v;
+
+      arma::vec k4_r = dt*p.v;
+      arma::vec k4_v = dt*p.find_force()/p.m;
+
+      // Update position and velocity:
+      p.r = r_temp + (1/6.0) * (k1_r + 2.0*k2_r + 2.0*k3_r + k4_r);
+      p.v = v_temp + (1/6.0) * (k1_v + 2.0*k2_v + 2.0*k3_v + k4_v);
+
+  }
+
+}
