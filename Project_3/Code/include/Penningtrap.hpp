@@ -2,7 +2,7 @@
 #define __Penningtrap__
 #include <armadillo>
 #include "Particle.hpp"
- 
+
 class Penningtrap{
     public:
 
@@ -17,10 +17,9 @@ class Penningtrap{
     void add_particle(Particle particle);
     void generate_particles(int N, double q, double m, int seed k);
 
-    //arma::mat forward_euler(arma::mat r, arma::mat v);
+    void evolve_forwardeuler(double dt, bool particle_interaction);
+    void evolve_rk4(double dt, bool particle_interaction);
 
-    //arma::mat rk4(arma::mat r,arma::mat v,double m, double q);
-    
     void write_to_file();
 };
 
