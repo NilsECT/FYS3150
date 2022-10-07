@@ -20,6 +20,8 @@ class Penningtrap{
     //arma::mat forward_euler(arma::mat r, arma::mat v);
 
     //arma::mat rk4(arma::mat r,arma::mat v,double m, double q);
+    
+    void write_to_file();
 };
 
 #endif
