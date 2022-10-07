@@ -53,11 +53,11 @@ void Penningtrap::find_force(bool has_coloumb_force, bool has_E_field, bool has_
             // Calculate B-field if it is turned on
             B = particle.find_B_field(this->B_0);
         }
-        
+
         arma::vec L = particle.find_Lorentz_force(E, B);
 
         arma::vec F = C + L;
-        std::cout << C << L << F << std::endl;
+        //std::cout << C << L << F << std::endl;
         particle.force = F;
     }
 }
@@ -90,24 +90,26 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
  *
 */
 
-void Penningtrap::write_to_file(std::string h, std::string inter){  
+void Penningtrap::write_to_file(std::string h, std::string inter){
     std::string N = std::to_string(this->num_particles_inside);
-        
-    std::ofstream r_outfile;
-    std::ofstream v_outfile;
+
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
-    
+
     for (int i = 0; i < 3; i++) {
+
+        std::ofstream r_outfile;
+        std::ofstream v_outfile;
+
         r_outfile.open(N+"_"+inter+"_"+h+"_"+names[i]+".txt", std::ios_base::app); // append instead of overwrite
         v_outfile.open(N+"_"+inter+"_"+h+"_"+names[i+3]+".txt", std::ios_base::app); // append instead of overwrite
         for (Particle p : this->particles) {  // particle number
-            r_outfile << p.r(i) << "   "; 
-            v_outfile << p.v(i) << "   "; 
+            r_outfile << p.r(i) << "   ";
+            v_outfile << p.v(i) << "   ";
         }
         r_outfile << "\n";
         v_outfile << "\n";
     }
-        
+
 
 }
 
@@ -120,9 +122,16 @@ void Penningtrap::write_to_file(std::string h, std::string inter){
 
 void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field) {
 
+
+  int i = 0;
   for (Particle p : this->particles) {  // Iterate through particles
-      p.r = p.r + p.v * dt;
-      p.v = p.v + dt * p.find_force(has_coulomb_force, has_E_field, has_B_field) / p.m;
+
+      this->find_force(has_coulomb_force, has_E_field, has_B_field);
+
+      this->particles.at(i).r = p.r + p.v * dt;
+      this->particles.at(i).v = p.v + dt * p.force / p.m;
+
+      i += 1;
   }
 
 }
@@ -143,26 +152,29 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       arma::vec r_temp = p.r;
       arma::vec v_temp = p.v;
 
+      this->find_force(has_coulomb_force, has_E_field, has_B_field);
+
       arma::vec k1_r = dt * p.v;
-      arma::vec k1_v = dt * p.find_force(has_coulomb_force, has_E_field, has_B_field)/p.m;
+      arma::vec k1_v = dt * p.force/p.m;
 
       p.r = p.r + k1_r/2;
       p.v = p.v + k1_v/2;
 
-      arma::vec k2_r = dt*p.v;
-      arma::vec k2_v = dt*p.find_force(has_coulomb_force, has_E_field, has_B_field)/p.m;
+      arma::vec k2_r = dt * p.v;
+      arma::vec k2_v = dt * p.force/p.m;
 
       p.r = r_temp + k2_r/2;
       p.v = v_temp + k2_v/2;
 
-      arma::vec k3_r = dt*p.v;
-      arma::vec k3_v = dt*p.find_force(has_coulomb_force, has_E_field, has_B_field)/p.m;
+      arma::vec k3_r = dt * p.v;
+      arma::vec k3_v = dt * p.force/p.m;
 
       p.r = r_temp + k3_r;
       p.v = v_temp + k3_v;
 
-      arma::vec k4_r = dt*p.v;
-      arma::vec k4_v = dt*p.find_force(has_coulomb_force, has_E_field, has_B_field)/p.m;
+
+      arma::vec k4_r = dt * p.v;
+      arma::vec k4_v = dt * p.force/p.m;
 
       // Update position and velocity:
       p.r = r_temp + (1/6.0) * (k1_r + 2.0*k2_r + 2.0*k3_r + k4_r);
