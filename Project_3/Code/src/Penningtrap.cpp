@@ -67,6 +67,8 @@ void Penningtrap::generate_particles(int N, double q, double m) {
     arma::vec r;
     arma::vec v;
 
+    arma_rng::set_seed();
+
     for (int i = 0; i < N; i++) {
         r = arma::vec(3).randn() * 0.1 * this->d;
         v = arma::vec(3).randn() * 0.1 * this->d;
