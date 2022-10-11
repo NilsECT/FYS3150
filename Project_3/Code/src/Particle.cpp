@@ -4,13 +4,13 @@
 #include <iomanip>
 #include <unistd.h>
 #include <assert.h>
- 
+
 Particle::Particle(double q, double m, arma::vec r, arma::vec v){
     this->q = q;
     this->m = m;
     this->r = r;
     this->v = v;
-    this->ke = 1;
+    this->ke = 1.38935333 * std::pow(10, 5); //1;
     this->force = arma::vec(3).fill(0); // Zero until we find it using find_coulomb_force()
 }
 
@@ -33,9 +33,12 @@ arma::vec Particle::find_coulomb_force(std::vector<Particle> particles) {
 
 arma::vec Particle::find_E_field(double V_0, double d){
     arma::vec E = arma::vec(3).fill(0.);
-    E(0) = -this->r(0)*V_0*d;
+    /*E(0) = -this->r(0)*V_0*d;
     E(1) = -this->r(1)*V_0*d;
-    E(2) = 2*this->r(2)*V_0*d;
+    E(2) = 2*this->r(2)*V_0*d;*/
+    E(0) = this->r(0)*V_0/(d*d);
+    E(1) = this->r(1)*V_0/(d*d);
+    E(2) = -2*this->r(2)*V_0/(d*d);
     return E;
 }
 
