@@ -57,7 +57,6 @@ void Penningtrap::find_force(bool has_coloumb_force, bool has_E_field, bool has_
         arma::vec L = particle.find_Lorentz_force(E, B);
 
         arma::vec F = C + L;
-        //std::cout << C << L << F << std::endl;
         particle.force = F;
     }
 }
@@ -122,16 +121,12 @@ void Penningtrap::write_to_file(std::string h, std::string inter){
 
 void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field) {
 
-
-  int i = 0;
-  for (Particle p : this->particles) {  // Iterate through particles
+  for (Particle& p : this->particles) {  // Iterate through particles
 
       this->find_force(has_coulomb_force, has_E_field, has_B_field);
 
-      this->particles.at(i).r = p.r + p.v * dt;
-      this->particles.at(i).v = p.v + dt * p.force / p.m;
-
-      i += 1;
+      p.r = p.r + p.v * dt;
+      p.v = p.v + dt * p.force / p.m;
   }
 
 }
@@ -146,7 +141,7 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
 
 void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field) {
 
-  for (Particle p : this->particles) {  // Iterate through particles
+  for (Particle& p : this->particles) {  // Iterate through particles
 
       // Store current position and velocity:
       arma::vec r_temp = p.r;
