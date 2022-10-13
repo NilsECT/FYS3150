@@ -19,7 +19,6 @@ plt.plot(x, y)
 plt.ylabel('$y$')
 plt.xlabel('$x$')
 plt.title('Test!')
-plt.show()
+plt.savefig(f"{N}_particle_{inter}_interacting.pdf")
 
-print(x)
-print(y)
+
