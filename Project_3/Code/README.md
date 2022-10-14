@@ -1,6 +1,11 @@
-#Mappe for project 3 code:
+# Mappe for project 3 code:
 
 ## To run:
-####    -   g++ Project_3.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Project_3.exe -larmadillo 
+####    -   g++ Simulaton_tester.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Simulation_tester.exe -larmadillo 
 
-####    -   ./Project_3.exe
+####    -   ./Simulation_tester.exe
+
+
+## Running python file:
+
+####    -   python3 plottest.py "Number of particles: (N)" "interaction: (y/n)" "dt: (0.01)"

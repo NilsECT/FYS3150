@@ -24,6 +24,16 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d){
     this->num_particles_inside = 0; // Number of particles in the trap
 }
 
+/**
+ * @brief
+ *
+ * @param update_V_0
+ *
+ */
+void Penningtrap::update_V_0(double f, double w, double t){
+    this->V_0 = this->V_0*(1. + f * std::cos(w*t));
+}
+
 
 /**
  * @brief

@@ -21,20 +21,13 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt) {
 
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
 
-    /*
-    for (int i = 0; i < 6; i++) {
-      std::ofstream ofs;
-      ofs.open(trap.num_particles_inside + "_" + has_col + "_"  + dt_str + "_"+ names[i] + ".txt", std::ofstream::out | std::ofstream::trunc);
-      ofs.close();
-    }*/
-
-
     for (int i = 0; i < N; i++) {
       trap.write_to_file(dt_str, has_col);
+      trap.update_V_0(f,w,t); // Define updating parameters of the strength of the E-field.
       trap.evolve_RK4(dt, has_coulomb_force, true, true);
       std::cout << i << std::endl;
-
     }
+    trap.write_to_file(dt_str, has_col);
 }
 
 int main(){
@@ -83,57 +76,5 @@ int main(){
     has_coulomb_force = true;
     simulate(trap_100,has_coulomb_force,N,dt);
     
-
-/*
-    float time = std::stod(dt)*N;
-
-    std::cout << "total time: " << time << " microseconds" << std::endl;
-
-    std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
-
-    for (int i = 0; i < 6; i++) {
-      std::ofstream ofs;
-      ofs.open(num_part + "_" + inter + "_"  + dt + "_"+ names[i] + ".txt", std::ofstream::out | std::ofstream::trunc);
-      ofs.close();
-    }
-
-
-    for (int i = 0; i < N; i++) {
-      trap.write_to_file(dt, inter);
-      trap.evolve_RK4(std::stod(dt), false, true, true);
-
-    }
-
-    
-    if (!check) {
-      std::cout << "Warning: q/m is not greater than that other thing" << std::endl;
-    }
-
-    int N = 10000;
-    std::string inter = "y";
-    std::string dt = "0.01";
-
-    float time = std::stod(dt)*N;
-
-    std::cout << "total time: " << time << " microseconds" << std::endl;
-
-    std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
-
-    for (int i = 0; i < 6; i++) {
-      std::ofstream ofs;
-      ofs.open(num_part + "_" + inter + "_" + dt + "_"+ names[i] + ".txt", std::ofstream::out | std::ofstream::trunc);
-      ofs.close();
-    }
-
-
-    for (int i = 0; i < N; i++) {
-      trap.write_to_file(dt, inter);
-      trap.evolve_RK4(std::stod(dt), true, true, true);
-
-    }
-
-
-*/
-
     return 0;
 }
