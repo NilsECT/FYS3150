@@ -1,7 +1,7 @@
 #ifndef __Particle__
 #define __Particle__
 #include <armadillo>
- 
+
 class Particle{
 
     public:
@@ -14,6 +14,10 @@ class Particle{
     arma::vec r;
     arma::vec v;
 
+    arma::mat runge_kutta_k;
+    arma::vec r_temp;
+    arma::vec v_temp;
+
     Particle(const double q, const double m, arma::vec r, arma::vec v);
 
     arma::vec find_coulomb_force(std::vector<Particle> particles);
@@ -22,6 +26,6 @@ class Particle{
     arma::vec find_Lorentz_force(arma::vec E, arma::vec B);
 
     void print();
-}; 
+};
 
 #endif

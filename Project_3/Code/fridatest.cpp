@@ -3,6 +3,7 @@
 
 #include <armadillo>
 #include <iostream>
+
 //#include <string>
 
 int main(){
@@ -23,21 +24,17 @@ int main(){
 
     Penningtrap trap = Penningtrap(B_0, V_0, d);
 
-    std::string num_part = "1";
+    int N = 100000;
+    std::string num_part = "5";
+    std::string inter = "ye";
+    std::string dt = "0.001";
+    float time = std::stod(dt)*N;
 
     trap.generate_particles(std::stod(num_part), q, m, seed);
 
-    bool check = q/m > 4.0*V_0/(B_0*B_0*d*d);
-
-    if (!check) {
+    if (!(q/m > 4.0*V_0/(B_0*B_0*d*d))) {
       std::cout << "Warning: q/m is not greater than that other thing" << std::endl;
     }
-
-    int N = 10000;
-    std::string inter = "y";
-    std::string dt = "0.01";
-
-    float time = std::stod(dt)*N;
 
     std::cout << "total time: " << time << " microseconds" << std::endl;
 
@@ -45,15 +42,14 @@ int main(){
 
     for (int i = 0; i < 6; i++) {
       std::ofstream ofs;
-      ofs.open(num_part + "_y_" + dt + "_"+ names[i] + ".txt", std::ofstream::out | std::ofstream::trunc);
+      ofs.open(num_part + "_" + inter + "_" + dt + "_"+ names[i] + ".txt", std::ofstream::out | std::ofstream::trunc);
       ofs.close();
     }
 
 
     for (int i = 0; i < N; i++) {
       trap.write_to_file(dt, inter);
-      trap.evolve_RK4(std::stod(dt), false, true, true);
-
+      trap.evolve_RK4(std::stod(dt), true, true, true);
     }
 
     return 0;
