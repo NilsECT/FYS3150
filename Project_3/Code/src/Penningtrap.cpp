@@ -129,13 +129,20 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
  * @param dt_str time_step as a string (used for naming the outfile)
  * @param has_coulomb_str "y" if the simulation had used coulomb forces, "n" if
  * not. Used for naming the outfile.
+ * @param count_particles If true, the method also creates a .txt-file which
+ * keeps track of the number of particles inside the penningtrap.
  *
 */
-void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::string has_coulomb_str){
+void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::string has_coulomb_str, bool count_particles = false){
     std::string N = std::to_string(this->num_particles_inside);
 
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
 
+    if (count_particles) {
+        std::ofstream count_outfile;
+        count_outfile.open("Particle_Counter_" + evolve + N + "_" + has_coulomb_str + "_" + dt_str, std::ios_base::app);
+        count_outfile << this->num_particles_inside << std::endl;
+    }
     for (int i = 0; i < 3; i++) {
 
         std::ofstream r_outfile;
@@ -150,7 +157,6 @@ void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::str
         r_outfile << "\n";
         v_outfile << "\n";
     }
-
 
 }
 

@@ -20,7 +20,7 @@ class Penningtrap{
     void evolve_forwardeuler(double dt, bool particle_interaction, bool has_E_field, bool has_B_field);
     void evolve_RK4(double dt, bool particle_interaction, bool has_E_field, bool has_B_field);
     void update_V_0(double f, double w, double t);
-    void write_to_file(std::string evolve,std::string h, std::string inter);
+    void write_to_file(std::string evolve,std::string h, std::string inter, bool count_particles);
 };
 
 #endif
