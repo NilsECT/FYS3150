@@ -66,10 +66,10 @@ arma::vec Particle::find_coulomb_force(std::vector<Particle> particles) {
  */
 arma::vec Particle::find_E_field(double V_0, double d){
     arma::vec E = arma::vec(3).fill(0.);
-    E(0) = this->r(0)*V_0/(d*d);
-    E(1) = this->r(1)*V_0/(d*d);
-    E(2) = -2*this->r(2)*V_0/(d*d);
-    return E;
+    E(0) = this->r(0);
+    E(1) = this->r(1);
+    E(2) = -2*this->r(2);
+    return E*V_0/(d*d);
 }
 
 /**
