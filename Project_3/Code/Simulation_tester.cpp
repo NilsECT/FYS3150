@@ -3,7 +3,7 @@
 
 #include <armadillo>
 #include <iostream>
-//#include <string>
+#include <string>
 
 void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt) {
     std::string dt_str = std::to_string(dt);
@@ -23,7 +23,7 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt) {
 
     for (int i = 0; i < N; i++) {
       trap.write_to_file(dt_str, has_col);
-      trap.update_V_0(f,w,t); // Define updating parameters of the strength of the E-field.
+      // trap.update_V_0(f,w,t); // Define updating parameters of the strength of the E-field.
       trap.evolve_RK4(dt, has_coulomb_force, true, true);
       std::cout << i << std::endl;
     }
