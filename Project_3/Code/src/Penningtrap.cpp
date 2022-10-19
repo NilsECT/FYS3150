@@ -97,6 +97,14 @@ void Penningtrap::add_particle(Particle particle) {
 }
 
 /**
+ * @brief Empties the std::vector containing particles
+ * 
+ */
+void Penningtrap::clear_particles() {
+    this->particles.clear();
+}
+
+/**
  * @brief Generates N particles randomly distributed in the trap, with randomly
  * distributed velocities (both normal distributions). If there are any other
  * particles in the trap before this method is called, these will be overwritten
@@ -143,6 +151,7 @@ void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::str
         count_outfile.open("Particle_Counter_" + evolve + N + "_" + has_coulomb_str + "_" + dt_str, std::ios_base::app);
         count_outfile << this->num_particles_inside << std::endl;
     }
+
     for (int i = 0; i < 3; i++) {
 
         std::ofstream r_outfile;

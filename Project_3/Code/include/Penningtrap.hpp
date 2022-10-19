@@ -15,6 +15,7 @@ class Penningtrap{
     Penningtrap(double B_0, double V_0, double d);
     void find_force(bool has_coloumb_force, bool has_E_field, bool has_B_field);
     void add_particle(Particle particle);
+    void clear_particles();
     void generate_particles(int N, double q, double m, int seed);
 
     void evolve_forwardeuler(double dt, bool particle_interaction, bool has_E_field, bool has_B_field);
