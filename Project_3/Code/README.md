@@ -1,9 +1,9 @@
 # Mappe for project 3 code:
 
 ## To run:
-####    -   g++ Simulation_tester.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Simulation_tester.exe -larmadillo 
+####    -   g++ Simulation_generator.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Simulation_generator.exe -larmadillo
 
-####    -   ./Simulation_tester.exe
+####    -   ./Simulation_generator.exe
 
 
 ## Running python file:
