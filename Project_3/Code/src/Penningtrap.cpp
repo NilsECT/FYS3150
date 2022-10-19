@@ -131,7 +131,7 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
  * not. Used for naming the outfile.
  *
 */
-void Penningtrap::write_to_file(std::string dt_str, std::string has_coulomb_str){
+void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::string has_coulomb_str){
     std::string N = std::to_string(this->num_particles_inside);
 
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
@@ -141,8 +141,8 @@ void Penningtrap::write_to_file(std::string dt_str, std::string has_coulomb_str)
         std::ofstream r_outfile;
         std::ofstream v_outfile;
 
-        r_outfile.open(N+"_"+has_coulomb_str+"_"+dt_str+"_"+names[i]+".txt", std::ios_base::app); // append instead of overwrite
-        v_outfile.open(N+"_"+has_coulomb_str+"_"+dt_str+"_"+names[i+3]+".txt", std::ios_base::app); // append instead of overwrite
+        r_outfile.open(evolve+N+"_"+has_coulomb_str+"_"+dt_str+"_"+names[i]+".txt", std::ios_base::app); // append instead of overwrite
+        v_outfile.open(evolve+N+"_"+has_coulomb_str+"_"+dt_str+"_"+names[i+3]+".txt", std::ios_base::app); // append instead of overwrite
         for (Particle p : this->particles) {  // particle number
             r_outfile << p.r(i) << "   ";
             v_outfile << p.v(i) << "   ";

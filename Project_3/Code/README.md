@@ -1,7 +1,7 @@
 # Mappe for project 3 code:
 
 ## To run:
-####    -   g++ Simulaton_tester.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Simulation_tester.exe -larmadillo 
+####    -   g++ Simulation_tester.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Simulation_tester.exe -larmadillo 
 
 ####    -   ./Simulation_tester.exe
 

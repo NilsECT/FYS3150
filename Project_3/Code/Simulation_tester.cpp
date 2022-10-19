@@ -23,7 +23,7 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt) {
 
     for (int i = 0; i < N; i++) {
       trap.write_to_file(dt_str, has_col);
-      trap.update_V_0(f,w,t); // Define updating parameters of the strength of the E-field.
+      //trap.update_V_0(f,w,t); // Define updating parameters of the strength of the E-field.
       trap.evolve_RK4(dt, has_coulomb_force, true, true);
       std::cout << i << std::endl;
     }
@@ -73,7 +73,7 @@ int main(){
 
     Penningtrap trap_100 = Penningtrap(B_0, V_0, d);
     trap_100.generate_particles(100,q,m,seed);
-    has_coulomb_force = true;
+    has_coulomb_force = false;
     simulate(trap_100,has_coulomb_force,N,dt);
     
     return 0;
