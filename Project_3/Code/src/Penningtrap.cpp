@@ -88,7 +88,7 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
 /**
  * @brief Adds a single particle to the Penningtraps std::vector of particles,
  * and increases the particle-counter by one.
- * 
+ *
  * @param particle The particle to be added to the trap.
  */
 void Penningtrap::add_particle(Particle particle) {
@@ -101,7 +101,7 @@ void Penningtrap::add_particle(Particle particle) {
  * distributed velocities (both normal distributions). If there are any other
  * particles in the trap before this method is called, these will be overwritten
  * by the new particles. This method also sets the particle counter to N.
- * 
+ *
  * @param N Number of particles to be generated.
  * @param q Charge of the particles.
  * @param m Mass of the particles.
@@ -181,7 +181,7 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
 
 /**
  * @brief Evolves the position and velocity of each particle one step in time using Runge-Kutta 4.
- * 
+ *
  * @param dt Time step of the simulation.
  * @param has_coulomb_force True if the simulation should include coulomb
  * forces between the particles, false if these forces should be ignored.
@@ -189,15 +189,17 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
  * electric field, false if these forces should be ignored.
  * @param has_B_field True if the simulation should include forces from the
  * magnetic field, false if these forces should be ignored.
- * 
+ *
 */
 void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field) {
 
   for (Particle& p : this->particles) {  // Iterate through particles
+      // Empty current particle's array of weighted sum of k-values:
+      p.runge_kutta_k = arma::zeros(3, 2);
 
-      // Store current position and velocity:
-      arma::vec r_temp = p.r;
-      arma::vec v_temp = p.v;
+      // Store particle's current position and velocity:
+      p.r_temp = p.r;
+      p.v_temp = p.v;
 
       this->find_force(has_coulomb_force, has_E_field, has_B_field);
 
@@ -207,26 +209,51 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       p.r = p.r + k1_r/2;
       p.v = p.v + k1_v/2;
 
+      // Add current k-value to the weighted sum of ks:
+      p.runge_kutta_k.col(0) += (1/6.0) * k1_r;
+      p.runge_kutta_k.col(1) += (1/6.0) * k1_v;
+  }
+
+  for (Particle& p : this->particles) {  // Iterate through particles
+      this->find_force(has_coulomb_force, has_E_field, has_B_field);
+
       arma::vec k2_r = dt * p.v;
       arma::vec k2_v = dt * p.force/p.m;
 
-      p.r = r_temp + k2_r/2;
-      p.v = v_temp + k2_v/2;
+      p.r = p.r_temp + k2_r/2;
+      p.v = p.v_temp + k2_v/2;
+
+      p.runge_kutta_k.col(0) += (1/6.0) * 2 * k2_r;
+      p.runge_kutta_k.col(1) += (1/6.0) * 2 * k2_v;
+  }
+
+  for (Particle& p : this->particles) {  // Iterate through particles
+      this->find_force(has_coulomb_force, has_E_field, has_B_field);
 
       arma::vec k3_r = dt * p.v;
       arma::vec k3_v = dt * p.force/p.m;
 
-      p.r = r_temp + k3_r;
-      p.v = v_temp + k3_v;
+      p.r = p.r_temp + k3_r;
+      p.v = p.v_temp + k3_v;
 
+      p.runge_kutta_k.col(0) += (1/6.0) * 2 * k3_r;
+      p.runge_kutta_k.col(1) += (1/6.0) * 2 * k3_v;
+  }
+
+  for (Particle& p : this->particles) {  // Iterate through particles
+      this->find_force(has_coulomb_force, has_E_field, has_B_field);
 
       arma::vec k4_r = dt * p.v;
       arma::vec k4_v = dt * p.force/p.m;
 
+      p.runge_kutta_k.col(0) += (1/6.0) * k4_r;
+      p.runge_kutta_k.col(1) += (1/6.0) * k4_v;
+
       // Update position and velocity:
-      p.r = r_temp + (1/6.0) * (k1_r + 2.0*k2_r + 2.0*k3_r + k4_r);
-      p.v = v_temp + (1/6.0) * (k1_v + 2.0*k2_v + 2.0*k3_v + k4_v);
+      p.r = p.r_temp + p.runge_kutta_k.col(0);
+      p.v = p.v_temp + p.runge_kutta_k.col(1);
 
   }
+
 
 }
