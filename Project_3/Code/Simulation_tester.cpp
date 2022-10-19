@@ -3,7 +3,7 @@
 
 #include <armadillo>
 #include <iostream>
-//#include <string>
+#include <string>
 
 void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt) {
     std::string dt_str = std::to_string(dt);
