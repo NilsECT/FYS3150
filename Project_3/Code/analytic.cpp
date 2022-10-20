@@ -23,10 +23,10 @@ int main() {
         z[0] = r[2];
 
         double q = 1.0;
-        double V_0 = 9.65 * std::pow(10, 8);
+        double V_0 = 2.41 * std::pow(10, 6);
         double B_0 = 9.65*10;
         double m = 40.078;
-        double d = 1 * std::pow(10, 4);
+        double d = 500;
 
 
         double omega0 = q * B_0 / m;
