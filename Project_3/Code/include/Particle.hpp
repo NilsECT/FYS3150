@@ -4,6 +4,10 @@
 
 class Particle{
 
+    private:
+
+    bool outside = false;
+
     public:
 
     double q;
@@ -26,6 +30,10 @@ class Particle{
     arma::vec find_Lorentz_force(arma::vec E, arma::vec B);
 
     void print();
+
+    // outside stuff
+    bool check_outside();
+    void is_outside();
 };
 
 #endif

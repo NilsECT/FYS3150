@@ -41,6 +41,11 @@ arma::vec Particle::find_coulomb_force(std::vector<Particle> particles) {
     arma::vec E_ke = arma::vec(3).fill(0.); // Total electric field over ke.
 
     for (Particle p : particles){
+        // skips the particle if it's outside
+        if (p.check_outside()) {
+            continue;
+        }
+
         arma::vec r_diff = this->r - p.r;
         double r_norm = arma::norm(r_diff);
         double tol = 1e-6;
@@ -116,4 +121,12 @@ void Particle::print(){
     std::cout << "r = " << this->r << std::endl;
     std::cout << "v = " << this->v << std::endl;
     std::cout << "force = " << this->force << std::endl;
+}
+
+bool Particle::check_outside() {
+    return outside;
+}
+
+void Particle::is_outside() {
+    this->outside = true;
 }

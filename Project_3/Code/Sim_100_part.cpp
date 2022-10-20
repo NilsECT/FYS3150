@@ -76,14 +76,14 @@ int main(){
 
         std::cout << "At omega = " << omega << std::endl;
 
-        trap_100.generate_particles(10,q,m,seed);
+        trap_100.generate_particles(100,q,m,seed);
         bool has_coulomb_force = false;
         std::string evolve = "RK4";
         simulate(trap_100,has_coulomb_force,N,dt,evolve, var_V, f, omega);
 
         // write number of contained particles to a file
         // omega  conatined_particles_after 500 micro sec
-        counter_file << omega << "   " << trap_100.num_particles_inside;
+        counter_file << omega << "   " << trap_100.particles_inside();
         counter_file << "\n";
       }
       counter_file.close();

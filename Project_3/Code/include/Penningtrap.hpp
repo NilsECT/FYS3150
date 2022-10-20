@@ -22,6 +22,8 @@ class Penningtrap{
     void evolve_RK4(double dt, bool particle_interaction, bool has_E_field, bool has_B_field, bool func_V=false, double f=0, double w=0, int i=0);
     void update_V(double f, double w, double t);
     void write_to_file(std::string evolve,std::string h, std::string inter);
+
+    int particles_inside();
 };
 
 #endif
