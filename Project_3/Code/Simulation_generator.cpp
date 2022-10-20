@@ -134,7 +134,7 @@ int main(){
     //4 Different time steps:
     std::vector<int> n = {4000,8000,16000,32000};
     for (int k : n){
-      int N = k;
+      int N = 50;
       dt = 50./k;
       trap_1 = Penningtrap(B_0, V_0, d);
       r = arma::vec{20,0,20}; // micro m
