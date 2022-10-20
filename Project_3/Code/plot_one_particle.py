@@ -60,17 +60,19 @@ def error_plot(num_time_steps, method):
 
     plt.plot( t, error, marker = "o", markersize = 0.05,label=f"n_step ={num_time_steps}")
 
+n = np.array([4000,8000,16000,32000])
+
 plt.figure(2)
 plt.subplot(1,2,1) 
 plt.title("Error over time for Forward Euler")
-n = np.array([4000,8000,16000,32000])
 for i in n:
     error_plot(i,"FE")
 plt.legend()
+
 plt.subplot(1,2,2) 
 plt.title("Error over time for Runge Kutta 4")
 for i in n:
     error_plot(i,"RK")
-
 plt.legend()
-plt.savefig("error_plot_FE.pdf")
+
+plt.savefig("error_plot.pdf")
