@@ -164,7 +164,7 @@ int main(){
     std::cout << "At trap 1 with RK4 testing different timesteps." << std::endl;
 
     for (int k : n){
-      int N = k;
+      int N = 50;
       dt = 50./k;
       trap_1 = Penningtrap(B_0, V_0, d);
       r = arma::vec{20,0,20}; // micro m
@@ -189,38 +189,6 @@ int main(){
       bool has_coulomb_force = false;
       evolve = "FE";
       simulate(trap_1,has_coulomb_force,k,dt,evolve);
-    }
-
-
-    // 100 particles with interaction:
-    arma::vec omega_v = arma::linspace(0.2, 2.5, 150);
-    std::vector<double> f_list = std::vector{0.1, 0.4, 0.7};
-    bool var_V = true;
-
-    std::cout << "At trap with 100 particles." << std::endl;
-
-    Penningtrap trap_100 = Penningtrap(B_0, V_0, d);
-    for (double f : f_list) {
-
-        std::string f_name = std::to_string(f);
-        std::ofstream counter_file;
-
-        std::cout << "At f = " << f_name << std::endl;
-
-        counter_file.open("counter_" + f_name + ".txt", std::ios_base::app);
-
-      for (double omega : omega_v) {
-        trap_100.generate_particles(100,q,m,seed);
-        has_coulomb_force = false;
-        evolve = "RK4";
-        simulate(trap_100,has_coulomb_force,N,dt,evolve, var_V, f, omega);
-
-        // write number of contained particles to a file
-        // omega  conatined_particles_after 500 micro sec
-        counter_file << omega << "   " << trap_100.num_particles_inside;
-        counter_file << "\n";
-      }
-      counter_file.close();
     }
 
     return 0;
