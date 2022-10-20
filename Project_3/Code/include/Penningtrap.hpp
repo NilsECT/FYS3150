@@ -13,13 +13,13 @@ class Penningtrap{
     int num_particles_inside;
     
     Penningtrap(double B_0, double V_0, double d);
-    void find_force(bool has_coloumb_force, bool has_E_field, bool has_B_field);
+    void find_force(bool has_coloumb_force, bool has_E_field, bool has_B_field, bool func_V=false, double f=0, double w=0, double ti=0);
     void add_particle(Particle particle);
     void generate_particles(int N, double q, double m, int seed);
 
-    void evolve_forwardeuler(double dt, bool particle_interaction, bool has_E_field, bool has_B_field);
-    void evolve_RK4(double dt, bool particle_interaction, bool has_E_field, bool has_B_field);
-    void update_V_0(double f, double w, double t);
+    void evolve_forwardeuler(double dt, bool particle_interaction, bool has_E_field, bool has_B_field, bool func_V=false, double f=0, double w=0, int i=0);
+    void evolve_RK4(double dt, bool particle_interaction, bool has_E_field, bool has_B_field, bool func_V=false, double f=0, double w=0, int i=0);
+    void update_V(double f, double w, double t);
     void write_to_file(std::string evolve,std::string h, std::string inter);
 };
 

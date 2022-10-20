@@ -5,7 +5,7 @@
 #include <iostream>
 //#include <string>
 
-void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::string evolve, bool update_V) {
+void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V=false, double f=0, double w=0) {
     std::string dt_str = std::to_string(dt);
     std::string has_col;
     if (has_coulomb_force) {
@@ -17,25 +17,35 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
     
     float time = dt*N;
 
-    std::cout << "total time: " << time << " microseconds" << std::endl;
+    // std::cout << "total time: " << time << " microseconds" << std::endl;
 
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
 
-    for (int i = 0; i < N; i++) {
-      trap.write_to_file(evolve,dt_str, has_col);
-      /*if (update_V){
-        trap.update_V_0(f,w,t); // Define updating parameters of the strength of the E-field.
-      }*/
-      if (evolve=="RK4"){
-        trap.evolve_RK4(dt, has_coulomb_force, true, true);
-
-      std::cout << i << std::endl;
-      }
-      else{
-        trap.evolve_forwardeuler(dt, has_coulomb_force, true, true);
+    if (func_V) {
+      for (int i = 0; i < N; i++) {
+        if (evolve=="RK4"){
+          trap.evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
+        }
+        else{
+          trap.evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
+        }
       }
     }
-    trap.write_to_file(evolve, dt_str, has_col);
+
+    else {
+      for (int i = 0; i < N; i++) {
+        trap.write_to_file(evolve,dt_str, has_col);
+        if (evolve=="RK4"){
+          trap.evolve_RK4(dt, has_coulomb_force, true, true);
+
+        // std::cout << i << std::endl;
+        }
+        else{
+          trap.evolve_forwardeuler(dt, has_coulomb_force, true, true);
+        }
+      }
+      trap.write_to_file(evolve, dt_str, has_col);
+    }
 }
 
 int main(){
@@ -58,9 +68,11 @@ int main(){
     Particle particle_1 = Particle(q,m,r,v);
     trap_1.add_particle(particle_1);
     bool has_coulomb_force = false;
-    bool update_V = false;
     std::string evolve = "RK4";
-    simulate(trap_1,has_coulomb_force,N,dt,evolve,update_V);
+    
+    std::cout << "At trap 1." << std::endl;
+
+    simulate(trap_1,has_coulomb_force,N,dt,evolve);
 
     // With Forward Euler:
     Penningtrap trap_2 = Penningtrap(B_0, V_0, d);
@@ -70,7 +82,10 @@ int main(){
     trap_2.add_particle(particle_2);
     has_coulomb_force = false;
     evolve = "Forward_Euler";
-    simulate(trap_2,has_coulomb_force,N,dt,evolve,update_V);
+
+    std::cout << "At trap 2." << std::endl;
+
+    simulate(trap_2,has_coulomb_force,N,dt,evolve);
 
     // Two particles with interaction:
     // With RK4:
@@ -85,7 +100,10 @@ int main(){
     trap_3.add_particle(particle_4);
     has_coulomb_force = true;
     evolve = "RK4";
-    simulate(trap_3,has_coulomb_force,N,dt,evolve,update_V);
+
+    std::cout << "At trap 3." << std::endl;
+
+    simulate(trap_3,has_coulomb_force,N,dt,evolve);
 
     // With Forward Euler:
     Penningtrap trap_4 = Penningtrap(B_0, V_0, d);
@@ -99,7 +117,10 @@ int main(){
     trap_4.add_particle(particle_6);
     has_coulomb_force = true;
     evolve = "Forward_Euler";
-    simulate(trap_4,has_coulomb_force,N,dt,evolve,update_V);
+
+    std::cout << "At trap 4." << std::endl;
+
+    simulate(trap_4,has_coulomb_force,N,dt,evolve);
 
     // Two particles without interaction:
     // With RK4:
@@ -114,7 +135,10 @@ int main(){
     trap_5.add_particle(particle_8);
     has_coulomb_force = false;
     evolve = "RK4";
-    simulate(trap_5,has_coulomb_force,N,dt,evolve,update_V);
+
+    std::cout << "At trap 5." << std::endl;
+
+    simulate(trap_5,has_coulomb_force,N,dt,evolve);
 
     // With Forward Euler:
     Penningtrap trap_6 = Penningtrap(B_0, V_0, d);
@@ -128,11 +152,17 @@ int main(){
     trap_6.add_particle(particle_10);
     has_coulomb_force = false;
     evolve = "Forward_Euler";
-    simulate(trap_6,has_coulomb_force,N,dt,evolve,update_V);
+
+    std::cout << "At trap 6." << std::endl;
+
+    simulate(trap_6,has_coulomb_force,N,dt,evolve);
 
 
     //4 Different time steps:
     std::vector<int> n = {4000,8000,16000,32000};
+
+    std::cout << "At trap 1 with RK4 testing different timesteps." << std::endl;
+
     for (int k : n){
       int N = k;
       dt = 50./k;
@@ -142,10 +172,12 @@ int main(){
       particle_1 = Particle(q,m,r,v);
       trap_1.add_particle(particle_1);
       bool has_coulomb_force = false;
-      bool update_V = false;
       evolve = "RK";
-      simulate(trap_1,has_coulomb_force,k,dt,evolve,update_V);
+      simulate(trap_1,has_coulomb_force,k,dt,evolve);
     }
+
+    std::cout << "At trap 1 with FE testing different timesteps." << std::endl;
+
     for (int k : n){
       int N = k;
       dt = 50./k;
@@ -155,20 +187,41 @@ int main(){
       particle_1 = Particle(q,m,r,v);
       trap_1.add_particle(particle_1);
       bool has_coulomb_force = false;
-      bool update_V = false;
       evolve = "FE";
-      simulate(trap_1,has_coulomb_force,k,dt,evolve,update_V);
+      simulate(trap_1,has_coulomb_force,k,dt,evolve);
     }
 
 
-    /*
     // 100 particles with interaction:
+    arma::vec omega_v = arma::linspace(0.2, 2.5, 150);
+    std::vector<double> f_list = std::vector{0.1, 0.4, 0.7};
+    bool var_V = true;
+
+    std::cout << "At trap with 100 particles." << std::endl;
+
     Penningtrap trap_100 = Penningtrap(B_0, V_0, d);
-    trap_100.generate_particles(100,q,m,seed);
-    update_V = true;
-    has_coulomb_force = false;
-    evolve = ?;
-    simulate(trap_100,has_coulomb_force,N,dt,evolve,update_V);
-    */
+    for (double f : f_list) {
+
+        std::string f_name = std::to_string(f);
+        std::ofstream counter_file;
+
+        std::cout << "At f = " << f_name << std::endl;
+
+        counter_file.open("counter_" + f_name + ".txt", std::ios_base::app);
+
+      for (double omega : omega_v) {
+        trap_100.generate_particles(100,q,m,seed);
+        has_coulomb_force = false;
+        evolve = "RK4";
+        simulate(trap_100,has_coulomb_force,N,dt,evolve, var_V, f, omega);
+
+        // write number of contained particles to a file
+        // omega  conatined_particles_after 500 micro sec
+        counter_file << omega << "   " << trap_100.num_particles_inside;
+        counter_file << "\n";
+      }
+      counter_file.close();
+    }
+
     return 0;
 }

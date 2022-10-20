@@ -29,18 +29,6 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d){
     this->num_particles_inside = 0; // Number of particles in the trap
 }
 
-/**
- * @brief Updates the electric potential V_0 of the trap as a periodic potential.
- *
- * @param f Amplitude
- * @param w Angular frequency
- * @param t Time
- *
- */
-void Penningtrap::update_V_0(double f, double w, double t){
-    this->V_0 = this->V_0*(1. + f * std::cos(w*t));
-}
-
 
 /**
  * @brief Goes through each particle object and computes the forces working on
@@ -55,7 +43,7 @@ void Penningtrap::update_V_0(double f, double w, double t){
  * set to false.
  *
  */
-void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_B_field) {
+void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, double ti) {
     for (Particle &particle : this->particles) {
 
         // Initialize coulomb force, E-field and B-field to zero-vectors
@@ -69,13 +57,28 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
         }
 
         if (has_E_field) {
-            // Calculate E-field if has_E_field is set to true
-            E = particle.find_E_field(this->V_0, this->d);
+            
+            if (arma::norm(particle.r) > this->d) {
+                continue;
+            }
+            else if (func_V) {
+                E = particle.find_E_field(this->V_0 * (1 + std::cos(w*ti)), this->d);
+            }
+            else {
+                // Calculate E-field if has_E_field is set to true
+                E = particle.find_E_field(this->V_0, this->d);
+            }
         }
 
         if (has_B_field) {
-            // Calculate B-field if has_B_field is set to true
-            B = particle.find_B_field(this->B_0);
+            if (arma::norm(particle.r) < this->d) {
+                // Calculate B-field if has_B_field is set to true
+                B = particle.find_B_field(this->B_0);
+            }
+            else {
+                continue;
+            }
+            
         }
 
         arma::vec L = particle.find_Lorentz_force(E, B); // Calculate the Lorentz force from the electric and magnetic field.
@@ -149,6 +152,9 @@ void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::str
         }
         r_outfile << "\n";
         v_outfile << "\n";
+
+        r_outfile.close();
+        v_outfile.close();
     }
 
 
@@ -166,14 +172,18 @@ void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::str
  * magnetic field, false if these forces should be ignored.
  *
 */
-void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field) {
+void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, int i) {
 
   for (Particle& p : this->particles) {  // Iterate through particles
 
-      this->find_force(has_coulomb_force, has_E_field, has_B_field);
+      this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
 
       p.r = p.r + p.v * dt;
       p.v = p.v + dt * p.force / p.m;
+
+      if (arma::norm(p.r) > this->d) {
+        this->num_particles_inside--;
+      }
   }
 
 }
@@ -191,7 +201,7 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
  * magnetic field, false if these forces should be ignored.
  *
 */
-void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field) {
+void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, int i) {
 
   for (Particle& p : this->particles) {  // Iterate through particles
       // Empty current particle's array of weighted sum of k-values:
@@ -201,7 +211,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       p.r_temp = p.r;
       p.v_temp = p.v;
 
-      this->find_force(has_coulomb_force, has_E_field, has_B_field);
+      this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
 
       arma::vec k1_r = dt * p.v;
       arma::vec k1_v = dt * p.force/p.m;
@@ -215,7 +225,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
-      this->find_force(has_coulomb_force, has_E_field, has_B_field);
+      this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
 
       arma::vec k2_r = dt * p.v;
       arma::vec k2_v = dt * p.force/p.m;
@@ -228,7 +238,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
-      this->find_force(has_coulomb_force, has_E_field, has_B_field);
+      this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
 
       arma::vec k3_r = dt * p.v;
       arma::vec k3_v = dt * p.force/p.m;
@@ -241,7 +251,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
-      this->find_force(has_coulomb_force, has_E_field, has_B_field);
+      this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
 
       arma::vec k4_r = dt * p.v;
       arma::vec k4_v = dt * p.force/p.m;
@@ -252,6 +262,13 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       // Update position and velocity:
       p.r = p.r_temp + p.runge_kutta_k.col(0);
       p.v = p.v_temp + p.runge_kutta_k.col(1);
+
+      if (arma::norm(p.r) > this->d) {
+
+        std::cout << "A particle left the trap!" << std::endl;
+
+        this->num_particles_inside--;
+      }
 
   }
 
