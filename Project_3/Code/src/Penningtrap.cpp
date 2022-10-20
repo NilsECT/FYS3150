@@ -144,11 +144,7 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
  * keeps track of the number of particles inside the penningtrap.
  *
 */
-<<<<<<< HEAD
 void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::string has_coulomb_str){
-=======
-void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::string has_coulomb_str, bool count_particles){
->>>>>>> 447903e469979809f5bba70103016b6a046b8a4b
     std::string N = std::to_string(this->num_particles_inside);
 
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
