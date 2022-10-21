@@ -40,19 +40,19 @@ Particle::Particle(double q, double m, arma::vec r, arma::vec v){
 arma::vec Particle::find_coulomb_force(std::vector<Particle> particles) {
     arma::vec E_ke = arma::vec(3).fill(0.); // Total electric field over ke.
 
-    for (Particle p : particles){
+    for (Particle& p : particles){
         // skips the particle if it's outside
         if (p.check_outside()) {
             continue;
         }
 
         arma::vec r_diff = this->r - p.r;
-        double r_norm = arma::norm(r_diff);
-        double tol = 1e-6;
+        double r_norm = std::sqrt(r_diff(0)*r_diff(0) + r_diff(1)*r_diff(1) + r_diff(2)*r_diff(2));//arma::norm(r_diff);
+        double tol = 1e-3;
         if (r_norm<tol){
             continue;
         }
-        double r_3 = std::pow(r_norm,3);
+        double r_3 = r_norm*r_norm*r_norm;
         E_ke = E_ke + r_diff/r_3;
     }
     arma::vec C= this->q*this->ke*E_ke;

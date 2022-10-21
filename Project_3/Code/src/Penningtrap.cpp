@@ -44,21 +44,44 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d){
  *
  */
 void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, double ti) {
+
+    int i = 0;
+
+    // Contains Coulomb force for each particle:
+    arma::mat C = arma::zeros(3, this->num_particles_inside);
+
     for (Particle &particle : this->particles) {
 
-        // Initialize coulomb force, E-field and B-field to zero-vectors
-        arma::vec C = arma::vec(3).fill(0.);
+        // Initialize E-field and B-field to zero-vectors
         arma::vec E = arma::vec(3).fill(0.);
         arma::vec B = arma::vec(3).fill(0.);
 
         if (has_coulomb_force) {
-            // Calculate the coulomb force if has_coulomb_force is set to true
-            C = particle.find_coulomb_force(this->particles);
+
+            for (int j = i; j < this->num_particles_inside; j++){
+
+              if (this->particles.at(j).check_outside()){
+                continue;
+              }
+
+              arma::vec r_diff = particle.r - this->particles.at(j).r;
+              double r_norm = std::sqrt(r_diff(0)*r_diff(0) + r_diff(1)*r_diff(1) + r_diff(2)*r_diff(2));//arma::norm(r_diff);
+              double tol = 1e-3;
+              if (r_norm<tol){
+                  continue;
+              }
+
+              double r_3 = r_norm*r_norm*r_norm;
+
+              C.col(i) = C.col(i) + r_diff/r_3;
+              C.col(j) = -C.col(j) + r_diff/r_3;
+
+            }
         }
 
         if (has_E_field) {
-            
-            if (arma::norm(particle.r) > this->d) {
+
+            if (particle.outside) {
                 continue;
             }
             else if (func_V) {
@@ -71,21 +94,25 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
         }
 
         if (has_B_field) {
-            if (arma::norm(particle.r) < this->d) {
+            if (!particle.outside) {
                 // Calculate B-field if has_B_field is set to true
                 B = particle.find_B_field(this->B_0);
             }
             else {
                 continue;
             }
-            
+
         }
 
         arma::vec L = particle.find_Lorentz_force(E, B); // Calculate the Lorentz force from the electric and magnetic field.
 
-        arma::vec F = C + L; // The total force is the sum of the coulomb force and the Lorentz force
+        arma::vec F = C.col(i) + L; // The total force is the sum of the coulomb force and the Lorentz force
         particle.force = F; // Updates the particles force to the one we calculated here
+
+        i = i + 1;
     }
+
+
 }
 
 /**
@@ -101,7 +128,7 @@ void Penningtrap::add_particle(Particle particle) {
 
 /**
  * @brief Empties the std::vector containing particles
- * 
+ *
  */
 void Penningtrap::clear_particles() {
     this->particles.clear();
@@ -126,8 +153,12 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
     arma::arma_rng::set_seed(seed);
 
     for (int i = 0; i < N; i++) {
-        r = arma::vec(3).randn() * this->d;
-        v = arma::vec(3).randn();//* 0.01 * this->d;//arma::vec(3).randn() * 0.1 * this->d;
+        r = arma::vec(3).randn() * 0.1 * this->d;
+<<<<<<< HEAD
+        v = arma::vec(3).randn() * 0.1 * this->d;
+=======
+        v = arma::vec(3).randn() * 0.1 * this->d; // must be times 0.1 and d according to the problem text.
+>>>>>>> 65333980b2973ba4bbb0ac254cc78b9c01cc1e20
         Particle particle = Particle(q, m, r, v);
         this->particles.push_back(particle);
     }
@@ -193,7 +224,7 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
 
   for (Particle& p : this->particles) {  // Iterate through particles
 
-      if (arma::norm(p.r) > this->d && !p.check_outside()) {
+      if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d && !p.check_outside()) {
 
         p.is_outside();
 
@@ -253,8 +284,8 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       p.v = p.v + k1_v/2;
 
       // Add current k-value to the weighted sum of ks:
-      p.runge_kutta_k.col(0) += (1/6.0) * k1_r;
-      p.runge_kutta_k.col(1) += (1/6.0) * k1_v;
+      p.runge_kutta_k.col(0) = p.runge_kutta_k.col(0) + (1/6.0) * k1_r;
+      p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * k1_v;
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
@@ -271,8 +302,8 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       p.r = p.r_temp + k2_r/2;
       p.v = p.v_temp + k2_v/2;
 
-      p.runge_kutta_k.col(0) += (1/6.0) * 2 * k2_r;
-      p.runge_kutta_k.col(1) += (1/6.0) * 2 * k2_v;
+      p.runge_kutta_k.col(0) = p.runge_kutta_k.col(0) + (1/6.0) * 2 * k2_r;
+      p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * 2 * k2_v;
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
@@ -290,12 +321,12 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       p.r = p.r_temp + k3_r;
       p.v = p.v_temp + k3_v;
 
-      p.runge_kutta_k.col(0) += (1/6.0) * 2 * k3_r;
-      p.runge_kutta_k.col(1) += (1/6.0) * 2 * k3_v;
+      p.runge_kutta_k.col(0) = p.runge_kutta_k.col(0) + (1/6.0) * 2 * k3_r;
+      p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * 2 * k3_v;
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
-      if (arma::norm(p.r) > this->d && !p.check_outside()) {
+      if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d && !p.check_outside()) {//if (arma::norm(p.r) > this->d && !p.check_outside()) {
 
         p.is_outside();
 
@@ -313,8 +344,8 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       arma::vec k4_r = dt * p.v;
       arma::vec k4_v = dt * p.force/p.m;
 
-      p.runge_kutta_k.col(0) += (1/6.0) * k4_r;
-      p.runge_kutta_k.col(1) += (1/6.0) * k4_v;
+      p.runge_kutta_k.col(0) = p.runge_kutta_k.col(0) + (1/6.0) * k4_r;
+      p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * k4_v;
 
       // Update position and velocity:
       p.r = p.r_temp + p.runge_kutta_k.col(0);
