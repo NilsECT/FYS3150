@@ -6,8 +6,6 @@ cm = 1 / 2.54
 plt.rcParams["figure.figsize"] = (12 * cm, 8 * cm)
 sns.set_theme("notebook", "whitegrid")
 
-
-
 # Forward Euler, has coulomb force
 data_2p_FE_x_hasC = np.loadtxt("Forward_Euler2_y_0.010000_x.txt")
 data_2p_FE_y_hasC = np.loadtxt("Forward_Euler2_y_0.010000_y.txt")
@@ -37,8 +35,9 @@ ax.set_xlabel("x [$\\mu$m]")
 ax.set_ylabel("y [$\\mu$m]")
 ax.set_zlabel("z [$\\mu$m]")
 plt.legend()
-plt.show()
+plt.savefig("p1_rk4_with_and_without_coulomb_3d.pdf")
 
+plt.figure()
 plt.plot(data_2p_RK_x_hasC[:,0], data_2p_RK_y_hasC[:,0], label="Particle 1: RK4, has coulomb")
 plt.plot(data_2p_RK_x[:,0], data_2p_RK_y[:,0], label="Particle 1: RK4, no coulomb")
 plt.plot(data_2p_RK_x_hasC[0,0], data_2p_RK_y_hasC[0,0], "ro", label="Particle 1 initial position", markersize=10)
@@ -46,7 +45,7 @@ ax.set_xlabel("x [$\\mu$m]")
 ax.set_ylabel("y [$\\mu$m]")
 ax.set_zlabel("z [$\\mu$m]")
 plt.legend()
-plt.show()
+plt.savefig("p1_rk4_with_and_without_coulomb_2d.pdf")
 
 ax = plt.axes(projection = "3d")
 ax.plot3D(data_2p_RK_x[:,0], data_2p_RK_y[:,0], data_2p_RK_z[:,0], label="Particle 1: RK4, no coulomb")
@@ -55,7 +54,7 @@ ax.set_xlabel("x [$\\mu$m]")
 ax.set_ylabel("y [$\\mu$m]")
 ax.set_zlabel("z [$\\mu$m]")
 plt.legend()
-plt.show()
+plt.savefig("p1_and_p2_rk4_without_coulomb_3d.pdf")
 
 ax = plt.axes(projection = "3d")
 ax.plot3D(data_2p_RK_x_hasC[:,0], data_2p_RK_y_hasC[:,0], data_2p_RK_z_hasC[:,0], label="Particle 1: RK4, has coulomb")
@@ -64,7 +63,7 @@ ax.set_xlabel("x [$\\mu$m]")
 ax.set_ylabel("y [$\\mu$m]")
 ax.set_zlabel("z [$\\mu$m]")
 plt.legend()
-plt.show()
+plt.savefig("p1_and_p2_rk4_with_coulomb_3d.pdf")
 
 ax = plt.axes(projection = "3d")
 ax.plot3D(data_2p_RK_x[:,0], data_2p_RK_y[:,0], data_2p_RK_z[:,0], label="Particle 1: RK4, no coulomb")
@@ -73,21 +72,24 @@ ax.set_xlabel("x [$\\mu$m]")
 ax.set_ylabel("y [$\\mu$m]")
 ax.set_zlabel("z [$\\mu$m]")
 plt.legend()
-plt.show()
+plt.savefig("p1_rk4_and_fe_without_coulomb_3d.pdf")
 
+plt.figure()
 plt.plot(data_2p_RK_x[:,0], data_2p_RK_y[:,0], label="Particle 1: RK4, no coulomb")
 plt.plot(data_2p_RK_x[:,1], data_2p_RK_y[:,1], label="Particle 2: RK4, no coulomb")
 plt.xlabel("x [$\\mu$m]")
 plt.ylabel("y [$\\mu$m]")
 plt.legend()
-plt.show()
+plt.savefig("p1_and_p2_rk4_without_coulomb_2d.pdf")
 
+plt.figure()
 plt.plot(data_2p_RK_x_hasC[:,0], data_2p_RK_y_hasC[:,0], label="Particle 1: RK4, has coulomb")
 plt.plot(data_2p_RK_x_hasC[:,1], data_2p_RK_y_hasC[:,1], label="Particle 2: RK4, has coulomb")
 plt.xlabel("x [$\\mu$m]")
 plt.ylabel("y [$\\mu$m]")
 plt.legend()
-plt.show()
+plt.savefig("p1_and_p2_rk4_without_coulomb_2d.pdf")
+
 
 # plt.plot(data_2p_FE_x_hasC[:,0], data_2p_FE_y_hasC[:,0], label="Particle 1: FE, has coulomb")
 # plt.plot(data_2p_FE_x[:,0], data_2p_FE_y[:,0], label="Particle 1: FE, no coulomb")
@@ -134,6 +136,7 @@ RK4_vz = np.loadtxt("RK42_n_0.010000_vz.txt")
 
 #cut = -int(np.ceil(N/2))
 
+plt.figure()
 plt.plot(RK4_x[:, 0], RK4_vx[:, 0], 'red', linewidth=0.8)
 plt.scatter(RK4_x[0, 0], RK4_vx[0, 0], 30, 'red', label=p1)
 
@@ -145,7 +148,9 @@ plt.ylabel("velocity in x-direction")
 
 plt.legend()
 plt.savefig("RK4_phase_space_x_n.pdf")
-plt.show()
+# plt.show()
+
+plt.figure()
 
 plt.plot(RK4_z[:, 0], RK4_vz[:, 0], 'red', linewidth=0.8)
 plt.scatter(RK4_z[0, 0], RK4_vz[0, 0], 30, 'red', label=p1)
@@ -158,10 +163,11 @@ plt.ylabel("velocity in z-direction")
 
 plt.legend()
 plt.savefig("RK4_phase_space_z_n.pdf")
-plt.show()
+# plt.show()
 
 # With Coulomb
 
+plt.figure()
 RK4_x = np.loadtxt("RK42_y_0.010000_x.txt")
 #RK4_y = np.loadtxt("RK42_y_0.010000_y.txt")
 RK4_z = np.loadtxt("RK42_y_0.010000_z.txt")
@@ -184,7 +190,9 @@ plt.ylabel("velocity in x-direction")
 
 plt.legend()
 plt.savefig("RK4_phase_space_x_y.pdf")
-plt.show()
+# plt.show()
+
+plt.figure()
 
 plt.plot(RK4_z[:, 0], RK4_vz[:, 0], 'red', linewidth=0.8)
 plt.scatter(RK4_z[0, 0], RK4_vz[0, 0], 30, 'red', label=p1)
@@ -197,4 +205,4 @@ plt.ylabel("velocity in z-direction")
 
 plt.legend()
 plt.savefig("RK4_phase_space_z_y.pdf")
-plt.show()
+# plt.show()
