@@ -21,36 +21,73 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
 
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
 
-    if (func_V) {
+
+    if (func_V && evolve=="RK4"){
       for (int i = 0; i < N; i++) {
-        if (evolve=="RK4"){
-          trap.evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
-        }
-        else{
-          trap.evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
-        }
+        trap.write_to_file(evolve + "f", dt_str, has_col);
+        //std::cout << evolve + "f" << std::endl;
+        //trap.update_V(f, w, t);
+        trap.evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
+        /*if (trap.num_particles_inside < N_particles) {
+          std::cout << trap.num_particles_inside << std::endl;
+        }*/
       }
     }
-
+    else if (func_V && evolve!="RK4"){
+      for (int i = 0; i < N; i++) {
+        trap.write_to_file(evolve + "f", dt_str, has_col);
+        trap.evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
+      }
+    }
+    else if (!func_V && evolve=="RK4"){
+      for (int i = 0; i < N; i++) {
+        trap.write_to_file(evolve,dt_str, has_col);
+        trap.evolve_RK4(dt, has_coulomb_force, true, true);
+      }
+    }
     else {
       for (int i = 0; i < N; i++) {
         trap.write_to_file(evolve,dt_str, has_col);
-        if (evolve=="RK4"){
-          trap.evolve_RK4(dt, has_coulomb_force, true, true);
-
-        // std::cout << i << std::endl;
-        }
-        else{
-          trap.evolve_forwardeuler(dt, has_coulomb_force, true, true);
-        }
+        trap.evolve_forwardeuler(dt, has_coulomb_force, true, true);
       }
-      trap.write_to_file(evolve, dt_str, has_col);
     }
+
+    trap.write_to_file(evolve,dt_str, has_col);
+
 }
 
 int main(){
     // Defining core values used for simulation:
+    double q = 1.0;
+    double V_0 = 2.41 * std::pow(10, 6);
+    double B_0 = 9.65*10;
+    double m = 40.078;
+    double d = 500;
 
+    int seed = 137;
+
+    int N_particles = 100;
+    arma::vec f = {0.1, 0.4, 0.7};
+    double dw = 0.02; // unit: MHz
+    double w_min = 0.2;
+    double w_max = 2.5;
+
+    // Two particles without interaction:
+    // With RK4:
+    Penningtrap trap_test = Penningtrap(B_0, V_0, d);
+    trap_test.generate_particles(2, q, m, seed);
+    bool has_coulomb_force = false;
+    std::string evolve = "RK4";
+
+    int N = 1000;
+    double dt = 0.01;
+
+    simulate(trap_test, has_coulomb_force, N, dt, evolve, true, f.at(1), w_min);
+
+    return 0;
+}
+
+int main_old(){
     double q = 1.0;
     double V_0 = 2.41 * std::pow(10, 6);
     double B_0 = 9.65*10;

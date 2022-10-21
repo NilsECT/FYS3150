@@ -44,6 +44,14 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d){
  *
  */
 void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, double ti) {
+    double V;
+
+    if (func_V) {
+      V = this->V_0 * (1 + f*std::cos(w*ti));
+    }
+    else {
+      V = this->V_0;
+    }
 
     int i = 0;
 
@@ -84,12 +92,9 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
             if (particle.outside) {
                 continue;
             }
-            else if (func_V) {
-                E = particle.find_E_field(this->V_0 * (1 + std::cos(w*ti)), this->d);
-            }
             else {
                 // Calculate E-field if has_E_field is set to true
-                E = particle.find_E_field(this->V_0, this->d);
+                E = particle.find_E_field(V, this->d);
             }
         }
 
@@ -154,11 +159,7 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
 
     for (int i = 0; i < N; i++) {
         r = arma::vec(3).randn() * 0.1 * this->d;
-<<<<<<< HEAD
         v = arma::vec(3).randn() * 0.1 * this->d;
-=======
-        v = arma::vec(3).randn() * 0.1 * this->d; // must be times 0.1 and d according to the problem text.
->>>>>>> 65333980b2973ba4bbb0ac254cc78b9c01cc1e20
         Particle particle = Particle(q, m, r, v);
         this->particles.push_back(particle);
     }
