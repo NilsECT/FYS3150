@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 # sns.set_theme("notebook","whitegrid")
 
 ## Data extraction with interaction for Forward Euler:
-data_1p_FE_x = np.loadtxt("Forward_Euler1_n_0.010000_x.txt")
-data_1p_FE_y = np.loadtxt("Forward_Euler1_n_0.010000_y.txt")
-data_1p_FE_z = np.loadtxt("Forward_Euler1_n_0.010000_z.txt")
+data_1p_Forward_Euler_x = np.loadtxt("Forward_Euler1_n_0.010000_x.txt")
+data_1p_Forward_Euler_y = np.loadtxt("Forward_Euler1_n_0.010000_y.txt")
+data_1p_Forward_Euler_z = np.loadtxt("Forward_Euler1_n_0.010000_z.txt")
 
 data_1p_RK4_x = np.loadtxt("RK41_n_0.010000_x.txt")
 data_1p_RK4_y = np.loadtxt("RK41_n_0.010000_y.txt")
@@ -20,7 +20,7 @@ data_16000_1p_a_x, data_16000_1p_a_y, data_16000_1p_a_z = np.loadtxt("16000_anal
 data_32000_1p_a_x, data_32000_1p_a_y, data_32000_1p_a_z = np.loadtxt("32000_analytical.txt",unpack=True)
 
 plt.figure(1)
-plt.plot(data_1p_FE_z,label="Forward Euler")
+plt.plot(data_1p_Forward_Euler_z,label="Forward Euler")
 plt.plot(data_1p_RK4_z,label="Runge Kutta 4")
 plt.plot(data_4000_1p_a_z,label="Analytic")
 
@@ -66,13 +66,17 @@ plt.figure(2)
 plt.subplot(1,2,1) 
 plt.title("Error over time for Forward Euler")
 for i in n:
-    error_plot(i,"FE")
+    error_plot(i,"Forward_Euler")
+plt.xlabel("t [$\\mu$s]")
+plt.ylabel("y [$\\mu$m]")
 plt.legend()
 
 plt.subplot(1,2,2) 
 plt.title("Error over time for Runge Kutta 4")
 for i in n:
-    error_plot(i,"RK")
+    error_plot(i,"RK4")
+plt.xlabel("t [$\\mu$s]")
+plt.ylabel("y [$\\mu$m]")
 plt.legend()
 
 plt.savefig("error_plot.pdf")
