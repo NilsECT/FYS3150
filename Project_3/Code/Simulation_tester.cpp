@@ -15,7 +15,7 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt) {
         has_col = "n";
     }
 
-    std::string evolve = "RK";
+    std::string evolve = "RK4";
 
     float time = dt*N;
 
