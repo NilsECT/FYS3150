@@ -23,6 +23,7 @@ class Penningtrap{
     void update_V(double f, double w, double t);
     void write_to_file(std::string evolve,std::string h, std::string inter);
 
+    void simulate(bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V=false, double f=0, double w=0);
     int particles_inside();
 };
 

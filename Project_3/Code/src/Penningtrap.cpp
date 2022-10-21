@@ -76,7 +76,7 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
               double r_norm = std::sqrt(r_diff(0)*r_diff(0) + r_diff(1)*r_diff(1) + r_diff(2)*r_diff(2));//arma::norm(r_diff);
               double tol = 1e-3;
               if (r_norm<tol){
-                  continue;
+                continue;
               }
 
               double r_3 = r_norm*r_norm*r_norm;
@@ -385,12 +385,53 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       // Update position and velocity:
       p.r = p.r_temp + p.runge_kutta_k.col(0);
       p.v = p.v_temp + p.runge_kutta_k.col(1);
-
-
   }
 
 }
 
 int Penningtrap::particles_inside() {
     return this->num_particles_inside;
+}
+
+void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V, double f, double w) {
+  std::string dt_str = std::to_string(dt);
+  std::string has_col;
+  if (has_coulomb_force) {
+      has_col = "y";
+  }
+  else {
+      has_col = "n";
+  }
+
+  // float time = dt*N;
+
+  // std::cout << "total time: " << time << " microseconds" << std::endl;
+
+  std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
+
+  if (func_V) {
+    for (int i = 0; i < N; i++) {
+      if (evolve=="RK4"){
+        this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
+      }
+      else{
+        this->evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
+      }
+    }
+  }
+
+  else {
+    for (int i = 0; i < N; i++) {
+      this->write_to_file(evolve,dt_str, has_col);
+      if (evolve=="RK4"){
+        this->evolve_RK4(dt, has_coulomb_force, true, true);
+
+      // std::cout << i << std::endl;
+      }
+      else{
+        this->evolve_forwardeuler(dt, has_coulomb_force, true, true);
+      }
+    }
+    this->write_to_file(evolve, dt_str, has_col);
+  }
 }
