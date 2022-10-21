@@ -52,6 +52,7 @@ int main(){
     
     trap.add_particle(part_2);
     std::cout << "At two particles without Coulomb" << std::endl;
+    // std::cout << "Having " << trap.num_particles_inside << std::endl;
     trap.simulate(no_coulomb_force,n[2],dt,evolve);
     part_1.reset(r_1, v_1);
     part_2.reset(r_2, v_2);
