@@ -61,7 +61,7 @@ int main(){
     // Single particle
     // With RK4:
     int N = 10000; // "micro" sec
-    double dt = 0.01;
+    double dt = 100./N;
     Penningtrap trap_1 = Penningtrap(B_0, V_0, d);
     arma::vec r = arma::vec{20.,0.,20.}; // micro m
     arma::vec v = arma::vec{0.,25.,0.};
@@ -148,8 +148,8 @@ int main(){
     trap_6.add_particle(particle_9);
     r = arma::vec{25.,25.,0.}; // micro m
     v = arma::vec{0.,4.,5.};
-    Particle particle_10 = Particle(q,m,r,v);
-    trap_6.add_particle(particle_10);
+    particle_6 = Particle(q,m,r,v);
+    trap_6.add_particle(particle_6);
     has_coulomb_force = false;
     evolve = "Forward_Euler";
 
@@ -166,14 +166,14 @@ int main(){
     for (int k : n){
       int N = 50;
       dt = 50./k;
-      trap_1 = Penningtrap(B_0, V_0, d);
+      Penningtrap trap_10 = Penningtrap(B_0, V_0, d);
       r = arma::vec{20.,0.,20.}; // micro m
       v = arma::vec{0.,25.,0.};
-      particle_1 = Particle(q,m,r,v);
-      trap_1.add_particle(particle_1);
+      Particle particle_10 = Particle(q,m,r,v);
+      trap_10.add_particle(particle_10);
       bool has_coulomb_force = false;
       evolve = "RK4";
-      simulate(trap_1,has_coulomb_force,k,dt,evolve);
+      simulate(trap_10,has_coulomb_force,k,dt,evolve);
     }
 
     std::cout << "At trap 1 with FE testing different timesteps." << std::endl;
@@ -181,14 +181,14 @@ int main(){
     for (int k : n){
       int N = k;
       dt = 50./k;
-      trap_1 = Penningtrap(B_0, V_0, d);
+      Penningtrap trap_11 = Penningtrap(B_0, V_0, d);
       r = arma::vec{20.,0.,20.}; // micro m
       v = arma::vec{0.,25.,0.};
       particle_1 = Particle(q,m,r,v);
-      trap_1.add_particle(particle_1);
+      trap_11.add_particle(particle_1);
       bool has_coulomb_force = false;
       evolve = "Forward_Euler";
-      simulate(trap_1,has_coulomb_force,k,dt,evolve);
+      simulate(trap_11,has_coulomb_force,k,dt,evolve);
     }
 
     return 0;
