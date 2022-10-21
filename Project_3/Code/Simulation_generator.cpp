@@ -159,12 +159,11 @@ int main(){
 
 
     //4 Different time steps:
-    std::vector<int> n = {4000,8000,16000,32000};
+    std::vector<double> n = {4000.,8000.,16000.,32000.};
 
     std::cout << "At trap 1 with RK4 testing different timesteps." << std::endl;
 
-    for (int k : n){
-      int N = 50;
+    for (double k : n){
       dt = 50./k;
       Penningtrap trap_10 = Penningtrap(B_0, V_0, d);
       r = arma::vec{20.,0.,20.}; // micro m
@@ -178,8 +177,7 @@ int main(){
 
     std::cout << "At trap 1 with FE testing different timesteps." << std::endl;
 
-    for (int k : n){
-      int N = k;
+    for (double k : n){
       dt = 50./k;
       Penningtrap trap_11 = Penningtrap(B_0, V_0, d);
       r = arma::vec{20.,0.,20.}; // micro m

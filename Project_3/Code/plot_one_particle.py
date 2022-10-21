@@ -34,14 +34,30 @@ plt.savefig(f"1_particle_z_direction.pdf")
 
 
 def error_plot(num_time_steps, method):
+
+    # take out analytical datapoints
     data_1p_a_x, data_1p_a_y, data_1p_a_z = np.loadtxt(f"{num_time_steps}_analytical.txt",unpack=True)
 
     dt = 50/num_time_steps 
 
+    # take out either FE or RK4 datapoints
     data_1p_x = np.loadtxt(f"{method}1_n_{dt:.6f}_x.txt",unpack=True)
     data_1p_y = np.loadtxt(f"{method}1_n_{dt:.6f}_y.txt",unpack=True)
     data_1p_z = np.loadtxt(f"{method}1_n_{dt:.6f}_z.txt",unpack=True)
 
+    # storage for the fe/rk4 positions
+    r_F = np.zeros((num_time_steps,3))
+    for i in range(num_time_steps):
+        r_F[i] = np.array([data_1p_x[i], data_1p_y[i], data_1p_z[i]])
+
+
+    r_a = np.zeros((num_time_steps,3))
+    for i in range(num_time_steps):
+        r_a[i] = np.array([data_1p_a_x[i],data_1p_a_y[i],data_1p_a_z[i]])
+    
+    max_error = r_a-r_F
+
+    error = np.zeros(num_time_steps)
     t = np.linspace(0,50,num_time_steps)
     error = np.zeros(num_time_steps)
     Delta_max_error = np.zeros(num_time_steps)
@@ -70,6 +86,7 @@ for i in range(len(n)):
 
 plt.xlabel("t [$\\mu$s]")
 plt.ylabel("y [$\\mu$m]")
+plt.yscale('log')
 plt.legend()
 
 plt.subplot(1,2,2) 
@@ -78,6 +95,8 @@ for i in range(len(n)):
     delta_max_error_RK4[i] = error_plot(n[i],"RK4")
 
 plt.xlabel("t [$\\mu$s]")
+plt.ylabel("y [$\\mu$m]")
+plt.yscale('log')
 plt.legend()
 
 plt.savefig("error_plot.pdf")
