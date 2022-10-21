@@ -32,6 +32,8 @@ class Particle{
     bool check_outside();
     void is_outside();
 
+    void reset(arma::vec pos, arma::vec vel);
+
     bool outside = false;
 };
 

@@ -130,3 +130,8 @@ bool Particle::check_outside() {
 void Particle::is_outside() {
     this->outside = true;
 }
+
+void Particle::reset(arma::vec pos, arma::vec vel) {
+    this->r = pos;
+    this->v = vel;
+}

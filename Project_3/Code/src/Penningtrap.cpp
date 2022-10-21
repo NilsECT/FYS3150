@@ -130,7 +130,7 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
  *
  * @param particle The particle to be added to the trap.
  */
-void Penningtrap::add_particle(Particle particle) {
+void Penningtrap::add_particle(Particle &particle) {
     this->particles.push_back(particle); // Add particle to particles
     this->num_particles_inside++; // Increase the number of particles in the trap
 }
@@ -141,6 +141,7 @@ void Penningtrap::add_particle(Particle particle) {
  */
 void Penningtrap::clear_particles() {
     this->particles.clear();
+    this->num_particles_inside = 0;
 }
 
 /**
@@ -253,8 +254,8 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
       // for updating the coulomb force on all particles before they move.
       // basically freezing time and calculating the coulombforce from all particles in their original position.
 
-      p.r = p.r + p.v * dt;
       p.v = p.v + dt * p.force / p.m;
+      p.r = p.r + p.v * dt;
   }
 
 }
