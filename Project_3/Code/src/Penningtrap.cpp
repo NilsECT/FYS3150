@@ -52,19 +52,27 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
 
     for (Particle &particle : this->particles) {
 
+        // skips finding the force if the particle is outside
+        if (particle.outside) {
+            continue;
+        }
+
         // Initialize E-field and B-field to zero-vectors
         arma::vec E = arma::vec(3).fill(0.);
         arma::vec B = arma::vec(3).fill(0.);
 
         if (has_coulomb_force) {
 
-            for (int j = i; j < this->num_particles_inside; j++){
+            int j = i;
 
-              if (this->particles.at(j).check_outside()){
+            for (Particle &particle_i : this->particles){
+
+              // excludes the particles which are outside
+              if (particle_i.outside){
                 continue;
               }
 
-              arma::vec r_diff = particle.r - this->particles.at(j).r;
+              arma::vec r_diff = particle.r - particle_i.r_coulomb;
               double r_norm = std::sqrt(r_diff(0)*r_diff(0) + r_diff(1)*r_diff(1) + r_diff(2)*r_diff(2));//arma::norm(r_diff);
               double tol = 1e-3;
               if (r_norm<tol){
@@ -76,6 +84,7 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
               C.col(i) = C.col(i) + r_diff/r_3;
               C.col(j) = -C.col(j) + r_diff/r_3;
 
+              j++;
             }
         }
 
@@ -218,6 +227,11 @@ void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::str
 */
 void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, int i) {
 
+  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
+  for (Particle& p : this->particles){
+    p.r_coulomb = p.r;
+  }
+
   for (Particle& p : this->particles) {  // Iterate through particles
 
       if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d && !p.check_outside()) {
@@ -235,6 +249,9 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
       }
 
       this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
+
+      // for updating the coulomb force on all particles before they move.
+      // basically freezing time and calculating the coulombforce from all particles in their original position.
 
       p.r = p.r + p.v * dt;
       p.v = p.v + dt * p.force / p.m;
@@ -256,6 +273,11 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
  *
 */
 void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, int i) {
+
+  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
+  for (Particle& p : this->particles){
+    p.r_coulomb = p.r;
+  }
 
   for (Particle& p : this->particles) {  // Iterate through particles
       // Empty current particle's array of weighted sum of k-values:
@@ -284,6 +306,11 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * k1_v;
   }
 
+  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
+  for (Particle& p : this->particles){
+    p.r_coulomb = p.r;
+  }
+
   for (Particle& p : this->particles) {  // Iterate through particles
 
       // skips the particle if it's outside
@@ -300,6 +327,12 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
 
       p.runge_kutta_k.col(0) = p.runge_kutta_k.col(0) + (1/6.0) * 2 * k2_r;
       p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * 2 * k2_v;
+  }
+
+
+  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
+  for (Particle& p : this->particles){
+    p.r_coulomb = p.r;
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
@@ -319,6 +352,11 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
 
       p.runge_kutta_k.col(0) = p.runge_kutta_k.col(0) + (1/6.0) * 2 * k3_r;
       p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * 2 * k3_v;
+  }
+
+  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
+  for (Particle& p : this->particles){
+    p.r_coulomb = p.r;
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles

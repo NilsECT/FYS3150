@@ -32,18 +32,21 @@ plt.savefig(f"1_particle_z_direction.pdf")
 
 
 def error_plot(num_time_steps, method):
+
+    # take out analytical datapoints
     data_1p_a_x, data_1p_a_y, data_1p_a_z = np.loadtxt(f"{num_time_steps}_analytical.txt",unpack=True)
 
     dt = 50/num_time_steps 
 
+    # take out either FE or RK4 datapoints
     data_1p_x = np.loadtxt(f"{method}1_n_{dt:.6f}_x.txt",unpack=True)
     data_1p_y = np.loadtxt(f"{method}1_n_{dt:.6f}_y.txt",unpack=True)
     data_1p_z = np.loadtxt(f"{method}1_n_{dt:.6f}_z.txt",unpack=True)
 
+    # storage for the fe/rk4 positions
     r_F = np.zeros((num_time_steps,3))
     for i in range(num_time_steps):
         r_F[i] = np.array([data_1p_x[i], data_1p_y[i], data_1p_z[i]])
-    
 
 
     r_a = np.zeros((num_time_steps,3))
@@ -56,27 +59,29 @@ def error_plot(num_time_steps, method):
     t = np.linspace(0,50,num_time_steps)
 
     for i in range(num_time_steps):
-        error[i] = np.linalg.norm(max_error[i])
+        error[i] = np.linalg.norm(max_error[i]) / (np.linalg.norm(r_a[i]))
 
     plt.plot( t, error, marker = "o", markersize = 0.05,label=f"n_step ={num_time_steps}")
 
 n = np.array([4000,8000,16000,32000])
 
 plt.figure(2)
-plt.subplot(1,2,1) 
+plt.subplot(2,1,1) 
 plt.title("Error over time for Forward Euler")
 for i in n:
     error_plot(i,"Forward_Euler")
 plt.xlabel("t [$\\mu$s]")
 plt.ylabel("y [$\\mu$m]")
+plt.yscale('log')
 plt.legend()
 
-plt.subplot(1,2,2) 
+plt.subplot(2,1,2)
 plt.title("Error over time for Runge Kutta 4")
 for i in n:
     error_plot(i,"RK4")
 plt.xlabel("t [$\\mu$s]")
 plt.ylabel("y [$\\mu$m]")
+plt.yscale('log')
 plt.legend()
 
 plt.savefig("error_plot.pdf")

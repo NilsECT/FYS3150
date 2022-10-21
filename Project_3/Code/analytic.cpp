@@ -3,8 +3,8 @@
 #include <iostream>
 
 int main() {
-    std::vector<int> n = {4000,8000,16000,32000};
-    for (int k : n){
+    std::vector<double> n = {4000.,8000.,16000.,32000.};
+    for (double k : n){
 
         std::complex<double> i(0., 1.);
         double T = 50;
@@ -38,7 +38,7 @@ int main() {
         double Ap = (v[1] + omegam * x[0]) / (omegam - omegap);
         double Am = - (v[1] + omegap * x[0]) / (omegam - omegap);
 
-        std::string num_steps = std::to_string(k);
+        std::string num_steps = std::to_string(int(k));
         std::complex<double> f;
 
         std::ofstream r_outfile;
