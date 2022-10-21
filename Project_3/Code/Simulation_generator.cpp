@@ -22,7 +22,7 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
 
     if (func_V) {
-      for (int i = 0; i < N; i++) {
+      for (int i = 0; i < N-1; i++) {
         if (evolve=="RK4"){
           trap.evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
         }
@@ -33,7 +33,7 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
     }
 
     else {
-      for (int i = 0; i < N; i++) {
+      for (int i = 0; i < N-1; i++) {
         trap.write_to_file(evolve,dt_str, has_col);
         if (evolve=="RK4"){
           trap.evolve_RK4(dt, has_coulomb_force, true, true);
@@ -84,17 +84,17 @@ int main(){
       if (i == 2) {
         dt = 0.01;
       }
-      simulate(trap,no_coulomb_force,n[i],dt,evolve);
+      simulate(trap,no_coulomb_force,int(n[i]),dt,evolve);
       part_1.reset(r_1, v_1);
     }
 
     dt = 0.01;
     
     trap.add_particle(part_2);
-    simulate(trap,no_coulomb_force,n[2],dt,evolve);
+    simulate(trap,no_coulomb_force,int(n[2]),dt,evolve);
     part_1.reset(r_1, v_1);
     part_2.reset(r_2, v_2);
-    simulate(trap, has_coulomb_force, n[2], dt, evolve);
+    simulate(trap, has_coulomb_force, int(n[2]), dt, evolve);
     
     part_1.reset(r_1, v_1);
     part_2.reset(r_2, v_2);

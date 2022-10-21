@@ -22,8 +22,8 @@ data_16000_1p_a_x, data_16000_1p_a_y, data_16000_1p_a_z = np.loadtxt("16000_anal
 data_32000_1p_a_x, data_32000_1p_a_y, data_32000_1p_a_z = np.loadtxt("32000_analytical.txt",unpack=True)
 t = np.linspace(0,50,4000)
 plt.figure(1)
-plt.plot(t,data_1p_Forward_Euler_z[1:],label="Forward Euler")
-plt.plot(t,data_1p_RK4_z[1:],label="Runge Kutta 4")
+plt.plot(t,data_1p_Forward_Euler_z,label="Forward Euler")
+plt.plot(t,data_1p_RK4_z,label="Runge Kutta 4")
 plt.plot(t,data_4000_1p_a_z,label="Analytic")
 
 plt.ylabel('z [$\\mu$m]')
