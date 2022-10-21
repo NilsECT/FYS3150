@@ -19,6 +19,8 @@ Particle::Particle(double q, double m, arma::vec r, arma::vec v){
     this->m = m;
     this->r = r;
     this->v = v;
+    this->r_origin = r;
+    this->v_origin = v;
     this->ke = 1.38935333 * std::pow(10, 5); //1;
     this->force = arma::vec(3).fill(0); // Zero until we find it using the find_force()
     // method of the penningtrap this particle is in
@@ -131,8 +133,8 @@ void Particle::is_outside() {
     this->outside = true;
 }
 
-void Particle::reset(arma::vec pos, arma::vec vel) {
-    this->r = pos;
-    this->v = vel;
+void Particle::reset() {
+    this->r = this->r_origin;
+    this->v = this->v_origin;
     this->outside = false;
 }

@@ -39,26 +39,22 @@ int main(){
     trap.add_particle(part_1);
 
     for (int i = 0; i < 5; i++) {
-      std::cout << "At " << n[i] << std::endl;
+      std::cout << "At simulation with 1 particle, using N = " << n[i] << std::endl;
       dt = 50./n[i];
       if (i == 2) {
         dt = 0.01;
       }
-      trap.simulate(no_coulomb_force,int(n[i]),dt,evolve);
-      part_1.reset(r_1, v_1);
+      trap.simulate(no_coulomb_force,int(n[i]),dt,evolve);;
     }
 
     dt = 0.01;
     
+    std::cout << "At two particles without Coulomb" << std::endl;
     trap.add_particle(part_2);
     trap.simulate(no_coulomb_force,int(n[2]),dt,evolve);
-    part_1.reset(r_1, v_1);
-    part_2.reset(r_2, v_2);
     std::cout << "At two particles with Coulomb" << std::endl;
     trap.simulate(has_coulomb_force, int(n[2]), dt, evolve);
     
-    part_1.reset(r_1, v_1);
-    part_2.reset(r_2, v_2);
     trap.clear_particles();
   }
   return 0;

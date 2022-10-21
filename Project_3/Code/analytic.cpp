@@ -47,7 +47,7 @@ int main() {
         r_outfile << x[0] << "   " << y[0] << "   " << z[0];
         r_outfile << "\n";
 
-        for (int j = 1; j < k; j++) {
+        for (int j = 0; j < k; j++) {
             f = Ap * std::exp(- i * (omegap * (j * timestep))) + Am * std::exp(- i * (omegam * (j * timestep)));
 
             r_outfile << std::real(f) << "   " << std::imag(f) << "   " << z[0] * std::cos(std::sqrt(omega_z2) * j * timestep);

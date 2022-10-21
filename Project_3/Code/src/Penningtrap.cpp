@@ -83,7 +83,7 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
               double r_3 = r_norm*r_norm*r_norm;
 
               C.col(i) = C.col(i) + r_diff/r_3;
-              C.col(j) = -C.col(j) + r_diff/r_3;
+              //C.col(j) = -C.col(j) + r_diff/r_3;
 
               j++;
             }
@@ -396,6 +396,10 @@ int Penningtrap::particles_inside() {
 
 void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V, double f, double w) {
   this->num_particles_out = 0;
+
+  for (Particle& particle : this->particles) {
+    particle.reset();
+  }
 
   std::string dt_str = std::to_string(dt);
   std::string has_col;
