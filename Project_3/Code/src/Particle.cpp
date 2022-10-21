@@ -134,4 +134,5 @@ void Particle::is_outside() {
 void Particle::reset(arma::vec pos, arma::vec vel) {
     this->r = pos;
     this->v = vel;
+    this->outside = false;
 }

@@ -5,49 +5,6 @@
 #include <iostream>
 // #include <string>
 
-void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V=false, double f=0, double w=0) {
-    std::string dt_str = std::to_string(dt);
-    std::string has_col;
-    if (has_coulomb_force) {
-        has_col = "y";
-    }
-    else {
-        has_col = "n";
-    }
-
-    // float time = dt*N;
-
-    // std::cout << "total time: " << time << " microseconds" << std::endl;
-
-    std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
-
-    if (func_V) {
-      for (int i = 0; i < N-1; i++) {
-        if (evolve=="RK4"){
-          trap.evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
-        }
-        else{
-          trap.evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
-        }
-      }
-    }
-
-    else {
-      for (int i = 0; i < N-1; i++) {
-        trap.write_to_file(evolve,dt_str, has_col);
-        if (evolve=="RK4"){
-          trap.evolve_RK4(dt, has_coulomb_force, true, true);
-
-        // std::cout << i << std::endl;
-        }
-        else{
-          trap.evolve_forwardeuler(dt, has_coulomb_force, true, true);
-        }
-      }
-      trap.write_to_file(evolve, dt_str, has_col);
-    }
-}
-
 int main(){
     // Defining core values used for simulation:
 
@@ -77,24 +34,28 @@ int main(){
   std::vector<double> n = {4000.,8000., 10000., 16000.,32000.}; // micro-sec
   for (std::string evolve : methods) {
 
+    std::cout << "At " << evolve << std::endl;
+
     trap.add_particle(part_1);
 
     for (int i = 0; i < 5; i++) {
+      std::cout << "At " << n[i] << std::endl;
       dt = 50./n[i];
       if (i == 2) {
         dt = 0.01;
       }
-      simulate(trap,no_coulomb_force,int(n[i]),dt,evolve);
+      trap.simulate(no_coulomb_force,int(n[i]),dt,evolve);
       part_1.reset(r_1, v_1);
     }
 
     dt = 0.01;
     
     trap.add_particle(part_2);
-    simulate(trap,no_coulomb_force,int(n[2]),dt,evolve);
+    trap.simulate(no_coulomb_force,int(n[2]),dt,evolve);
     part_1.reset(r_1, v_1);
     part_2.reset(r_2, v_2);
-    simulate(trap, has_coulomb_force, int(n[2]), dt, evolve);
+    std::cout << "At two particles with Coulomb" << std::endl;
+    trap.simulate(has_coulomb_force, int(n[2]), dt, evolve);
     
     part_1.reset(r_1, v_1);
     part_2.reset(r_2, v_2);
