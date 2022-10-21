@@ -6,7 +6,6 @@ class Particle{
 
     private:
 
-    bool outside = false;
 
     public:
 
@@ -34,6 +33,8 @@ class Particle{
     // outside stuff
     bool check_outside();
     void is_outside();
+
+    bool outside = false;
 };
 
 #endif

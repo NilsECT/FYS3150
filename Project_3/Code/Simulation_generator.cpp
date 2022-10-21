@@ -14,7 +14,7 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
     else {
         has_col = "n";
     }
-    
+
     float time = dt*N;
 
     // std::cout << "total time: " << time << " microseconds" << std::endl;
@@ -69,7 +69,7 @@ int main(){
     trap_1.add_particle(particle_1);
     bool has_coulomb_force = false;
     std::string evolve = "RK4";
-    
+
     std::cout << "At trap 1." << std::endl;
 
     simulate(trap_1,has_coulomb_force,N,dt,evolve);

@@ -14,7 +14,9 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt) {
     else {
         has_col = "n";
     }
-    
+
+    std::string evolve = "RK";
+
     float time = dt*N;
 
     std::cout << "total time: " << time << " microseconds" << std::endl;
@@ -22,22 +24,22 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt) {
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
 
     for (int i = 0; i < N; i++) {
-      trap.write_to_file(dt_str, has_col);
+      trap.write_to_file(evolve, dt_str, has_col);
       //trap.update_V_0(f,w,t); // Define updating parameters of the strength of the E-field.
       trap.evolve_RK4(dt, has_coulomb_force, true, true);
-      std::cout << i << std::endl;
+      //std::cout << i << std::endl;
     }
-    trap.write_to_file(dt_str, has_col);
+    trap.write_to_file(evolve, dt_str, has_col);
 }
 
 int main(){
     // Defining core values used for simulation:
 
     double q = 1.0;
-    double V_0 = 9.65 * std::pow(10, 8);
+    double V_0 = 2.41 * std::pow(10, 6);
     double B_0 = 9.65*10;
     double m = 40.078;
-    double d = 1 * std::pow(10, 4);
+    double d = 500;
 
     int seed = 137;
 
@@ -61,20 +63,23 @@ int main(){
       std::cout << "Warning: q/m is not greater than that other thing" << std::endl;
     }
 
-    int N = 10000;
+
+    int N = 1000;
     double dt = 0.01;
     bool has_coulomb_force = true;
-
+    /*
     simulate(trap,has_coulomb_force,N,dt);
 
     has_coulomb_force = false;
 
     simulate(trap,has_coulomb_force,N,dt);
-
+    */
     Penningtrap trap_100 = Penningtrap(B_0, V_0, d);
     trap_100.generate_particles(100,q,m,seed);
-    has_coulomb_force = false;
+    //has_coulomb_force = false;
+    //simulate(trap_100,has_coulomb_force,N,dt);
+    has_coulomb_force = true;
     simulate(trap_100,has_coulomb_force,N,dt);
-    
+
     return 0;
 }

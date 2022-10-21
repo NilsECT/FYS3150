@@ -15,7 +15,7 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
     else {
         has_col = "n";
     }
-    
+
     float time = dt*N;
 
     // std::cout << "total time: " << time << " microseconds" << std::endl;
@@ -57,7 +57,7 @@ int main(){
 
     // 100 particles with interaction:
     arma::vec omega_v = arma::linspace(0.2, 2.5, 15);
-    std::vector<double> f_list = std::vector{0.1, 0.4, 0.7};
+    std::vector<double> f_list = {0.1, 0.4, 0.7};
     bool var_V = true;
 
     std::cout << "At trap with 100 particles." << std::endl;
