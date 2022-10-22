@@ -428,7 +428,7 @@ int Penningtrap::particles_inside() {
  * @param f Amplitude of time-dependent perturbation.
  * @param w Frequency of time-dependent perturbation.
  **/
-void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V, double f, double w) {
+void Penningtrap::simulate(bool has_coulomb_force, int N, double dt, std::string evolve, bool func_V, double f, double w) {
   this->num_particles_out = 0;
 
   std::string dt_str = std::to_string(dt);

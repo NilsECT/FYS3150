@@ -29,16 +29,27 @@ int main(){
   double w_max = 2.5; // [MHz]
   int M = w_max/dw;   // number of values for angular frequency w (ie. omega)
 
-
-  arma::vec f = {0.1, 0.4};//, 0.7};
+  arma::vec f = {0.1, 0.4, 0.7};
 
   for (double &amp : f) {
     std::cout << std::endl;
-    std::cout << "Simulate for " << N*dt << " microseconds, with amplitude f = " << amp << std::endl;
-    std::cout << "         ";
+    std::cout << "Simulate for " << N*dt << " microseconds, with amplitude f = " << amp << "(no interaction)" << std::endl;
 
     for (double w = w_min; w <= w_max; w += dw) {
-      std::cout << w;
+      std::cout << w << std::endl;
+      trap_100.simulate(has_coulomb_force, N, dt, "RK4", true, amp, w);
+      trap_100.write_to_file_perturbation(amp, w, has_coulomb_force, 100);
+    }
+  }
+
+  has_coulomb_force = true;
+
+  for (double &amp : f) {
+    std::cout << std::endl;
+    std::cout << "Simulate for " << N*dt << " microseconds, with amplitude f = " << amp <<"(with interaction)" <<  std::endl;
+
+    for (double w = w_min; w <= w_max; w += dw) {
+      std::cout << w << std::endl;
       trap_100.simulate(has_coulomb_force, N, dt, "RK4", true, amp, w);
       trap_100.write_to_file_perturbation(amp, w, has_coulomb_force, 100);
     }
