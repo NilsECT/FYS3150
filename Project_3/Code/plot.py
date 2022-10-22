@@ -6,7 +6,7 @@ cm = 1 / 2.54
 plt.rcParams["figure.figsize"] = (12 * cm, 8 * cm)
 sns.set_theme("notebook", "whitegrid")
 
-"""
+
 # Forward Euler, has coulomb force
 data_2p_FE_x_hasC = np.loadtxt("Forward_Euler2_y_0.010000_x.txt")
 data_2p_FE_y_hasC = np.loadtxt("Forward_Euler2_y_0.010000_y.txt")
@@ -231,4 +231,3 @@ plt.ylabel("velocity in z-direction")
 plt.legend()
 plt.savefig("RK4_phase_space_z_y.pdf")
 # plt.show()
-"""
