@@ -30,7 +30,7 @@ int main(){
   int M = w_max/dw;   // number of values for angular frequency w (ie. omega)
 
 
-  arma::vec f = {0.1, 0.4};//, 0.7};
+  arma::vec f = {0.1, 0.4, 0.7};
 
   for (double &amp : f) {
     std::cout << std::endl;
@@ -38,9 +38,11 @@ int main(){
     std::cout << "         ";
 
     for (double w = w_min; w <= w_max; w += dw) {
-      std::cout << w;
+      std::cout << w << "    ";
+      trap_100.reset_particles();
       trap_100.simulate(has_coulomb_force, N, dt, "RK4", true, amp, w);
       trap_100.write_to_file_perturbation(amp, w, has_coulomb_force, 100);
+      std::cout << "Number of particles that left the trap: " << trap_100.num_particles_out << std::endl;
     }
   }
 

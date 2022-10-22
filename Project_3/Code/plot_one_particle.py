@@ -30,7 +30,7 @@ plt.plot(t,data_4000_1p_a_z,label="Analytic", c ="g")
 plt.ylabel('z [$\\mu$m]')
 plt.xlabel('t [$\\mu$s]')
 plt.legend()
-plt.savefig(f"1_particle_z_direction.pdf")
+plt.savefig(f"1_particle_y_direction.pdf")
 
 
 
@@ -93,7 +93,7 @@ plt.legend()
 plt.subplot(1,2,2) 
 plt.title("and Runge Kutta 4")
 for i in range(len(n)):
-    delta_max_error_RK4[i] = error_plot(n[i],"RK4")
+    delta_max_error_RK4[i] = error_plot(n[i], "RK4")
 
 plt.xlabel("t [$\\mu$s]")
 plt.ylabel("y [$\\mu$m]")
