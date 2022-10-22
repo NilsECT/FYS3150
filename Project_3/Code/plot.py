@@ -113,7 +113,7 @@ plt.plot(data_2p_RK_x_hasC[:,1], data_2p_RK_y_hasC[:,1], label="Particle 2: RK4,
 plt.xlabel("x [$\\mu$m]")
 plt.ylabel("y [$\\mu$m]")
 plt.legend()
-plt.savefig("p1_and_p2_rk4_without_coulomb_2d.pdf")
+plt.savefig("p1_and_p2_rk4_with_coulomb_2d.pdf")
 
 
 # plt.plot(data_2p_FE_x_hasC[:,0], data_2p_FE_y_hasC[:,0], label="Particle 1: FE, has coulomb")

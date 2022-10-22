@@ -78,7 +78,8 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
       for (Particle &particle_j : this->particles){
 
         // excludes the particles which are outside
-        if (particle_j.outside || j < i){
+        if (particle_j.outside || j <= i){
+          j++;
           continue;
         }
 
