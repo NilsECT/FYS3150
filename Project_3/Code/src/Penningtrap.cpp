@@ -258,10 +258,9 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
 
       p.is_outside();
 
-      std::cout << "A particle left the trap!" << std::endl;
+      //std::cout << "A particle left the trap!" << std::endl;
 
       this->num_particles_out++;
-      std::cout << this->num_particles_out << std::endl;
     }
 
     // skips the particle if it's outside
@@ -302,7 +301,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
     if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d && !p.check_outside()) {//if (arma::norm(p.r) > this->d && !p.check_outside()) {
       p.is_outside();
 
-      std::cout << "A particle left the trap!" << std::endl;
+      //std::cout << "A particle left the trap!" << std::endl;
 
       this->num_particles_out++;
     }
