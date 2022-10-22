@@ -19,6 +19,10 @@ Particle::Particle(double q, double m, arma::vec r, arma::vec v){
     this->m = m;
     this->r = r;
     this->v = v;
+    this->r_origin = r;
+    this->v_origin = v;
+    this->r_origin = r;
+    this->v_origin = v;
     this->ke = 1.38935333 * std::pow(10, 5); //1;
     this->force = arma::vec(3).fill(0); // Zero until we find it using the find_force()
     // method of the penningtrap this particle is in
@@ -27,36 +31,6 @@ Particle::Particle(double q, double m, arma::vec r, arma::vec v){
     this->runge_kutta_k = arma::zeros(3, 2); // Contains weighted sum of k-values
     this->v_temp = arma::zeros(3);  // Stores particle's velocity before evolving
     this->r_temp = arma::zeros(3);  // Stores particle's position
-}
-
-
-/**
- * @brief Finds the coulomb force on this particle from other particles.
- *
- * @param particles The particles we want to calculate the coulomb force from.
- *
- * @return The sum of the coulomb force from each particle in particles as a 3D-vector.
- */
-arma::vec Particle::find_coulomb_force(std::vector<Particle> particles) {
-    arma::vec E_ke = arma::vec(3).fill(0.); // Total electric field over ke.
-
-    for (Particle& p : particles){
-        // skips the particle if it's outside
-        if (p.check_outside()) {
-            continue;
-        }
-
-        arma::vec r_diff = this->r - p.r;
-        double r_norm = std::sqrt(r_diff(0)*r_diff(0) + r_diff(1)*r_diff(1) + r_diff(2)*r_diff(2));//arma::norm(r_diff);
-        double tol = 1e-3;
-        if (r_norm<tol){
-            continue;
-        }
-        double r_3 = r_norm*r_norm*r_norm;
-        E_ke = E_ke + r_diff/r_3;
-    }
-    arma::vec C= this->q*this->ke*E_ke;
-    return C;
 }
 
 /**
@@ -131,8 +105,15 @@ void Particle::is_outside() {
     this->outside = true;
 }
 
-void Particle::reset(arma::vec pos, arma::vec vel) {
-    this->r = pos;
-    this->v = vel;
+void Particle::reset() {
+    this->r = this->r_origin;
+    this->v = this->v_origin;
     this->outside = false;
+    this->force = arma::vec(3).fill(0); // Zero until we find it using the find_force()
+    // method of the penningtrap this particle is in
+
+    // Variables for Runge Kutta 4-method:
+    this->runge_kutta_k = arma::zeros(3, 2); // Contains weighted sum of k-values
+    this->v_temp = arma::zeros(3);  // Stores particle's velocity before evolving
+    this->r_temp = arma::zeros(3);  // Stores particle's position
 }

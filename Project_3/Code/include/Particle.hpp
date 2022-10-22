@@ -18,6 +18,8 @@ class Particle{
     arma::vec r_temp;
     arma::vec v_temp;
     arma::vec r_coulomb;
+    arma::vec r_origin;
+    arma::vec v_origin;
 
     Particle(const double q, const double m, arma::vec r, arma::vec v);
 
@@ -32,7 +34,7 @@ class Particle{
     bool check_outside();
     void is_outside();
 
-    void reset(arma::vec pos, arma::vec vel);
+    void reset();
 
     bool outside = false;
 };
