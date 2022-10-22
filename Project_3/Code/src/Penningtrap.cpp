@@ -227,6 +227,22 @@ void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::str
 }
 
 /**
+ * @brief Writes data for time-varying electric field.
+ *
+ * @param f
+ * @param w Angular frequency for simulation.
+ * @param has_col True if particles interact.
+ * @param total_particles Initial number of particles.
+*/
+void Penningtrap::write_to_file_perturbation(double f, double w, bool has_coulomb_force, int N_particles){
+    std::ofstream outfile;
+
+    outfile.open(std::to_string(f)+"_"+std::to_string(N_particles)+"_"+std::to_string(has_coulomb_force)+"_"+".txt", std::ios_base::app); // append instead of overwrite
+    outfile << w << "   " << this->num_particles_inside << "\n";
+    outfile.close();
+}
+
+/**
  * @brief Evolves the position and velocity of each particle one step in time using Forward Euler.
  *
  * @param dt Time step of the simulation.

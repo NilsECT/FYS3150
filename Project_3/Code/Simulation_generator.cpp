@@ -21,16 +21,10 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
 
     std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
 
-
     if (func_V && evolve=="RK4"){
       for (int i = 0; i < N; i++) {
         trap.write_to_file(evolve + "f", dt_str, has_col);
-        //std::cout << evolve + "f" << std::endl;
-        //trap.update_V(f, w, t);
         trap.evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
-        /*if (trap.num_particles_inside < N_particles) {
-          std::cout << trap.num_particles_inside << std::endl;
-        }*/
       }
     }
     else if (func_V && evolve!="RK4"){
@@ -56,8 +50,56 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
 
 }
 
+void simulate_perturbation(Penningtrap trap, bool has_coulomb_force, int N, double dt, arma::vec f) {
+  std::string dt_str = std::to_string(dt);
+
+  double dw = 0.02;   // [MHz]
+  double w_min = 0.2; // [MHz]
+  double w_max = 2.5; // [MHz]
+
+  int M = w_max/dw;   // number of values for angular frequency w (ie. omega)
+
+
+  for (double &amp : f) {
+    std::cout << std::endl;
+    std::cout << "Simulate for " << N*dt << " microseconds, with amplitude f = " << amp << std::endl;
+    std::cout << "         ";
+
+    for (double w = w_min; w <= w_max; w += dw) {
+      std::cout << w;
+      simulate(trap, has_coulomb_force, N, dt, "RK4", true, amp, w);
+      trap.write_to_file_perturbation(amp, w, has_coulomb_force, 100);
+    }
+  }
+
+}
+
 int main(){
     // Defining core values used for simulation:
+
+  double q = 1.0;
+  double V_0 = 2.41 * std::pow(10, 6);
+  double B_0 = 9.65*10;
+  double m = 40.078;
+  double d = 500;
+
+  int seed = 137;
+  int N = 1000;
+  double dt = 0.01;
+
+  bool has_coulomb_force = false;
+
+  Penningtrap trap_100 = Penningtrap(B_0, V_0, d);
+  trap_100.generate_particles(1, q, m, seed);
+
+  arma::vec f = {0.1, 0.4, 0.7};
+  simulate_perturbation(trap_100, has_coulomb_force, N, dt, f);
+
+  return 0;
+}
+
+int old_main(){
+  // Defining core values used for simulation:
 
   double q = 1.0;
   double V_0 = 2.41 * std::pow(10, 6);
