@@ -2,6 +2,7 @@
 *.o
 *.so
 *.a
+*.exe
 # temporary files:
 *.pyc
 *.bak
@@ -13,6 +14,7 @@ tmp*
 temp*
 .#*
 \#*
+
 # tex files:
 *.log
 *.dvi
@@ -24,6 +26,16 @@ temp*
 *.toc
 *.snm
 *.vrb
+
+*.pdf
+
+# Intermediate files
+*.txt
+*.csv
+*.dat
+
+# REVTeX-specific:
+*Notes.bib
 
 *.bbl
 *.bcf
@@ -65,3 +77,13 @@ doc/pub/*
 
 # for macOS:
 .DS_Store
+
+# NO TEST FILES!
+test*
+
+build/
+.vscode/
+
+# executables:
+*.exe
+main

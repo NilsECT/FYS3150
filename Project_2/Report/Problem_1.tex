@@ -1,0 +1,51 @@
+\documentclass[english,notitlepage]{article}  % defines the basic parameters of the document
+\usepackage[T1]{fontenc} %for å bruke æøå
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} %for å inkludere grafikk
+\usepackage{mathpazo}
+\usepackage[norsk]{babel}
+% Standard stuff
+\usepackage{amsmath,graphicx,varioref,verbatim,amsfonts,geometry,gensymb, multirow}
+% colors in text
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+% Hyper refs
+\usepackage[colorlinks=true,allcolors=black]{hyperref}
+
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{tikz}             % draw figures manually
+\usepackage{subfigure}        % imports a lot of cool and useful figure commands
+\usepackage{float}
+\usepackage{circuitikz}
+\usepackage{listings}
+
+\usepackage{csquotes}
+\usepackage[backend=biber,style=alphabetic,sorting=ynt]{biblatex} %Imports biblatex package
+\addbibresource{referanser.bib}
+
+\begin{document}
+
+\section*{Problem 1:}
+
+We use the dimensionless variable $\hat{x} = \frac{x}{L}$, which gives us
+$\frac{d \hat{x}}{dx} = \frac{1}{L}$. Using this, we get:
+
+\begin{align*}
+    \frac{d}{dx} = \frac{d\hat{x}}{dx} \frac{d}{d\hat{x}} = \frac{1}{L} \frac{d}{d\hat{x}}
+\end{align*}
+
+And we can find the scaled differential equation:
+
+\begin{align*}
+    \gamma \frac{d^2 u(x)}{dx^2} &= -F u(x)
+    \\
+    \gamma \left( \frac{1}{L} \frac{d}{d\hat{x}} \right)^2 u(\hat{x}) &= -F u(\hat{x})
+    \\
+    \gamma \frac{1}{L^2} \frac{d^2 u(\hat{x})}{d \hat{x}^2} &= -F u(\hat{x})
+    \\
+    \frac{d^2 u(\hat{x})}{d \hat{x}^2} &= - \frac{F L^2}{\gamma} u(\hat{x})
+    \\
+    \frac{d^2 u(\hat{x})}{d \hat{x}^2} &= - \lambda u(\hat{x}) \; , \hspace*{20pt} \lambda \equiv \frac{F L^2}{\gamma}
+\end{align*}
+
+\end{document}
