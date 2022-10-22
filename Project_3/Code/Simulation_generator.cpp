@@ -58,175 +58,55 @@ void simulate(Penningtrap trap, bool has_coulomb_force,int N, double dt, std::st
 
 int main(){
     // Defining core values used for simulation:
-    double q = 1.0;
-    double V_0 = 2.41 * std::pow(10, 6);
-    double B_0 = 9.65*10;
-    double m = 40.078;
-    double d = 500;
 
-    int seed = 137;
+  double q = 1.0;
+  double V_0 = 2.41 * std::pow(10, 6);
+  double B_0 = 9.65*10;
+  double m = 40.078;
+  double d = 500;
 
-    int N_particles = 100;
-    arma::vec f = {0.1, 0.4, 0.7};
-    double dw = 0.02; // unit: MHz
-    double w_min = 0.2;
-    double w_max = 2.5;
+  int seed = 137;
+  // Single particle
+  // With RK4:
+  double dt = 0.01;
+  Penningtrap trap = Penningtrap(B_0, V_0, d);
+  arma::vec r_1 = arma::vec{20.,0.,20.}; // micro m
+  arma::vec v_1 = arma::vec{0.,25.,0.};
+  arma::vec r_2 = arma::vec{25.,25.,0.}; // micro m
+  arma::vec v_2 = arma::vec{0.,4.,5.};
+  bool has_coulomb_force = true;
+  bool no_coulomb_force = true;
+  Particle part_1 = Particle(q, m, r_1, v_1);
+  Particle part_2 = Particle(q, m, r_2, v_2);
 
-    // Two particles without interaction:
-    // With RK4:
-    Penningtrap trap_test = Penningtrap(B_0, V_0, d);
-    trap_test.generate_particles(2, q, m, seed);
-    bool has_coulomb_force = false;
-    std::string evolve = "RK4";
+  std::vector<std::string> methods = {"RK4", "Forward_Euler"};
+  std::vector<int> n_particles = {1, 2};
+  //4 Different time steps:
+  std::vector<double> n = {4000.,8000., 10000., 16000.,32000.}; // micro-sec
+  for (std::string evolve : methods) {
 
-    int N = 1000;
-    double dt = 0.01;
+    std::cout << "At " << evolve << std::endl;
 
-    simulate(trap_test, has_coulomb_force, N, dt, evolve, true, f.at(1), w_min);
+    trap.add_particle(part_1);
 
-    return 0;
-}
-
-int main_old(){
-    double q = 1.0;
-    double V_0 = 2.41 * std::pow(10, 6);
-    double B_0 = 9.65*10;
-    double m = 40.078;
-    double d = 500;
-
-    int seed = 137;
-    // Single particle
-    // With RK4:
-    int N = 10000; // "micro" sec
-    double dt = 0.01;
-    Penningtrap trap_1 = Penningtrap(B_0, V_0, d);
-    arma::vec r = arma::vec{20.,0.,20.}; // micro m
-    arma::vec v = arma::vec{0.,25.,0.};
-    Particle particle_1 = Particle(q,m,r,v);
-    trap_1.add_particle(particle_1);
-    bool has_coulomb_force = false;
-    std::string evolve = "RK4";
-
-    std::cout << "At trap 1." << std::endl;
-
-    simulate(trap_1,has_coulomb_force,N,dt,evolve);
-
-    // With Forward Euler:
-    Penningtrap trap_2 = Penningtrap(B_0, V_0, d);
-    r = arma::vec{20.,0.,20.}; // micro m
-    v = arma::vec{0.,25.,0.};
-    Particle particle_2 = Particle(q,m,r,v);
-    trap_2.add_particle(particle_2);
-    has_coulomb_force = false;
-    evolve = "Forward_Euler";
-
-    std::cout << "At trap 2." << std::endl;
-
-    simulate(trap_2,has_coulomb_force,N,dt,evolve);
-
-    // Two particles with interaction:
-    // With RK4:
-    Penningtrap trap_3 = Penningtrap(B_0, V_0, d);
-    r = arma::vec{20.,0.,20.}; // micro m
-    v = arma::vec{0.,25.,0.};
-    Particle particle_3 = Particle(q,m,r,v);
-    trap_3.add_particle(particle_3);
-    r = arma::vec{25.,25.,0.}; // micro m
-    v = arma::vec{0.,4.,5.};
-    Particle particle_4 = Particle(q,m,r,v);
-    trap_3.add_particle(particle_4);
-    has_coulomb_force = true;
-    evolve = "RK4";
-
-    std::cout << "At trap 3." << std::endl;
-
-    simulate(trap_3,has_coulomb_force,N,dt,evolve);
-
-    // With Forward Euler:
-    Penningtrap trap_4 = Penningtrap(B_0, V_0, d);
-    r = arma::vec{20.,0.,20.}; // micro m
-    v = arma::vec{0.,25.,0.};
-    Particle particle_5 = Particle(q,m,r,v);
-    trap_4.add_particle(particle_5);
-    r = arma::vec{25.,25.,0.}; // micro m
-    v = arma::vec{0.,4.,5.};
-    Particle particle_6 = Particle(q,m,r,v);
-    trap_4.add_particle(particle_6);
-    has_coulomb_force = true;
-    evolve = "Forward_Euler";
-
-    std::cout << "At trap 4." << std::endl;
-
-    simulate(trap_4,has_coulomb_force,N,dt,evolve);
-
-    // Two particles without interaction:
-    // With RK4:
-    Penningtrap trap_5 = Penningtrap(B_0, V_0, d);
-    r = arma::vec{20.,0.,20.}; // micro m
-    v = arma::vec{0.,25.,0.};
-    Particle particle_7 = Particle(q,m,r,v);
-    trap_5.add_particle(particle_7);
-    r = arma::vec{25.,25.,0.}; // micro m
-    v = arma::vec{0.,4.,5.};
-    Particle particle_8 = Particle(q,m,r,v);
-    trap_5.add_particle(particle_8);
-    has_coulomb_force = false;
-    evolve = "RK4";
-
-    std::cout << "At trap 5." << std::endl;
-
-    simulate(trap_5,has_coulomb_force,N,dt,evolve);
-
-    // With Forward Euler:
-    Penningtrap trap_6 = Penningtrap(B_0, V_0, d);
-    r = arma::vec{20.,0.,20.}; // micro m
-    v = arma::vec{0.,25.,0.};
-    Particle particle_9 = Particle(q,m,r,v);
-    trap_6.add_particle(particle_9);
-    r = arma::vec{25.,25.,0.}; // micro m
-    v = arma::vec{0.,4.,5.};
-    Particle particle_10 = Particle(q,m,r,v);
-    trap_6.add_particle(particle_10);
-    has_coulomb_force = false;
-    evolve = "Forward_Euler";
-
-    std::cout << "At trap 6." << std::endl;
-
-    simulate(trap_6,has_coulomb_force,N,dt,evolve);
-
-
-    //4 Different time steps:
-    std::vector<int> n = {4000,8000,16000,32000};
-
-    std::cout << "At trap 1 with RK4 testing different timesteps." << std::endl;
-
-    for (int k : n){
-      int N = 50;
-      dt = 50./k;
-      trap_1 = Penningtrap(B_0, V_0, d);
-      r = arma::vec{20.,0.,20.}; // micro m
-      v = arma::vec{0.,25.,0.};
-      particle_1 = Particle(q,m,r,v);
-      trap_1.add_particle(particle_1);
-      bool has_coulomb_force = false;
-      evolve = "RK4";
-      simulate(trap_1,has_coulomb_force,k,dt,evolve);
+    for (int i = 0; i < 5; i++) {
+      std::cout << "At simulation with 1 particle, using N = " << n[i] << std::endl;
+      dt = 50./n[i];
+      if (i == 2) {
+        dt = 0.01;
+      }
+      trap.simulate(no_coulomb_force,int(n[i]),dt,evolve);;
     }
 
-    std::cout << "At trap 1 with FE testing different timesteps." << std::endl;
+    dt = 0.01;
 
-    for (int k : n){
-      int N = k;
-      dt = 50./k;
-      trap_1 = Penningtrap(B_0, V_0, d);
-      r = arma::vec{20.,0.,20.}; // micro m
-      v = arma::vec{0.,25.,0.};
-      particle_1 = Particle(q,m,r,v);
-      trap_1.add_particle(particle_1);
-      bool has_coulomb_force = false;
-      evolve = "Forward_Euler";
-      simulate(trap_1,has_coulomb_force,k,dt,evolve);
-    }
+    std::cout << "At two particles without Coulomb" << std::endl;
+    trap.add_particle(part_2);
+    trap.simulate(no_coulomb_force,int(n[2]),dt,evolve);
+    std::cout << "At two particles with Coulomb" << std::endl;
+    trap.simulate(has_coulomb_force, int(n[2]), dt, evolve);
 
-    return 0;
+    trap.clear_particles();
+  }
+  return 0;
 }

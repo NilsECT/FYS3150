@@ -15,15 +15,7 @@ void simulate(Penningtrap trap, bool has_coulomb_force, int N, double dt, std::s
         has_col = "n";
     }
 
-    void (Penningtrap::*evolve_method)(double, bool, bool, bool, bool, double, double, int);
-
-    /*switch (evolve) {
-      case "RK4":
-        evolve_method = trap.evolve_RK4;//trap.evolve_RK4(trap, has_coulomb_force, true, true, func_V, f, w, i);
-      default:
-        evolve_method = trap.evolve_forwardeuler;//(trap, has_coulomb_force, true, true, func_V, f, w, i);
-    }*/
-    evolve_method = &trap.evolve_RK4;
+    std::string evolve = "RK4";
 
     float time = dt*N;
 
