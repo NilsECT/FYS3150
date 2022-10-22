@@ -55,85 +55,76 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
       V = this->V_0;
     }
 
-    int i = 0;
+  int i = 0;
 
-    // contains Coulomb force for each particle:
-    arma::mat C = arma::zeros(3, this->num_particles_inside);
+  // Contains Coulomb force for each particle:
+  arma::mat C = arma::zeros(3, this->num_particles_inside);
 
-    for (Particle &particle : this->particles) {
+  for (Particle &particle : this->particles) {
 
-        // skips finding the force if the particle is outside
-        if (particle.outside) {
-            continue;
-        }
-
-        // Initialize E-field and B-field to zero-vectors
-        arma::vec E = arma::vec(3).fill(0.);
-        arma::vec B = arma::vec(3).fill(0.);
-
-        if (has_coulomb_force) {
-
-            // update Coulomb force for current particle
-            // and all next particles:
-
-            int j = i;  // index for particle 2
-            for (Particle &particle_i : this->particles){
-
-              // excludes the particles that are outside
-              if (particle_i.outside){
-                continue;
-              }
-
-              arma::vec r_diff = particle.r - particle_i.r_coulomb;
-              double r_norm = std::sqrt(r_diff(0)*r_diff(0) + r_diff(1)*r_diff(1) + r_diff(2)*r_diff(2));
-              double tol = 1e-3;
-              if (r_norm<tol){
-                continue;
-              }
-
-              double r_3 = r_norm*r_norm*r_norm;
-
-              // update the sum of contributions to the total Coulomb force
-              // for both particles:
-              C.col(i) = C.col(i) + r_diff/r_3;
-              C.col(j) = -C.col(j) + r_diff/r_3;
-
-              j++;
-              std::cout << j <<std::endl;
-            }
-        }
-
-        if (has_E_field) {
-
-            if (particle.outside) {
-                continue;
-            }
-            else {
-                // Calculate E-field if has_E_field is set to true
-                E = particle.find_E_field(V, this->d);
-            }
-        }
-
-        if (has_B_field) {
-            if (!particle.outside) {
-                // Calculate B-field if has_B_field is set to true
-                B = particle.find_B_field(this->B_0);
-            }
-            else {
-                continue;
-            }
-
-        }
-
-        arma::vec L = particle.find_Lorentz_force(E, B); // Calculate the Lorentz force from the electric and magnetic field.
-
-        arma::vec F = C.col(i) + L; // The total force is the sum of the coulomb force and the Lorentz force
-        particle.force = F; // Updates the particles force to the one we calculated here
-
-        i = i + 1;
+    // skips finding the force if the particle is outside
+    if (particle.outside) {
+      continue;
     }
 
+    // Initialize E-field and B-field to zero-vectors
+    arma::vec E = arma::vec(3).fill(0.);
+    arma::vec B = arma::vec(3).fill(0.);
 
+    if (has_coulomb_force) {
+
+      int j = 0;
+
+      for (Particle &particle_j : this->particles){
+
+        // excludes the particles which are outside
+        if (particle_j.outside || j <= i){
+          j++;
+          continue;
+        }
+
+        arma::vec r_diff = particle.r - particle_j.r_coulomb;
+        double r_norm = std::sqrt(r_diff(0)*r_diff(0) + r_diff(1)*r_diff(1) + r_diff(2)*r_diff(2));//arma::norm(r_diff);
+        double tol = 1e-3;
+        if (r_norm<tol){
+          continue;
+        }
+
+        double r_3 = r_norm*r_norm*r_norm;
+
+        C.col(i) = C.col(i) + particle_j.q * r_diff/r_3;  // charge is 1 but can change
+        C.col(j) = -C.col(i);
+
+        //C.col(i) = C.col(i) + r_diff/r_3;
+        //C.col(j) = -C.col(j) + r_diff/r_3;
+
+        j++;
+      }
+      C.col(i) = C.col(i) * particle.ke * particle.q / particle.m;  // TEST adding all charges and stuff, which are in the same scale as the distances and so on
+    }
+
+    if (has_E_field && !particle.outside) {
+      if (func_V) {
+        E = particle.find_E_field(this->V_0 * (1 + std::cos(w*ti)), this->d);
+      }
+      else {
+        // Calculate E-field if has_E_field is set to true
+        E = particle.find_E_field(this->V_0, this->d);
+      }
+    }
+
+    if (has_B_field && !particle.outside) {
+      // Calculate B-field if has_B_field is set to true
+      B = particle.find_B_field(this->B_0);
+    }
+
+    arma::vec L = particle.find_Lorentz_force(E, B); // Calculate the Lorentz force from the electric and magnetic field.
+
+    arma::vec F = C.col(i) + L; // The total force is the sum of the coulomb force and the Lorentz force
+    particle.force = F; // Updates the particles force to the one we calculated here
+
+    i = i + 1;
+  }
 }
 
 /**
@@ -143,8 +134,8 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
  * @param particle The particle to be added to the trap.
  */
 void Penningtrap::add_particle(Particle &particle) {
-    this->particles.push_back(particle); // Add particle to particles
-    this->num_particles_inside++; // Increase the number of particles in the trap
+  this->particles.push_back(particle); // Add particle to particles
+  this->num_particles_inside++; // Increase the number of particles in the trap
 }
 
 /**
@@ -152,8 +143,9 @@ void Penningtrap::add_particle(Particle &particle) {
  *
  */
 void Penningtrap::clear_particles() {
-    this->particles.clear();
-    this->num_particles_inside = 0;
+  this->particles.clear();
+  this->num_particles_inside = 0;
+  this->num_particles_out = 0;
 }
 
 /**
@@ -168,19 +160,19 @@ void Penningtrap::clear_particles() {
  * @param seed Seed for the random number generator.
  */
 void Penningtrap::generate_particles(int N, double q, double m, int seed) {
-    this->particles.clear();
-    arma::vec r;
-    arma::vec v;
+  this->particles.clear();
+  arma::vec r;
+  arma::vec v;
 
-    arma::arma_rng::set_seed(seed);
+  arma::arma_rng::set_seed(seed);
 
-    for (int i = 0; i < N; i++) {
-        r = arma::vec(3).randn() * 0.1 * this->d;
-        v = arma::vec(3).randn() * 0.1 * this->d; // must be times 0.1 and d according to the problem text.
-        Particle particle = Particle(q, m, r, v);
-        this->particles.push_back(particle);
-    }
-    this->num_particles_inside = N; // Updates the particle counter
+  for (int i = 0; i < N; i++) {
+    r = arma::vec(3).randn() * 0.1 * this->d;
+    v = arma::vec(3).randn() * 0.1 * this->d; // must be times 0.1 and d according to the problem text.
+    Particle particle = Particle(q, m, r, v);
+    this->particles.push_back(particle);
+  }
+  this->num_particles_inside = N; // Updates the particle counter
 }
 
 /**
@@ -194,36 +186,35 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
  *
 */
 void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::string has_coulomb_str){
-    std::string N = std::to_string(this->num_particles_inside);
+  std::string N = std::to_string(this->num_particles_inside);
 
-    std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
+  std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
 
-    /*
-    if (count_particles) {
-        std::ofstream count_outfile;
-        count_outfile.open("Particle_Counter_" + evolve + N + "_" + has_coulomb_str + "_" + dt_str, std::ios_base::app);
-        count_outfile << this->num_particles_inside << std::endl;
+  /*
+  if (count_particles) {
+    std::ofstream count_outfile;
+    count_outfile.open("Particle_Counter_" + evolve + N + "_" + has_coulomb_str + "_" + dt_str, std::ios_base::app);
+    count_outfile << this->num_particles_inside << std::endl;
+  }
+  */
+
+  for (int i = 0; i < 3; i++) {
+
+    std::ofstream r_outfile;
+    std::ofstream v_outfile;
+
+    r_outfile.open(evolve+N+"_"+has_coulomb_str+"_"+dt_str+"_"+names[i]+".txt", std::ios_base::app); // append instead of overwrite
+    v_outfile.open(evolve+N+"_"+has_coulomb_str+"_"+dt_str+"_"+names[i+3]+".txt", std::ios_base::app); // append instead of overwrite
+    for (Particle &p : this->particles) {  // particle number
+      r_outfile << p.r(i) << "   ";
+      v_outfile << p.v(i) << "   ";
     }
-    */
+    r_outfile << "\n";
+    v_outfile << "\n";
 
-    for (int i = 0; i < 3; i++) {
-
-        std::ofstream r_outfile;
-        std::ofstream v_outfile;
-
-        r_outfile.open(evolve+N+"_"+has_coulomb_str+"_"+dt_str+"_"+names[i]+".txt", std::ios_base::app); // append instead of overwrite
-        v_outfile.open(evolve+N+"_"+has_coulomb_str+"_"+dt_str+"_"+names[i+3]+".txt", std::ios_base::app); // append instead of overwrite
-        for (Particle p : this->particles) {  // particle number
-            r_outfile << p.r(i) << "   ";
-            v_outfile << p.v(i) << "   ";
-        }
-        r_outfile << "\n";
-        v_outfile << "\n";
-
-        r_outfile.close();
-        v_outfile.close();
-    }
-
+    r_outfile.close();
+    v_outfile.close();
+  }
 }
 
 /**
@@ -237,8 +228,8 @@ void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::str
 void Penningtrap::write_to_file_perturbation(double f, double w, bool has_coulomb_force, int N_particles){
     std::ofstream outfile;
 
-    outfile.open(std::to_string(f)+"_"+std::to_string(N_particles)+"_"+std::to_string(has_coulomb_force)+"_"+".txt", std::ios_base::app); // append instead of overwrite
-    outfile << w << "   " << this->num_particles_inside << "\n";
+    outfile.open("Perturbation_"+std::to_string(f)+"_"+std::to_string(N_particles)+"_"+std::to_string(has_coulomb_force)+".txt", std::ios_base::app); // append instead of overwrite
+    outfile << w << "   " << this->num_particles_out << "\n";
     outfile.close();
 }
 
@@ -270,6 +261,7 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
       std::cout << "A particle left the trap!" << std::endl;
 
       this->num_particles_out++;
+      std::cout << this->num_particles_out << std::endl;
     }
 
     // skips the particle if it's outside
@@ -306,6 +298,14 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
   // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
   for (Particle& p : this->particles){
     p.r_coulomb = p.r;
+
+    if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d && !p.check_outside()) {//if (arma::norm(p.r) > this->d && !p.check_outside()) {
+      p.is_outside();
+
+      std::cout << "A particle left the trap!" << std::endl;
+
+      this->num_particles_out++;
+    }
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
@@ -389,15 +389,6 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
   }
 
   for (Particle& p : this->particles) {  // Iterate through particles
-    if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d && !p.check_outside()) {//if (arma::norm(p.r) > this->d && !p.check_outside()) {
-
-      p.is_outside();
-
-      std::cout << "A particle left the trap!" << std::endl;
-
-      this->num_particles_out++;
-    }
-
     // skips the particle if it's outside
     if (p.check_outside()) {
       continue;
@@ -417,16 +408,28 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
 
 }
 
+/**
+ * @brief Gives the number of particles trapped inside Penningtrap.
+ *
+ * @return num_particles_inside Number of particles inside.
+ */
 int Penningtrap::particles_inside() {
     return this->num_particles_inside;
 }
 
+/**
+ * @brief Simulates
+ *
+ * @param has_coulomb_force Whether particles interact.
+ * @param N Number of iterations in simulation.
+ * @param dt Time step.
+ * @param evolve Which method (FE or RK4).
+ * @param func_V Whether applied potential is time-dependent.
+ * @param f Amplitude of time-dependent perturbation.
+ * @param w Frequency of time-dependent perturbation.
+ **/
 void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V, double f, double w) {
   this->num_particles_out = 0;
-
-  for (Particle& particle : this->particles) {
-    particle.reset();
-  }
 
   std::string dt_str = std::to_string(dt);
   std::string has_col;
@@ -437,9 +440,43 @@ void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string 
       has_col = "n";
   }
 
-  // float time = dt*N;
-
   // std::cout << "total time: " << time << " microseconds" << std::endl;
+
+  if (func_V && evolve=="RK4"){
+    for (int i = 0; i < N; i++) {
+      this->write_to_file(evolve + "f", dt_str, has_col);
+      this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
+    }
+  }
+  else if (func_V && evolve!="RK4"){
+    for (int i = 0; i < N; i++) {
+      this->write_to_file(evolve + "f", dt_str, has_col);
+      this->evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
+    }
+  }
+  else if (!func_V && evolve=="RK4"){
+    for (int i = 0; i < N; i++) {
+      this->write_to_file(evolve,dt_str, has_col);
+      this->evolve_RK4(dt, has_coulomb_force, true, true);
+    }
+  }
+  else {
+    for (int i = 0; i < N; i++) {
+      this->write_to_file(evolve,dt_str, has_col);
+      this->evolve_forwardeuler(dt, has_coulomb_force, true, true);
+    }
+  }
+
+  /*if (func_V) {
+    for (int i = 0; i < N; i++) {
+      if (evolve=="RK4"){
+        this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
+      }
+      else{
+        this->evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
+      }
+    }
+  }
 
   if (func_V) {
     for (int i = 0; i < N; i++) {
@@ -451,7 +488,6 @@ void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string 
       }
     }
   }
-
   else {
     for (int i = 0; i < N; i++) {
       this->write_to_file(evolve,dt_str, has_col);
@@ -465,5 +501,57 @@ void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string 
       }
     }
     this->write_to_file(evolve, dt_str, has_col);
+  }
+  */
+}
+
+void Penningtrap::reset_particles() {
+  for (Particle& particle : this->particles) {
+    particle.reset();
+  }
+}
+
+void Penningtrap::analytical(double dt, int N) {
+
+  if (this->particles.size() != 1){
+    std::cout << "Cannot call analytical if there is anything else than a single particle inside the Penningtrap." << std::endl;
+    exit(0);
+  }
+
+  for (Particle &p : this->particles){
+    // just in case we have a pass by reference problem
+    // we are passing by reference everytwhere else
+
+    std::complex<double> i(0., 1.);
+    //double k = 10000;
+    double timestep = dt;
+
+    double omega0 = p.q * B_0 / p.m;
+    double omega_z2 = 2 * p.q * V_0 / (p.m * d*d);
+
+    double omegap = (omega0 + std::sqrt(omega0*omega0 - 2 * omega_z2) / 2);
+    double omegam = (omega0 - std::sqrt(omega0*omega0 - 2 * omega_z2) / 2);
+
+    double Ap = (p.v[1] + omegam * p.r[0]) / (omegam - omegap);
+    double Am = - (p.v[1] + omegap * p.r[0]) / (omegam - omegap);
+
+    std::string num_steps = std::to_string(N);
+    std::complex<double> f;
+
+    std::ofstream r_outfile;
+    r_outfile.open(num_steps+"_analytical.txt", std::ios_base::app); // append instead of overwrite
+    // legg til 0
+    r_outfile << p.r[0] << "   " << p.r[1] << "   " << p.r[2];
+    r_outfile << "\n";
+
+    double z = p.r[2];
+
+    for (int j = 1; j <= N; j++) {
+      f = Ap * std::exp(- i * (omegap * (j * timestep))) + Am * std::exp(- i * (omegam * (j * timestep)));
+
+      r_outfile << std::real(f) << "   " << std::imag(f) << "   " << z * std::cos(std::sqrt(omega_z2) * j * timestep);
+
+      r_outfile << "\n";
+    }
   }
 }

@@ -6,7 +6,21 @@ cm = 1 / 2.54
 plt.rcParams["figure.figsize"] = (12 * cm, 8 * cm)
 sns.set_theme("notebook", "whitegrid")
 
-"""
+# Time-varying applied potential for amplitudes f = 0.1, 0.4, 0.7
+for i, f in enumerate([0.1, 0.4, 0.7]):
+    N_particles = 100
+    coulomb_force = 0
+
+    data = np.loadtxt(f"Perturbation_{f}00000_{N_particles}_{coulomb_force}.txt")
+    particles_trapped = (N_particles-data[:, 1])/N_particles
+
+    plt.figure()
+    plt.plot(data[:, 0], particles_trapped)
+    plt.ylabel("Fraction of particles still trapped")
+    plt.xlabel("Angular frequency $\omega_V$ [MHz]")
+    plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}.pdf")
+    plt.show()
+
 # Forward Euler, has coulomb force
 data_2p_FE_x_hasC = np.loadtxt("Forward_Euler2_y_0.010000_x.txt")
 data_2p_FE_y_hasC = np.loadtxt("Forward_Euler2_y_0.010000_y.txt")
@@ -39,7 +53,7 @@ N = len(data_100p_RK_x_hasC[0,:])
 for i in range(N): # , label="Particle 1: RK4, has coulomb"
     ax.plot3D(data_100p_RK_x_hasC[:,i], data_100p_RK_y_hasC[:,i], data_100p_RK_z_hasC[:,i], linewidth=0.4)
     # ax.plot3D(data_100p_RK_x_hasC[0,i], data_100p_RK_y_hasC[0,i], data_100p_RK_z_hasC[0,i], label="Particle 1 initial position", markersize=7)
-    
+
 ax.set_xlabel("x [$\\mu$m]")
 ax.set_ylabel("y [$\\mu$m]")
 ax.set_zlabel("z [$\\mu$m]")
@@ -113,7 +127,7 @@ plt.plot(data_2p_RK_x_hasC[:,1], data_2p_RK_y_hasC[:,1], label="Particle 2: RK4,
 plt.xlabel("x [$\\mu$m]")
 plt.ylabel("y [$\\mu$m]")
 plt.legend()
-plt.savefig("p1_and_p2_rk4_without_coulomb_2d.pdf")
+plt.savefig("p1_and_p2_rk4_with_coulomb_2d.pdf")
 
 
 # plt.plot(data_2p_FE_x_hasC[:,0], data_2p_FE_y_hasC[:,0], label="Particle 1: FE, has coulomb")
@@ -231,4 +245,3 @@ plt.ylabel("velocity in z-direction")
 plt.legend()
 plt.savefig("RK4_phase_space_z_y.pdf")
 # plt.show()
-"""

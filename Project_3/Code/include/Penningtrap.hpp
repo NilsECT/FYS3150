@@ -21,12 +21,15 @@ class Penningtrap{
 
     void evolve_forwardeuler(double dt, bool particle_interaction, bool has_E_field, bool has_B_field, bool func_V=false, double f=0, double w=0, int i=0);
     void evolve_RK4(double dt, bool particle_interaction, bool has_E_field, bool has_B_field, bool func_V=false, double f=0, double w=0, int i=0);
-    
     void write_to_file(std::string evolve,std::string h, std::string inter);
     void write_to_file_perturbation(double f, double w, bool has_coulomb_force, int N_particles=100);
 
     void simulate(bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V=false, double f=0, double w=0);
     int particles_inside();
+
+    void reset_particles();
+
+    void analytical(double dt, int N);
 };
 
 #endif
