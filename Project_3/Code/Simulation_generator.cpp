@@ -63,9 +63,9 @@ int main(){
   }
 
   std::cout << "Calculating the analytical solutions." << std::endl;
+  trap.clear_particles();
   trap.add_particle(part_1);
   for (int i = 0; i < 5; i++) {
-
     dt = 50./n[i];
     trap.analytical(dt, int(n[i]));
     trap.reset_particles();
