@@ -404,7 +404,6 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
     p.r = p.r_temp + p.runge_kutta_k.col(0);
     p.v = p.v_temp + p.runge_kutta_k.col(1);
   }
-
 }
 
 /**
@@ -521,24 +520,28 @@ void Penningtrap::analytical(double dt, int N) {
     // just in case we have a pass by reference problem
     // we are passing by reference everytwhere else
 
-    std::complex<double> i(0., 1.);
     //double k = 10000;
     double timestep = dt;
 
-    double omega0 = p.q * B_0 / p.m;
-    double omega_z2 = 2 * p.q * V_0 / (p.m * d*d);
+    double omega0 = (p.q * this->B_0) / p.m;
+    std::cout << "omega0: " << omega0 << std::endl;
+    double omega_z2 = (2 * p.q * this->V_0) / (p.m * this->d * this->d);
+    std::cout << "omega_z2: " << omega_z2 << std::endl;
 
-    double omegap = (omega0 + std::sqrt(omega0*omega0 - 2 * omega_z2) / 2);
-    double omegam = (omega0 - std::sqrt(omega0*omega0 - 2 * omega_z2) / 2);
+    double omegap = (omega0 + std::sqrt(omega0*omega0 - 2 * omega_z2)) / 2;
+    std::cout << "omegap: " << omegap << std::endl;
+    double omegam = (omega0 - std::sqrt(omega0*omega0 - 2 * omega_z2)) / 2;
+    std::cout << "omegam: " << omegam << std::endl;
 
     double Ap = (p.v[1] + omegam * p.r[0]) / (omegam - omegap);
+    std::cout << "Ap: " << Ap << std::endl;
     double Am = - (p.v[1] + omegap * p.r[0]) / (omegam - omegap);
+    std::cout << "Am: " << Am << std::endl;
 
     std::string num_steps = std::to_string(N);
-    std::complex<double> f;
 
     std::ofstream r_outfile;
-    r_outfile.open(num_steps+"_analytical.txt", std::ios_base::app); // append instead of overwrite
+    r_outfile.open(num_steps+"_analytical.txt"); // append instead of overwrite
     // legg til 0
     r_outfile << p.r[0] << "   " << p.r[1] << "   " << p.r[2];
     r_outfile << "\n";
@@ -546,11 +549,17 @@ void Penningtrap::analytical(double dt, int N) {
     double z = p.r[2];
 
     for (int j = 1; j <= N; j++) {
-      f = Ap * std::exp(- i * (omegap * (j * timestep))) + Am * std::exp(- i * (omegam * (j * timestep)));
+      double jj = j * 1.0;
+      double ti = jj * timestep;
 
-      r_outfile << std::real(f) << "   " << std::imag(f) << "   " << z * std::cos(std::sqrt(omega_z2) * j * timestep);
+      double real = Ap * std::cos(omegap * ti) + Am * std::cos(omegam * ti);
+
+      double imaginary = - (Ap * std::sin(omegap * ti) + Am * std::sin(omegam * ti));
+
+      r_outfile << real << "   " << imaginary << "   " << z * std::cos(std::sqrt(omega_z2) * jj * timestep);
 
       r_outfile << "\n";
     }
+    r_outfile.close();
   }
 }
