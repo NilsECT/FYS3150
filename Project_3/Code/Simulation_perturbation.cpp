@@ -12,15 +12,17 @@ int main(){
   double m = 40.078;
   double d = 500;
 
-  int seed = 137;
+  int n_part = 25;
 
-  int N = 1000;
-  double dt = 0.01;
+  int seed = 5764;
+
+  int N = 5000;
+  double dt = 0.02;
 
   bool has_coulomb_force = false;
 
   Penningtrap trap_100 = Penningtrap(B_0, V_0, d);
-  trap_100.generate_particles(100, q, m, seed);
+  trap_100.generate_particles(n_part, q, m, seed);
 
   std::string dt_str = std::to_string(dt);
 
@@ -28,7 +30,6 @@ int main(){
   double w_min = 0.2; // [MHz]
   double w_max = 2.5; // [MHz]
   int M = w_max/dw;   // number of values for angular frequency w (ie. omega)
-
 
   arma::vec f = {0.1, 0.4, 0.7};
 
@@ -41,7 +42,7 @@ int main(){
       std::cout << w << "    ";
       trap_100.reset_particles();
       trap_100.simulate(has_coulomb_force, N, dt, "RK4", true, amp, w);
-      trap_100.write_to_file_perturbation(amp, w, has_coulomb_force, 100);
+      trap_100.write_to_file_perturbation(amp, w, has_coulomb_force, n_part);
       std::cout << "Number of particles that left the trap: " << trap_100.num_particles_out << std::endl;
     }
   }
