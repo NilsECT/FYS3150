@@ -92,7 +92,7 @@ plt.legend()
 plt.subplot(1,2,2) 
 plt.title("and Runge Kutta 4")
 for i in range(len(n)):
-    delta_max_error_RK4[i] = error_plot(n[i],"RK4")
+    delta_max_error_RK4[i] = error_plot(n[i], "RK4")
 
 plt.xlabel("t [$\\mu$s]")
 plt.ylabel("y [$\\mu$m]")
