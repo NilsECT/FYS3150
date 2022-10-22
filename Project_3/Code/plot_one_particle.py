@@ -20,11 +20,12 @@ data_4000_1p_a_x, data_4000_1p_a_y, data_4000_1p_a_z = np.loadtxt("4000_analytic
 data_8000_1p_a_x, data_8000_1p_a_y, data_8000_1p_a_z = np.loadtxt("8000_analytical.txt",unpack=True)
 data_16000_1p_a_x, data_16000_1p_a_y, data_16000_1p_a_z = np.loadtxt("16000_analytical.txt",unpack=True)
 data_32000_1p_a_x, data_32000_1p_a_y, data_32000_1p_a_z = np.loadtxt("32000_analytical.txt",unpack=True)
-t = np.linspace(0,50,4001)
+t = np.linspace(0,50,4000)
+
 plt.figure(1)
-plt.plot(t,data_1p_Forward_Euler_y,label="Forward Euler")
-plt.plot(t,data_1p_RK4_y,label="Runge Kutta 4")
-plt.plot(t,data_4000_1p_a_y,label="Analytic")
+plt.plot(t,data_1p_Forward_Euler_z,label="Forward Euler", c = "r")
+plt.plot(t,data_1p_RK4_z,label="Runge Kutta 4", c = "b")
+plt.plot(t,data_4000_1p_a_z,label="Analytic", c ="g")
 
 plt.ylabel('z [$\\mu$m]')
 plt.xlabel('t [$\\mu$s]')

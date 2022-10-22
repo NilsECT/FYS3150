@@ -426,7 +426,7 @@ void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string 
   }
 
 
-  for (int i = 0; i < N; i++) {
+  for (int i = 0; i < N - 1; i++) {
     this->mark_outside();
 
     if (func_V && evolve=="RK4") {
@@ -446,8 +446,9 @@ void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string 
       this->evolve_forwardeuler(dt, has_coulomb_force, true, true);
     }
   }
-  // std::cout << "total time: " << time << " microseconds" << std::endl;
 
+  //this->write_to_file(evolve, dt_str, has_col);
+  
 }
 
 void Penningtrap::reset_particles() {
