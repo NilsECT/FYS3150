@@ -67,6 +67,7 @@ int main(){
     
     dt = 50./n[i];
     trap.analytical(dt, int(n[i]));
+    trap.reset_particles();
   }
 
   return 0;

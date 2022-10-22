@@ -45,6 +45,15 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d){
  *
  */
 void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, double ti) {
+    double V;
+
+    // check if the applied potential (and E-field) is time-dependent:
+    if (func_V) {
+      V = this->V_0 * (1 + f*std::cos(w*ti)); // time-dependent perturbation
+    }
+    else {
+      V = this->V_0;
+    }
 
   int i = 0;
 
@@ -395,7 +404,7 @@ int Penningtrap::particles_inside() {
     return this->num_particles_inside;
 }
 
-void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V, double f, double w, bool analytical) {
+void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string evolve, bool func_V, double f, double w) {
   this->num_particles_out = 0;
 
   std::string dt_str = std::to_string(dt);
@@ -422,6 +431,20 @@ void Penningtrap::simulate(bool has_coulomb_force,int N, double dt, std::string 
     }
   }
 
+  // float time = dt*N;
+
+  // std::cout << "total time: " << time << " microseconds" << std::endl;
+
+  if (func_V) {
+    for (int i = 0; i < N; i++) {
+      if (evolve=="RK4"){
+        this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
+      }
+      else{
+        this->evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
+      }
+    }
+  }
   else {
     for (int i = 0; i < N; i++) {
       this->write_to_file(evolve,dt_str, has_col);
