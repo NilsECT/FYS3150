@@ -17,7 +17,6 @@ class Particle{
     arma::mat runge_kutta_k;
     arma::vec r_temp;
     arma::vec v_temp;
-    arma::vec r_coulomb;
     arma::vec r_origin;
     arma::vec v_origin;
 

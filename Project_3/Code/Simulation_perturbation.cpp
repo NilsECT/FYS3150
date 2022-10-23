@@ -17,7 +17,7 @@ int main(){
   int n_part = 100;
 
   double T = 500.0;      // [microseconds]
-  double dt = 0.013; // [microseconds]
+  double dt = 0.01; // [microseconds]
   int N = T/dt;
 
   Penningtrap trap_100 = Penningtrap(B_0, V_0, d);

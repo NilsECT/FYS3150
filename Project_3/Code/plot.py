@@ -7,19 +7,19 @@ plt.rcParams["figure.figsize"] = (12 * cm, 8 * cm)
 sns.set_theme("notebook", "whitegrid")
 
 # Time-varying applied potential for amplitudes f = 0.1, 0.4, 0.7
-for i, f in enumerate([0.1, 0.4, 0.7]):
-    N_particles = 100
-    coulomb_force = 0
+# for i, f in enumerate([0.1, 0.4, 0.7]):
+#     N_particles = 100
+#     coulomb_force = 0
 
-    data = np.loadtxt(f"Perturbation_{f}00000_{N_particles}_{coulomb_force}.txt")
-    particles_trapped = (N_particles-data[:, 1])/N_particles
+#     data = np.loadtxt(f"Perturbation_{f}00000_{N_particles}_{coulomb_force}.txt")
+#     particles_trapped = (N_particles-data[:, 1])/N_particles
 
-    plt.figure()
-    plt.plot(data[:, 0], particles_trapped)
-    plt.ylabel("Fraction of particles still trapped")
-    plt.xlabel("Angular frequency $\omega_V$ [MHz]")
-    plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}.pdf")
-    plt.show()
+#     plt.figure()
+#     plt.plot(data[:, 0], particles_trapped)
+#     plt.ylabel("Fraction of particles still trapped")
+#     plt.xlabel("Angular frequency $\omega_V$ [MHz]")
+#     plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}.pdf")
+#     plt.show()
 
 # Forward Euler, has coulomb force
 data_2p_FE_x_hasC = np.loadtxt("Forward_Euler2_y_0.010000_x.txt")

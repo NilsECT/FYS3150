@@ -80,14 +80,12 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
       int j = 0;
 
       for (Particle &particle_j : this->particles){
-
         // excludes the particles which are outside
         if (particle_j.outside || j <= i){
           j++;
           continue;
         }
-
-        arma::vec r_diff = particle.r - particle_j.r_coulomb;
+        arma::vec r_diff = particle.r - particle_j.r;
         double r_norm = std::sqrt(r_diff(0)*r_diff(0) + r_diff(1)*r_diff(1) + r_diff(2)*r_diff(2));//arma::norm(r_diff);
         double tol = 1e-3;
         if (r_norm<tol){
@@ -233,12 +231,13 @@ void Penningtrap::write_to_file_perturbation(double f, double w, bool has_coulom
 */
 void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, int i) {
 
+  /*
   // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
   if (has_coulomb_force) {
     for (Particle& p : this->particles){
-      p.r_coulomb = p.r;
+      //p.r_coulomb = p.r;
     }
-  }
+  }*/
 
   for (Particle& p : this->particles) {  // Iterate through particles
 
@@ -305,6 +304,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
     // Add current k-value to the weighted sum of ks:
     p.runge_kutta_k.col(0) = p.runge_kutta_k.col(0) + (1/6.0) * k1_r;
     p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * k1_v;
+    
   }
 
   // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
@@ -429,14 +429,14 @@ void Penningtrap::simulate(bool has_coulomb_force, int N, double dt, std::string
       this->write_to_file(evolve,dt_str, has_col);
       this->evolve_RK4(dt, has_coulomb_force, true, true);
     }
-    this->write_to_file(evolve + "f", dt_str, has_col);
+    this->write_to_file(evolve, dt_str, has_col);
   }
   else {
     for (int i = 0; i < N-1; i++) {   // simulation with constant potential
       this->write_to_file(evolve,dt_str, has_col);
       this->evolve_forwardeuler(dt, has_coulomb_force, true, true);
     }
-    this->write_to_file(evolve + "f", dt_str, has_col);
+    this->write_to_file(evolve, dt_str, has_col);
   }
 
 }
@@ -466,19 +466,19 @@ void Penningtrap::analytical(double dt, int N) {
     double timestep = dt;
 
     double omega0 = (p.q * this->B_0) / p.m;
-    std::cout << "omega0: " << omega0 << std::endl;
+    
     double omega_z2 = (2 * p.q * this->V_0) / (p.m * this->d * this->d);
-    std::cout << "omega_z2: " << omega_z2 << std::endl;
+    
 
     double omegap = (omega0 + std::sqrt(omega0*omega0 - 2 * omega_z2)) / 2;
-    std::cout << "omegap: " << omegap << std::endl;
+    
     double omegam = (omega0 - std::sqrt(omega0*omega0 - 2 * omega_z2)) / 2;
-    std::cout << "omegam: " << omegam << std::endl;
+    
 
     double Ap = (p.v[1] + omegam * p.r[0]) / (omegam - omegap);
-    std::cout << "Ap: " << Ap << std::endl;
+    
     double Am = - (p.v[1] + omegap * p.r[0]) / (omegam - omegap);
-    std::cout << "Am: " << Am << std::endl;
+    
 
     std::string num_steps = std::to_string(N);
 
@@ -490,7 +490,7 @@ void Penningtrap::analytical(double dt, int N) {
 
     double z = p.r[2];
 
-    for (int j = 1; j <= N; j++) {
+    for (int j = 1; j <= N-1; j++) {
       double jj = j * 1.0;
       double ti = jj * timestep;
 
