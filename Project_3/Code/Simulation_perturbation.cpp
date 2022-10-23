@@ -14,8 +14,9 @@ int main(){
 
   int seed = 137;
 
-  int N = 1000;
-  double dt = 0.01;
+  int T = 500;      // [microseconds]
+  double dt = 0.01; // [microseconds]
+  int N = T/dt;
 
   bool has_coulomb_force = false;
 

@@ -443,66 +443,30 @@ void Penningtrap::simulate(bool has_coulomb_force, int N, double dt, std::string
   // std::cout << "total time: " << time << " microseconds" << std::endl;
 
   if (func_V && evolve=="RK4"){
-    for (int i = 0; i < N; i++) {
-      this->write_to_file(evolve + "f", dt_str, has_col);
+    for (int i = 0; i < N-1; i++) {
       this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
     }
   }
-  else if (func_V && evolve!="RK4"){
-    for (int i = 0; i < N; i++) {
-      this->write_to_file(evolve + "f", dt_str, has_col);
+  /*else if (func_V && evolve!="RK4"){
+    for (int i = 0; i < N-1; i++) {
       this->evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
     }
-  }
+  }*/
   else if (!func_V && evolve=="RK4"){
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < N-1; i++) {
       this->write_to_file(evolve,dt_str, has_col);
       this->evolve_RK4(dt, has_coulomb_force, true, true);
     }
-  }
-  else {
-    for (int i = 0; i < N; i++) {
-      this->write_to_file(evolve,dt_str, has_col);
-      this->evolve_forwardeuler(dt, has_coulomb_force, true, true);
-    }
-  }
-
-  /*if (func_V) {
-    for (int i = 0; i < N; i++) {
-      if (evolve=="RK4"){
-        this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
-      }
-      else{
-        this->evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
-      }
-    }
-  }
-
-  if (func_V) {
-    for (int i = 0; i < N; i++) {
-      if (evolve=="RK4"){
-        this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
-      }
-      else{
-        this->evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
-      }
-    }
+    this->write_to_file(evolve + "f", dt_str, has_col);
   }
   else {
     for (int i = 0; i < N-1; i++) {
       this->write_to_file(evolve,dt_str, has_col);
-      if (evolve=="RK4"){
-        this->evolve_RK4(dt, has_coulomb_force, true, true);
-
-      // std::cout << i << std::endl;
-      }
-      else{
-        this->evolve_forwardeuler(dt, has_coulomb_force, true, true);
-      }
+      this->evolve_forwardeuler(dt, has_coulomb_force, true, true);
     }
-    this->write_to_file(evolve, dt_str, has_col);
+    this->write_to_file(evolve + "f", dt_str, has_col);
   }
-  */
+
 }
 
 void Penningtrap::reset_particles() {
