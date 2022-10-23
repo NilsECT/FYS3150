@@ -97,10 +97,20 @@ void Particle::print(){
     std::cout << "force = " << this->force << std::endl;
 }
 
+/**
+ * @brief checks if the particle is labeled as outside
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Particle::check_outside() {
     return outside;
 }
 
+/**
+ * @brief Sets the particle's outside variable to true
+ * 
+ */
 void Particle::is_outside() {
     this->outside = true;
 }
