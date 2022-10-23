@@ -42,6 +42,10 @@ Penningtrap::Penningtrap(double B_0, double V_0, double d){
  * set to false.
  * @param has_B_field Ignores the force contribution from the magnetic field if
  * set to false.
+ * @param func_V Whether there is a time-dependent potential.
+ * @param f Amplitude of applied potential
+ * @param w Angular freq of applied potential [MHz]
+ * @param ti Time [microseconds]
  *
  */
 void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, double ti) {
@@ -94,9 +98,6 @@ void Penningtrap::find_force(bool has_coulomb_force, bool has_E_field, bool has_
 
         C.col(i) = C.col(i) + particle_j.q * r_diff/r_3;  // charge is 1 but can change
         C.col(j) = -C.col(i);
-
-        //C.col(i) = C.col(i) + r_diff/r_3;
-        //C.col(j) = -C.col(j) + r_diff/r_3;
 
         j++;
       }
@@ -172,25 +173,16 @@ void Penningtrap::generate_particles(int N, double q, double m, int seed) {
 /**
  * @brief Writes position and velocity data to .txt-files.
  *
+ * @param evolve Whether to use RK4 or FE.
  * @param dt_str time_step as a string (used for naming the outfile)
  * @param has_coulomb_str "y" if the simulation had used coulomb forces, "n" if
  * not. Used for naming the outfile.
- * @param count_particles If true, the method also creates a .txt-file which
- * keeps track of the number of particles inside the penningtrap.
  *
 */
 void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::string has_coulomb_str){
   std::string N = std::to_string(this->num_particles_inside);
 
   std::vector<std::string> names =  {"x", "y", "z", "vx", "vy", "vz"};
-
-  /*
-  if (count_particles) {
-    std::ofstream count_outfile;
-    count_outfile.open("Particle_Counter_" + evolve + N + "_" + has_coulomb_str + "_" + dt_str, std::ios_base::app);
-    count_outfile << this->num_particles_inside << std::endl;
-  }
-  */
 
   for (int i = 0; i < 3; i++) {
 
@@ -214,10 +206,10 @@ void Penningtrap::write_to_file(std::string evolve, std::string dt_str, std::str
 /**
  * @brief Writes data for time-varying electric field.
  *
- * @param f
- * @param w Angular frequency for simulation.
- * @param has_col True if particles interact.
- * @param total_particles Initial number of particles.
+ * @param f Amplitude of time-dependent potential.
+ * @param w Angular frequency of time-dependent potential.
+ * @param has_coulomb_force True if particles interact.
+ * @param N_particles Initial number of particles.
 */
 void Penningtrap::write_to_file_perturbation(double f, double w, bool has_coulomb_force, int N_particles){
     std::ofstream outfile;
@@ -282,19 +274,19 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
 void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, int i) {
 
   // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  if (has_coulomb_force) {
+  /*if (has_coulomb_force) {
     for (Particle& p : this->particles){
       p.r_coulomb = p.r;
     }
-  }
+  }*/
 
   for (Particle& p : this->particles) {  // Iterate through particles
     // Empty current particle's array of weighted sum of k-values:
 
-    // skips the particle if it's outside
+    /*// skips the particle if it's outside
     if (p.check_outside()) {
       continue;
-    }
+    }*/
 
     p.runge_kutta_k = arma::zeros(3, 2);
 
@@ -316,18 +308,18 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
   }
 
   // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  if (has_coulomb_force) {
+  /*if (has_coulomb_force) {
     for (Particle& p : this->particles){
       p.r_coulomb = p.r;
     }
-  }
+  }*/
 
   for (Particle& p : this->particles) {  // Iterate through particles
 
     // skips the particle if it's outside
-    if (p.check_outside()) {
+    /*if (p.check_outside()) {
       continue;
-    }
+    }*/
     this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
 
     arma::vec k2_r = dt * p.v;
@@ -342,18 +334,18 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
 
 
   // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  if (has_coulomb_force) {
+  /*if (has_coulomb_force) {
     for (Particle& p : this->particles){
       p.r_coulomb = p.r;
     }
-  }
+  }*/
 
   for (Particle& p : this->particles) {  // Iterate through particles
 
-    // skips the particle if it's outside
+    /*// skips the particle if it's outside
     if (p.check_outside()) {
       continue;
-    }
+    }*/
 
     this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
 
@@ -368,17 +360,17 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
   }
 
   // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  if (has_coulomb_force) {
+  /*if (has_coulomb_force) {
     for (Particle& p : this->particles){
       p.r_coulomb = p.r;
     }
-  }
+  }*/
 
   for (Particle& p : this->particles) {  // Iterate through particles
     // skips the particle if it's outside
-    if (p.check_outside()) {
+    /*if (p.check_outside()) {
       continue;
-    }
+    }*/
     this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
 
     arma::vec k4_r = dt * p.v;
@@ -425,18 +417,14 @@ void Penningtrap::simulate(bool has_coulomb_force, int N, double dt, std::string
     has_col = "n";
   }
 
-
-  if (func_V && evolve=="RK4"){
+  if (func_V && evolve=="RK4"){       // simulation with time-dependent potential
     for (int i = 0; i < N-1; i++) {
+      // do not write position and velocities to file
       this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
+      std::cout << i << std::endl;
     }
   }
-  /*else if (func_V && evolve!="RK4"){
-    for (int i = 0; i < N-1; i++) {
-      this->evolve_forwardeuler(dt, has_coulomb_force, true, true, func_V, f, w, i);
-    }
-  }*/
-  else if (!func_V && evolve=="RK4"){
+  else if (!func_V && evolve=="RK4"){ // simulation with constant potential
     for (int i = 0; i < N-1; i++) {
       this->write_to_file(evolve,dt_str, has_col);
       this->evolve_RK4(dt, has_coulomb_force, true, true);
@@ -444,7 +432,7 @@ void Penningtrap::simulate(bool has_coulomb_force, int N, double dt, std::string
     this->write_to_file(evolve + "f", dt_str, has_col);
   }
   else {
-    for (int i = 0; i < N-1; i++) {
+    for (int i = 0; i < N-1; i++) {   // simulation with constant potential
       this->write_to_file(evolve,dt_str, has_col);
       this->evolve_forwardeuler(dt, has_coulomb_force, true, true);
     }
@@ -452,13 +440,17 @@ void Penningtrap::simulate(bool has_coulomb_force, int N, double dt, std::string
   }
 
 }
-
+/**
+ * @brief Resets each particle to their initial configurations.
+ **/
 void Penningtrap::reset_particles() {
   for (Particle& particle : this->particles) {
     particle.reset();
   }
 }
-
+/**
+ * @brief Writes the analytical solution of a single particle to a text file.
+ **/
 void Penningtrap::analytical(double dt, int N) {
 
   if (this->particles.size() != 1){
