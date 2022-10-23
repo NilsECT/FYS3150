@@ -320,7 +320,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
     /*if (p.check_outside()) {
       continue;
     }*/
-    this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
+    this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt/2);
 
     arma::vec k2_r = dt * p.v;
     arma::vec k2_v = dt * p.force/p.m;
@@ -347,7 +347,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       continue;
     }*/
 
-    this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
+    this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt/2);
 
     arma::vec k3_r = dt * p.v;
     arma::vec k3_v = dt * p.force/p.m;
@@ -371,7 +371,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
     /*if (p.check_outside()) {
       continue;
     }*/
-    this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
+    this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, (i+1)*dt);
 
     arma::vec k4_r = dt * p.v;
     arma::vec k4_v = dt * p.force/p.m;
