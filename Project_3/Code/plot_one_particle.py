@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.markers import *
 import seaborn as sns
-cm = 1/2.54
+# cm = 1/2.54
 # plt.rcParams["figure.figsize"] = (12*cm,8*cm)
 sns.set_theme("notebook","whitegrid")
 
@@ -71,7 +71,7 @@ def error_plot(num_time_steps, method):
         error[i] = max_error/np.linalg.norm(r_a)
         Delta_max_error[i] = np.linalg.norm(r_a - r_F)
 
-    plt.plot( t, error,".", markersize = 1,label=f"n_step ={num_time_steps}")
+    plt.plot( t, error,".",label=f"n_step ={num_time_steps}")
     return np.amax(Delta_max_error)
 
 ## Error Plot:
@@ -113,4 +113,4 @@ print(f"Error convergence rate for Forward Euler: {(1/3)*r_err_Forward_Euler}")
 r_err_RK4 = 0
 for i in range(1,4):
     r_err_RK4 += np.log(delta_max_error_RK4[i]/delta_max_error_RK4[i-1])/np.log((50/n[i])/(50/n[i-1]))
-print(f"Error convergence rate for Forward Euler: {(1/3)*r_err_RK4}")
+print(f"Error convergence rate for Runge Kutta 4: {(1/3)*r_err_RK4}")

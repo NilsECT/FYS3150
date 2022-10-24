@@ -2,24 +2,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-cm = 1 / 2.54
-plt.rcParams["figure.figsize"] = (12 * cm, 8 * cm)
+# cm = 1 / 2.54
+# plt.rcParams["figure.figsize"] = (12 * cm, 8 * cm)
 sns.set_theme("notebook", "whitegrid")
 
 # Time-varying applied potential for amplitudes f = 0.1, 0.4, 0.7
-# for i, f in enumerate([0.1, 0.4, 0.7]):
-#     N_particles = 100
-#     coulomb_force = 0
+for i, f in enumerate([0.1, 0.4, 0.7]):
+    N_particles = 100
+    coulomb_force = 0
 
-#     data = np.loadtxt(f"Perturbation_{f}00000_{N_particles}_{coulomb_force}.txt")
-#     particles_trapped = (N_particles-data[:, 1])/N_particles
+    data = np.loadtxt(f"Perturbation_{f}00000_{N_particles}_{coulomb_force}.txt")
+    particles_trapped = (N_particles-data[:, 1])/N_particles
 
-#     plt.figure()
-#     plt.plot(data[:, 0], particles_trapped)
-#     plt.ylabel("Fraction of particles still trapped")
-#     plt.xlabel("Angular frequency $\omega_V$ [MHz]")
-#     plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}.pdf")
-#     plt.show()
+    plt.figure()
+    plt.plot(data[:, 0], particles_trapped)
+    plt.ylabel("Fraction of particles still trapped")
+    plt.xlabel("Angular frequency $\omega_V$ [MHz]")
+    plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}.pdf")
 
 # Forward Euler, has coulomb force
 data_2p_FE_x_hasC = np.loadtxt("Forward_Euler2_y_0.010000_x.txt")
@@ -77,9 +76,8 @@ plt.figure()
 plt.plot(data_2p_RK_x_hasC[:,0], data_2p_RK_y_hasC[:,0], label="Particle 1: RK4, has coulomb", linewidth=0.8)
 plt.plot(data_2p_RK_x[:,0], data_2p_RK_y[:,0], label="Particle 1: RK4, no coulomb", linewidth=0.8)
 plt.plot(data_2p_RK_x_hasC[0,0], data_2p_RK_y_hasC[0,0], "ro", label="Particle 1 initial position", markersize=7)
-ax.set_xlabel("x [$\\mu$m]")
-ax.set_ylabel("y [$\\mu$m]")
-ax.set_zlabel("z [$\\mu$m]")
+plt.xlabel("x [$\\mu$m]")
+plt.ylabel("y [$\\mu$m]")
 plt.legend()
 plt.savefig("p1_rk4_with_and_without_coulomb_2d.pdf")
 
