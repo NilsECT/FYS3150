@@ -186,10 +186,11 @@ plt.scatter(RK4_x[0, 0], RK4_vx[0, 0], 30, 'red', label=p1)
 plt.plot(RK4_x[:, 1], RK4_vx[:, 1], 'blue', linewidth=0.8)
 plt.scatter(RK4_x[0, 1], RK4_vx[0, 1], 30, 'blue', label=p2)
 
-plt.axis('equal')
+
 plt.xlabel("position x")
 plt.ylabel("velocity in x-direction")
 
+plt.axis('equal')
 plt.legend()
 plt.savefig("RK4_phase_space_x_n.pdf")
 # plt.show()
@@ -202,10 +203,10 @@ plt.scatter(RK4_z[0, 0], RK4_vz[0, 0], 30, 'red', label=p1)
 plt.plot(RK4_z[:, 1], RK4_vz[:, 1], 'blue', linewidth=0.8)
 plt.scatter(RK4_z[0, 1], RK4_vz[0, 1], 30, 'blue', label=p2)
 
-plt.axis('equal')
 plt.xlabel("position z")
 plt.ylabel("velocity in z-direction")
 
+plt.axis('equal')
 plt.legend()
 plt.savefig("RK4_phase_space_z_n.pdf")
 # plt.show()
@@ -230,10 +231,10 @@ plt.scatter(RK4_x[0, 0], RK4_vx[0, 0], 30, 'red', label=p1)
 plt.plot(RK4_x[:, 1], RK4_vx[:, 1], 'blue', linewidth=0.8)
 plt.scatter(RK4_x[0, 1], RK4_vx[0, 1], 30, 'blue', label=p2)
 
-plt.axis('equal')
 plt.xlabel("position x")
 plt.ylabel("velocity in x-direction")
 
+plt.axis('equal')
 plt.legend()
 plt.savefig("RK4_phase_space_x_y.pdf")
 # plt.show()
@@ -246,10 +247,10 @@ plt.scatter(RK4_z[0, 0], RK4_vz[0, 0], 30, 'red', label=p1)
 plt.plot(RK4_z[:, 1], RK4_vz[:, 1], 'blue', linewidth=0.8)
 plt.scatter(RK4_z[0, 1], RK4_vz[0, 1], 30, 'blue', label=p2)
 
-plt.axis('equal')
 plt.xlabel("position z")
 plt.ylabel("velocity in z-direction")
 
+plt.axis('equal')
 plt.legend()
 plt.savefig("RK4_phase_space_z_y.pdf")
 # plt.show()
