@@ -30,7 +30,6 @@ class Penningtrap{
     void reset_particles();
 
     void analytical(double dt, int N);
-    void mark_outside();
 };
 
 #endif
