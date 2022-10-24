@@ -73,7 +73,7 @@ def error_plot(num_time_steps, method):
         error[i] = max_error/np.linalg.norm(r_a)
         Delta_max_error[i] = np.linalg.norm(r_a - r_F)
 
-    plt.plot( t, error,".",label=f"n_step ={num_time_steps}")
+    plt.plot(t, error,",",label=f"n_step ={num_time_steps}")
     return np.amax(Delta_max_error)
 
 ## Error Plot:

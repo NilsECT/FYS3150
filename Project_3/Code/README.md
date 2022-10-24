@@ -1,19 +1,19 @@
 # Mappe for project 3 code:
 
-Hi and welcome to our code for project 3. It is centered around object oriented programming for simulating a penning trap containing Calcium ions. The simulation is done with a few different parameters that has all been specified in the simulation main functions. Of these there are running a simulation for 1,2 and 25 particles, with and without particle-particle interactions with coulomb force. These simulations are also done with two different numerical integration methods, Forward Euler and Runge Kutta to the 4'th order. There is also an analytical solution for 1 particle in the penning trap that can be compeard with to check our results. For the las part we wil be alternating the elecrtical field of the penningtrep with different frequencies and angular frequencies. This will be done for 25 particles so the simulation time not to be too long. 
+Hi and welcome to our code for project 3. It is centered around object oriented programming for simulating a Penning trap containing Calcium ions. The simulation is done with a few different parameters that has all been specified in the simulation main functions. Of these there are running a simulation for 1,2 and 25 particles, with and without particle-particle interactions with coulomb force. These simulations are also done with two different numerical integration methods, Forward Euler and Runge Kutta to the 4'th order. There is also an analytical solution for 1 particle in the Penning trap that can be compared with to check our results. For the las part we wil be alternating the electrical field of the Penning trap with different frequencies and angular frequencies. This will be done for 25 particles so the simulation time won't be too long. 
 
 ## Simulation Generator.
-For the first part we run the Simulation_generator.cpp to generate all the different ways we wand to simulate the system. This includes; 1 particle analyticaly, with Runge Kutta 4 and with Forward Euler, 2 particles with and without particle interaction with both Forward Euler and Runge Kutta 4. 
+For the first part we run the Simulation_generator.cpp to generate all the different ways we want to simulate the system. This includes; 1 particle analyticaly, with Runge Kutta 4 and with forward Euler, 2 particles with and without particle interaction with both forward Euler and Runge Kutta 4. 
 
 ### To run:
-To run this we must include the Particle and Penningtrap class where we have all the functionality for running these simulation. What we are doing is that for each time step we wright out the position coordinate and the velocities for each particle in the simulation. There is one txt file for each of the coordinates with each row in the file being one particles trajectory in that coordinat form for each time step. We wright this as:
+To run this we must include the Particle and Penningtrap class where we have all the functionality for running these simulations. What we are doing is that for each time step we write out the position coordinate and the velocities for each particle in the simulation. There is one txt file for each of the coordinates with each row in the file being one particles trajectory in that coordinate form for each time step. We write this as:
 
 ####    -   g++ Simulation_generator.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Simulation_generator.exe -larmadillo && ./Simulation_generator.exe
 
 (Here there have been difficulties with armadillo not working for some people running the code, so we include the -larmadillo for safety.)(The prints in the terminal is to let you know how far the code have gotten in the simulations. Not in time steps but what kind of simulation it is running.)
 
 ## Simulation perturbation.
-This simulation is a little longer so we include a optimization key -O2 this will help the runtime and still keep our calculations ok. Here there is still a cout to let you know how far the simulation has come.
+This simulation is a little longer so we include a optimization key -O2 this will help the runtime and still keep our calculations ok. Here there is still a print to let you know how far the simulation has come.
 
 ####    -   g++ Simulation_perturbation.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Simulation_perturbation.exe -O2 -larmadillo && ./Simulation_perturbation.exe
 
