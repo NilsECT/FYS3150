@@ -4,8 +4,11 @@ import seaborn as sns
 
 # cm = 1 / 2.54
 # plt.rcParams["figure.figsize"] = (12 * cm, 8 * cm)
-sns.set_theme("notebook", "whitegrid")
+plt.rcParams["font.family"] = "serif"
+plt.rcParams["mathtext.fontset"] = "dejavuserif"
 
+sns.set_theme("notebook", "whitegrid")
+'''
 # Time-varying applied potential for amplitudes f = 0.1, 0.4, 0.7
 for i, f in enumerate([0.1, 0.4, 0.7]):
     N_particles = 100
@@ -19,7 +22,7 @@ for i, f in enumerate([0.1, 0.4, 0.7]):
     plt.ylabel("Fraction of particles still trapped")
     plt.xlabel("Angular frequency $\omega_V$ [MHz]")
     plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}.pdf")
-
+'''
 # Forward Euler, has coulomb force
 data_2p_FE_x_hasC = np.loadtxt("Forward_Euler2_y_0.010000_x.txt")
 data_2p_FE_y_hasC = np.loadtxt("Forward_Euler2_y_0.010000_y.txt")
@@ -78,6 +81,7 @@ plt.plot(data_2p_RK_x[:,0], data_2p_RK_y[:,0], label="Particle 1: RK4, no coulom
 plt.plot(data_2p_RK_x_hasC[0,0], data_2p_RK_y_hasC[0,0], "ro", label="Particle 1 initial position", markersize=7)
 plt.xlabel("x [$\\mu$m]")
 plt.ylabel("y [$\\mu$m]")
+plt.axis('equal')
 plt.legend()
 plt.savefig("p1_rk4_with_and_without_coulomb_2d.pdf")
 
@@ -116,6 +120,7 @@ plt.plot(data_2p_RK_x[:,0], data_2p_RK_y[:,0], label="Particle 1: RK4, no coulom
 plt.plot(data_2p_RK_x[:,1], data_2p_RK_y[:,1], label="Particle 2: RK4, no coulomb", linewidth=0.8)
 plt.xlabel("x [$\\mu$m]")
 plt.ylabel("y [$\\mu$m]")
+plt.axis('equal')
 plt.legend()
 plt.savefig("p1_and_p2_rk4_without_coulomb_2d.pdf")
 
@@ -124,6 +129,7 @@ plt.plot(data_2p_RK_x_hasC[:,0], data_2p_RK_y_hasC[:,0], label="Particle 1: RK4,
 plt.plot(data_2p_RK_x_hasC[:,1], data_2p_RK_y_hasC[:,1], label="Particle 2: RK4, has coulomb", linewidth=0.8)
 plt.xlabel("x [$\\mu$m]")
 plt.ylabel("y [$\\mu$m]")
+plt.axis('equal')
 plt.legend()
 plt.savefig("p1_and_p2_rk4_with_coulomb_2d.pdf")
 
@@ -180,6 +186,7 @@ plt.scatter(RK4_x[0, 0], RK4_vx[0, 0], 30, 'red', label=p1)
 plt.plot(RK4_x[:, 1], RK4_vx[:, 1], 'blue', linewidth=0.8)
 plt.scatter(RK4_x[0, 1], RK4_vx[0, 1], 30, 'blue', label=p2)
 
+plt.axis('equal')
 plt.xlabel("position x")
 plt.ylabel("velocity in x-direction")
 
@@ -195,6 +202,7 @@ plt.scatter(RK4_z[0, 0], RK4_vz[0, 0], 30, 'red', label=p1)
 plt.plot(RK4_z[:, 1], RK4_vz[:, 1], 'blue', linewidth=0.8)
 plt.scatter(RK4_z[0, 1], RK4_vz[0, 1], 30, 'blue', label=p2)
 
+plt.axis('equal')
 plt.xlabel("position z")
 plt.ylabel("velocity in z-direction")
 
@@ -222,6 +230,7 @@ plt.scatter(RK4_x[0, 0], RK4_vx[0, 0], 30, 'red', label=p1)
 plt.plot(RK4_x[:, 1], RK4_vx[:, 1], 'blue', linewidth=0.8)
 plt.scatter(RK4_x[0, 1], RK4_vx[0, 1], 30, 'blue', label=p2)
 
+plt.axis('equal')
 plt.xlabel("position x")
 plt.ylabel("velocity in x-direction")
 
@@ -237,6 +246,7 @@ plt.scatter(RK4_z[0, 0], RK4_vz[0, 0], 30, 'red', label=p1)
 plt.plot(RK4_z[:, 1], RK4_vz[:, 1], 'blue', linewidth=0.8)
 plt.scatter(RK4_z[0, 1], RK4_vz[0, 1], 30, 'blue', label=p2)
 
+plt.axis('equal')
 plt.xlabel("position z")
 plt.ylabel("velocity in z-direction")
 
