@@ -282,10 +282,11 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
   for (Particle& p : this->particles) {  // Iterate through particles
     // Empty current particle's array of weighted sum of k-values:
 
-    /*// skips the particle if it's outside
-    if (p.check_outside()) {
-      continue;
-    }*/
+    if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d){// && !particle.check_outside()) {
+      p.is_outside();
+      //std::cout << "A particle left the trap!" << std::endl;
+      this->num_particles_out++;
+    }
 
     p.runge_kutta_k = arma::zeros(3, 2);
 
@@ -304,7 +305,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
     // Add current k-value to the weighted sum of ks:
     p.runge_kutta_k.col(0) = p.runge_kutta_k.col(0) + (1/6.0) * k1_r;
     p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * k1_v;
-    
+
   }
 
   // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
@@ -347,7 +348,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
       continue;
     }*/
 
-    this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, (i+1/2)*dt;
+    this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, (i+1/2)*dt);
 
     arma::vec k3_r = dt * p.v;
     arma::vec k3_v = dt * p.force/p.m;
@@ -466,19 +467,19 @@ void Penningtrap::analytical(double dt, int N) {
     double timestep = dt;
 
     double omega0 = (p.q * this->B_0) / p.m;
-    
+
     double omega_z2 = (2 * p.q * this->V_0) / (p.m * this->d * this->d);
-    
+
 
     double omegap = (omega0 + std::sqrt(omega0*omega0 - 2 * omega_z2)) / 2;
-    
+
     double omegam = (omega0 - std::sqrt(omega0*omega0 - 2 * omega_z2)) / 2;
-    
+
 
     double Ap = (p.v[1] + omegam * p.r[0]) / (omegam - omegap);
-    
+
     double Am = - (p.v[1] + omegap * p.r[0]) / (omegam - omegap);
-    
+
 
     std::string num_steps = std::to_string(N);
 
@@ -509,11 +510,11 @@ void Penningtrap::analytical(double dt, int N) {
 void Penningtrap::mark_outside() {
 
   for (Particle &particle : this->particles){
-    if (std::sqrt(particle.r(0)*particle.r(0) + particle.r(1)*particle.r(1) + particle.r(2)*particle.r(2)) > this->d && !particle.check_outside()) {
+    if (std::sqrt(particle.r(0)*particle.r(0) + particle.r(1)*particle.r(1) + particle.r(2)*particle.r(2)) > this->d){// && !particle.check_outside()) {
 
       particle.is_outside();
 
-      //std::cout << "A particle left the trap!" << std::endl;
+      std::cout << "A particle left the trap!" << std::endl;
 
       this->num_particles_out++;
     }

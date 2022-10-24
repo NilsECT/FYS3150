@@ -14,7 +14,7 @@ int main(){
 
   int seed = 137;
 
-  int n_part = 100;
+  int n_part = 25;
 
   double T = 500.0;      // [microseconds]
   double dt = 0.01; // [microseconds]
