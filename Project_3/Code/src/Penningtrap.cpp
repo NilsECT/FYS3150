@@ -231,19 +231,13 @@ void Penningtrap::write_to_file_perturbation(double f, double w, bool has_coulom
 */
 void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, int i) {
 
-  /*
-  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  if (has_coulomb_force) {
-    for (Particle& p : this->particles){
-      //p.r_coulomb = p.r;
-    }
-  }*/
-
   for (Particle& p : this->particles) {  // Iterate through particles
 
-    // skips the particle if it's outside
-    if (p.check_outside()) {
-      continue;
+    // Check whether current particle is outside trap:
+    if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d){
+      p.is_outside();
+      //std::cout << "A particle left the trap!" << std::endl;
+      this->num_particles_out++;
     }
 
     this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, i*dt);
@@ -272,22 +266,15 @@ void Penningtrap::evolve_forwardeuler(double dt, bool has_coulomb_force, bool ha
 */
 void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field, bool has_B_field, bool func_V, double f, double w, int i) {
 
-  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  /*if (has_coulomb_force) {
-    for (Particle& p : this->particles){
-      p.r_coulomb = p.r;
-    }
-  }*/
-
   for (Particle& p : this->particles) {  // Iterate through particles
-    // Empty current particle's array of weighted sum of k-values:
-
-    if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d){// && !particle.check_outside()) {
+    // Check whether current particle is outside trap:
+    if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d){
       p.is_outside();
       //std::cout << "A particle left the trap!" << std::endl;
       this->num_particles_out++;
     }
 
+    // Empty current particle's array of weighted sum of k-values:
     p.runge_kutta_k = arma::zeros(3, 2);
 
     // Store particle's current position and velocity:
@@ -308,19 +295,8 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
 
   }
 
-  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  /*if (has_coulomb_force) {
-    for (Particle& p : this->particles){
-      p.r_coulomb = p.r;
-    }
-  }*/
-
   for (Particle& p : this->particles) {  // Iterate through particles
 
-    // skips the particle if it's outside
-    /*if (p.check_outside()) {
-      continue;
-    }*/
     this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, (i+1/2)*dt);
 
     arma::vec k2_r = dt * p.v;
@@ -333,21 +309,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
     p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * 2 * k2_v;
   }
 
-
-  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  /*if (has_coulomb_force) {
-    for (Particle& p : this->particles){
-      p.r_coulomb = p.r;
-    }
-  }*/
-
   for (Particle& p : this->particles) {  // Iterate through particles
-
-    /*// skips the particle if it's outside
-    if (p.check_outside()) {
-      continue;
-    }*/
-
     this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, (i+1/2)*dt);
 
     arma::vec k3_r = dt * p.v;
@@ -360,18 +322,8 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
     p.runge_kutta_k.col(1) = p.runge_kutta_k.col(1) + (1/6.0) * 2 * k3_v;
   }
 
-  // freezing time explicitly for the calculation of the coulomb force so it's updated homogenously for all particles
-  /*if (has_coulomb_force) {
-    for (Particle& p : this->particles){
-      p.r_coulomb = p.r;
-    }
-  }*/
 
   for (Particle& p : this->particles) {  // Iterate through particles
-    // skips the particle if it's outside
-    /*if (p.check_outside()) {
-      continue;
-    }*/
     this->find_force(has_coulomb_force, has_E_field, has_B_field, func_V, f, w, (i+1)*dt);
 
     arma::vec k4_r = dt * p.v;
@@ -504,19 +456,5 @@ void Penningtrap::analytical(double dt, int N) {
       r_outfile << "\n";
     }
     r_outfile.close();
-  }
-}
-
-void Penningtrap::mark_outside() {
-
-  for (Particle &particle : this->particles){
-    if (std::sqrt(particle.r(0)*particle.r(0) + particle.r(1)*particle.r(1) + particle.r(2)*particle.r(2)) > this->d){// && !particle.check_outside()) {
-
-      particle.is_outside();
-
-      std::cout << "A particle left the trap!" << std::endl;
-
-      this->num_particles_out++;
-    }
   }
 }
