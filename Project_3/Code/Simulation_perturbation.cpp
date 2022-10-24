@@ -14,7 +14,7 @@ int main(){
 
   int seed = 137;
 
-  int n_part = 25;
+  int n_part = 100;
 
   double T = 500.0;      // [microseconds]
   double dt = 0.01; // [microseconds]
@@ -24,7 +24,7 @@ int main(){
   trap_100.generate_particles(n_part, q, m, seed);
 
   std::string dt_str = std::to_string(dt);
-
+  
   double dw = 0.02;   // [MHz]
   double w_min = 0.2; // [MHz]
   double w_max = 2.5; // [MHz]
