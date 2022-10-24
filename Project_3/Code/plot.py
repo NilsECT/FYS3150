@@ -8,10 +8,10 @@ plt.rcParams["font.family"] = "serif"
 plt.rcParams["mathtext.fontset"] = "dejavuserif"
 
 sns.set_theme("notebook", "whitegrid")
-'''
+
 # Time-varying applied potential for amplitudes f = 0.1, 0.4, 0.7
-for i, f in enumerate([0.1, 0.4, 0.7]):
-    N_particles = 100
+for i, f in enumerate([0.7]):
+    N_particles = 25
     coulomb_force = 0
 
     data = np.loadtxt(f"Perturbation_{f}00000_{N_particles}_{coulomb_force}.txt")
@@ -22,7 +22,7 @@ for i, f in enumerate([0.1, 0.4, 0.7]):
     plt.ylabel("Fraction of particles still trapped")
     plt.xlabel("Angular frequency $\omega_V$ [MHz]")
     plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}.pdf")
-'''
+
 # Forward Euler, has coulomb force
 data_2p_FE_x_hasC = np.loadtxt("Forward_Euler2_y_0.010000_x.txt")
 data_2p_FE_y_hasC = np.loadtxt("Forward_Euler2_y_0.010000_y.txt")

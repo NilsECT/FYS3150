@@ -28,19 +28,18 @@ int main(){
   double dw = 0.02;   // [MHz]
   double w_min = 0.2; // [MHz]
   double w_max = 2.5; // [MHz]
-  int M = w_max/dw;   // number of values for angular frequency w (ie. omega)
 
-  arma::vec f = {0.4};//, 0.4, 0.7};
+  arma::vec f = {0.1, 0.4, 0.7};
 
   // Simulate with no particle interaction:
   bool has_coulomb_force = false;
-
+  /*
   for (double &amp : f) {
     std::cout << std::endl;
     std::cout << "Simulate for " << N*dt << " microseconds, with amplitude f = " << amp <<"(without interaction)" <<  std::endl;
     trap_100.reset_particles();
 
-    for (double w = w_min; w <= w_max; w += dw) {
+    for (double w = w_min; w < w_max+dw; w += dw) {
       std::cout << w << "    ";
       trap_100.reset_particles();
       trap_100.simulate(has_coulomb_force, N, dt, "RK4", true, amp, w);
@@ -48,23 +47,23 @@ int main(){
       std::cout << "Number of particles that left the trap: " << trap_100.num_particles_out << std::endl;
     }
   }
-
+  */
   // Simulate with particle interaction:
   has_coulomb_force = true;
-  /*
+  
   for (double &amp : f) {
     std::cout << std::endl;
     std::cout << "Simulate for " << N*dt << " microseconds, with amplitude f = " << amp <<"(with interaction)" <<  std::endl;
     trap_100.reset_particles();
 
-    for (double w = w_min; w <= w_max; w += dw) {
+    for (double w = w_min; w < w_max+dw; w += dw) {
       std::cout << w << "    ";
       trap_100.simulate(has_coulomb_force, N, dt, "RK4", true, amp, w);
       trap_100.write_to_file_perturbation(amp, w, has_coulomb_force, n_part);
       std::cout << "Number of particles that left the trap: " << trap_100.num_particles_out << std::endl;
     }
   }
-  */
+  
 
   return 0;
 }
