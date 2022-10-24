@@ -30,7 +30,7 @@ int main(){
   double w_max = 2.5; // [MHz]
   int M = w_max/dw;   // number of values for angular frequency w (ie. omega)
 
-  arma::vec f = {0.1};//, 0.4, 0.7};
+  arma::vec f = {0.4};//, 0.4, 0.7};
 
   // Simulate with no particle interaction:
   bool has_coulomb_force = false;

@@ -268,7 +268,7 @@ void Penningtrap::evolve_RK4(double dt, bool has_coulomb_force, bool has_E_field
 
   for (Particle& p : this->particles) {  // Iterate through particles
     // Check whether current particle is outside trap:
-    if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d){
+    if (std::sqrt(p.r(0)*p.r(0) + p.r(1)*p.r(1) + p.r(2)*p.r(2)) > this->d && !p.check_outside()){
       p.is_outside();
       //std::cout << "A particle left the trap!" << std::endl;
       this->num_particles_out++;
