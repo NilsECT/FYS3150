@@ -9,31 +9,39 @@ plt.rcParams["font.family"] = "serif"
 plt.rcParams["mathtext.fontset"] = "dejavuserif"
 
 ## Data extraction with interaction for Forward Euler:
-dt = 100/10000
-data_1p_Forward_Euler_x = np.loadtxt(f"Forward_Euler1_n_{dt:.6f}_x.txt")
-data_1p_Forward_Euler_y = np.loadtxt(f"Forward_Euler1_n_{dt:.6f}_y.txt")
-data_1p_Forward_Euler_z = np.loadtxt(f"Forward_Euler1_n_{dt:.6f}_z.txt")
+data_1p_Forward_Euler_x = np.loadtxt(f"Forward_Euler1_n_0.012500_x.txt")
+data_1p_Forward_Euler_y = np.loadtxt(f"Forward_Euler1_n_0.012500_y.txt")
+data_1p_Forward_Euler_z = np.loadtxt(f"Forward_Euler1_n_0.012500_z.txt")
 
-data_1p_RK4_x = np.loadtxt(f"RK41_n_{dt:.6f}_x.txt")
-data_1p_RK4_y = np.loadtxt(f"RK41_n_{dt:.6f}_y.txt")
-data_1p_RK4_z = np.loadtxt(f"RK41_n_{dt:.6f}_z.txt")
+data_1p_RK4_x = np.loadtxt(f"RK41_n_0.012500_x.txt")
+data_1p_RK4_y = np.loadtxt(f"RK41_n_0.012500_y.txt")
+data_1p_RK4_z = np.loadtxt(f"RK41_n_0.012500_z.txt")
 
 data_4000_1p_a_x, data_4000_1p_a_y, data_4000_1p_a_z = np.loadtxt("4000_analytical.txt",unpack=True)
 data_8000_1p_a_x, data_8000_1p_a_y, data_8000_1p_a_z = np.loadtxt("8000_analytical.txt",unpack=True)
 data_10000_1p_a_x, data_10000_1p_a_y, data_10000_1p_a_z = np.loadtxt("10000_analytical.txt",unpack=True)
 data_16000_1p_a_x, data_16000_1p_a_y, data_16000_1p_a_z = np.loadtxt("16000_analytical.txt",unpack=True)
 data_32000_1p_a_x, data_32000_1p_a_y, data_32000_1p_a_z = np.loadtxt("32000_analytical.txt",unpack=True)
-t = np.linspace(0,100,10000)
+t = np.linspace(0,100,4000)
 
 plt.figure(1)
-plt.plot(t,data_1p_Forward_Euler_z,label="Forward Euler", c = "r")
-plt.plot(t,data_1p_RK4_z,label="Runge Kutta 4", c = "b")
-plt.plot(t,data_10000_1p_a_z,label="Analytic", c ="g")
-
+plt.plot(t,data_4000_1p_a_z,label="Analytic", c ="g",lw=0.2)
+plt.plot(t,data_1p_Forward_Euler_z,"o",label="Forward Euler", c = "r",markersize=0.5)
+plt.plot(t,data_1p_RK4_z,"x",label="Runge Kutta 4", c = "b",markersize=0.5)
 plt.ylabel('z [$\\mu$m]')
 plt.xlabel('t [$\\mu$s]')
 plt.legend()
 plt.savefig(f"1_particle_z_direction.pdf")
+plt.figure(4)
+plt.plot(t,data_4000_1p_a_z,label="Analytic", c ="g",lw=0.2)
+plt.plot(t,data_1p_Forward_Euler_z,"o",label="Forward Euler", c = "r",markersize=5)
+plt.plot(t,data_1p_RK4_z,"x",label="Runge Kutta 4", c = "b",markersize=5)
+plt.xlim(49.9,50)
+plt.ylim(0.25,1.25)
+plt.ylabel('z [$\\mu$m]')
+plt.xlabel('t [$\\mu$s]')
+plt.legend()
+plt.savefig(f"1_particle_z_direction_zoom.pdf")
 
 
 
