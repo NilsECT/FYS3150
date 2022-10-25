@@ -9,19 +9,31 @@ plt.rcParams["mathtext.fontset"] = "dejavuserif"
 
 sns.set_theme("notebook", "whitegrid")
 
-# Time-varying applied potential for amplitudes f = 0.1, 0.4, 0.7
-for i, f in enumerate([0.7]):
-    N_particles = 25
-    coulomb_force = 0
-
+def Perturbation_plot(f,coulomb_force,zoom):
+    N_particles = 50
     data = np.loadtxt(f"Perturbation_{f}00000_{N_particles}_{coulomb_force}.txt")
     particles_trapped = (N_particles-data[:, 1])/N_particles
-
     plt.figure()
     plt.plot(data[:, 0], particles_trapped)
     plt.ylabel("Fraction of particles still trapped")
     plt.xlabel("Angular frequency $\omega_V$ [MHz]")
-    plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}.pdf")
+    plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}{zoom}.pdf")
+    
+# Plot of fist frequency scan:
+f = [0.1,0.4,0.7] # Amplitudes
+coulomb_force = 0
+zoom = ""
+for i in f:
+    Perturbation_plot(f,coulomb_force,zoom)
+# Plot of more detailed scan.
+## Without coulomb force:
+f = 0.1
+zoom = "zoom"
+Perturbation_plot(f,coulomb_force,zoom)
+## With coulomb force:
+coulomb_force = 1
+zoom = "zoom"
+Perturbation_plot(f,coulomb_force,zoom)
 
 # Forward Euler, has coulomb force
 data_2p_FE_x_hasC = np.loadtxt("Forward_Euler2_y_0.010000_x.txt")
