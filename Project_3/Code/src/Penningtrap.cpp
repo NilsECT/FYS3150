@@ -374,7 +374,6 @@ void Penningtrap::simulate(bool has_coulomb_force, int N, double dt, std::string
     for (int i = 0; i < N-1; i++) {
       // do not write position and velocities to file
       this->evolve_RK4(dt, has_coulomb_force, true, true, func_V, f, w, i);
-      std::cout << i << std::endl;
     }
   }
   else if (!func_V && evolve=="RK4"){ // simulation with constant potential

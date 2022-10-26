@@ -16,6 +16,7 @@ To run this we must include the Particle and Penningtrap class where we have all
 This simulation is a little longer so we include a optimization key -O2 this will help the runtime and still keep our calculations ok. Here there is still a print to let you know how far the simulation has come.
 
 ####    -   g++ Simulation_perturbation.cpp src/Particle.cpp src/Penningtrap.cpp -I include/ -o Simulation_perturbation.exe -O2 -larmadillo && ./Simulation_perturbation.exe
+(This simulation is very time consuming and probably takes longer time to run than the grader wants to use running them. For us this run was split to run different parameters on different computers. The files from this is plotted in the pdf, and can be generated from this)
 
 ## Plotting.
 There are two plot codes for these for simulations. plot_one_particle.py is meant for interpreting the one particle result of the simulation. It generates one plot for one particle in the z-direction for the  analytical, Forward Euler and Runge Kutta 4 simulation. It also generates a plot for the relative error in the simulation. This is done in two subplots for both Runge Kutta 4 and Forward Euler, and compering them to the analytical for the different number of time steps. This is done For 4000, 8000, 16000, 32000 number of time steps in a 50 micro second simulation. It also uses the max of these error to return the values the convergence rate for the error for both the Runge Kutta and the Forward Euler.
