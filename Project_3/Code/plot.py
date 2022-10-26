@@ -18,8 +18,8 @@ def Perturbation_plot(f,coulomb_force,zoom):
     plt.ylabel("Fraction of particles still trapped")
     plt.xlabel("Angular frequency $\omega_V$ [MHz]")
     plt.savefig(f"Perturbation_{f}_{N_particles}_{coulomb_force}{zoom}.pdf")
-    
-# Plot of fist frequency scan:
+
+# Plot of frequency scan:
 f = [0.1,0.4,0.7] # Amplitudes
 coulomb_force = 0
 zoom = ""
