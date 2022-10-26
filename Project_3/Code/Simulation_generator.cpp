@@ -23,7 +23,7 @@ int main(){
   arma::vec r_1 = arma::vec{20.,0.,20.}; // micro m
   arma::vec v_1 = arma::vec{0.,25.,0.}; // micro m per micro sec
   arma::vec r_2 = arma::vec{25.,25.,0.}; // micro m
-  arma::vec v_2 = arma::vec{0.,4.,5.};  // micro m per micro sec
+  arma::vec v_2 = arma::vec{0.,40.,5.};  // micro m per micro sec
   bool has_coulomb_force = true;
   bool no_coulomb_force = false;
   Particle part_1 = Particle(q, m, r_1, v_1);
