@@ -112,7 +112,12 @@ bool Particle::check_outside() {
 void Particle::is_outside() {
     this->outside = true;
 }
-
+/**
+ * @brief Resets the particle position and velocity to the initial values.
+ * Also defines the particle to be inside the Penning trap to be true.
+ * Empties all the temp vectors for velocity and position 
+ * 
+ */
 void Particle::reset() {
     this->r = this->r_origin;
     this->v = this->v_origin;
