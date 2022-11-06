@@ -5,14 +5,18 @@
 #include <math.h>
 #include <random>
 
-double MCMC(Grid G, int M, int thread_seed){
-  //int seed = 137;
+std::vector<double> MCMC(Grid G, int M, int thread_seed){
+
   std::mt19937 generator (thread_seed);
   std::uniform_int_distribution<int> dis(0, G.L-1);
   std::uniform_real_distribution<double> spinflip(0, 1);
+
   double r;
+
   double epsilon = 0.0;
-  double magnetization = 0.0;
+  double epsilon_squared = 0.0;
+  double m_squared = 0.0;
+  double m_abs = 0.0;
   double current_magnetization;
 
   //std::vector<double> dEs = {8, 4, 0};
@@ -21,22 +25,20 @@ double MCMC(Grid G, int M, int thread_seed){
     int s_x = dis(generator);
     int s_y = dis(generator);
 
+    // Compute change in energy:
     double dE = G.grid((s_x+1) % G.L, s_y) + G.grid((G.L + s_x - 1) % G.L, s_y) + G.grid(s_x, (s_y+1) % G.L) + G.grid(s_x, (G.L + s_y-1) % G.L);
-    dE = (2) * G.grid(s_x, s_y) * dE;// * G.grid(s_x, s_y); //dE = dE * (-2);
+    dE = 2 * G.grid(s_x, s_y) * dE;
 
-    //std::cout << dE <<  << std::endl;
+    // Ratio between probability of new state and old state:
+    dE = exp(-dE / G.T);
 
-    dE = exp(-dE / G.T);// * G.J * G.beta);
-
+    // Add current energy and magnetization values to average sum:
     epsilon += G.E;
-
-    //std::cout << G.get_E() << "    " << G.get_M() << std::endl;
+    epsilon_squared = epsilon_squared + G.E * G.E;
 
     current_magnetization = G.M;
-    current_magnetization = std::sqrt(current_magnetization * current_magnetization);
-    //std::cout << "CURRENT MAGNETIZATION: " << current_magnetization/(G.L * G.L) << std::endl;
-    magnetization += current_magnetization;
-
+    m_abs = m_abs + std::sqrt(current_magnetization * current_magnetization);
+    m_squared = m_squared + current_magnetization * current_magnetization;
 
     r = spinflip(generator);
 
@@ -46,17 +48,18 @@ double MCMC(Grid G, int M, int thread_seed){
 
   }
 
-  epsilon = epsilon / (G.L*G.L);
-  epsilon = epsilon / M;
-
-  magnetization = magnetization / (M * G.L * G.L);
+  // Divide averages by number of Monte Carlo cycles (and number of spins):
+  epsilon = epsilon / (G.L*G.L*M);
+  epsilon_squared = epsilon_squared / (M * std::pow(G.L, 4));
+  m_abs = m_abs / (M * G.L * G.L);
+  m_squared = m_squared / (M * std::pow(G.L, 4));
 
   std::cout << "THREAD SEED: " << thread_seed
-            << ", AVG MAGNETIZATION: " << magnetization
+            << ", AVG MAGNETIZATION: " << m_abs
             << ", EPSILON_MEAN: " << epsilon << ", TEMPERATURE: " << G.T << std::endl;
 
-
-  return epsilon;
+  std::vector<double> averages = {epsilon, epsilon_squared, m_abs, m_squared};
+  return averages;
 }
 
 
@@ -80,7 +83,6 @@ int main(int argc, char* argv[]){
 
   #pragma omp parallel
   {
-    //const int my_thread = omp_get_thread_num();
 
     # pragma omp for
     for (int i = 0; i < num_threads; i++){
@@ -92,7 +94,7 @@ int main(int argc, char* argv[]){
 
       G.fill_grid(thread_seed);
 
-      double epsilon_mean = MCMC(G, num_MC_cycles, thread_seed);
+      std::vector<double> thread_averages = MCMC(G, num_MC_cycles, thread_seed);
       /*std::cout << "THREAD SEED: " << thread_seed
           << ", EPSILON_MEAN: " << epsilon_mean << ", TEMPERATURE: " << T << std::endl;
       */
@@ -104,27 +106,6 @@ int main(int argc, char* argv[]){
     }
   }
 
-  /////////////////////
-
-
-  /*arma::mat grid2;
-  grid2.eye(L, L);
-  grid2 = grid2*2 - 1;
-
-  double E = 0.0;
-
-  for (int i = 0; i < L; i ++){
-    for (int j = 0; j < L; j ++){
-
-      E = E + grid2(i, j) * (grid2((i+1) %  L, j) + grid2(i, (j+1) %  L));
-
-    }
-  }
-
-  std::cout << -E/(L*L) << "    " << -E <<std::endl;
-  */
-
-  //std::cout << "analytical epsilon_mean: " << G.epsilon_mean() << std::endl;
 
   return 0;
 }

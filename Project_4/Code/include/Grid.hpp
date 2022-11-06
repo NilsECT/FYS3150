@@ -19,10 +19,9 @@ public:
 
   double get_E();
   double get_M();
-  double epsilon_mean();
   double Z();
+  
   void fill_grid(int seed = 137);
-
   void flip_spin(int x, int y);
 };
 
