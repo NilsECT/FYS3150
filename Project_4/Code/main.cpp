@@ -1,9 +1,18 @@
-#include "omp.h"  // OpenMP header
-#include <armadillo>
+#include <fstream>
+#include "omp.h"
 #include "Grid.hpp"
+#include <armadillo>
 #include <iostream>
-#include <math.h>
+#include <string>
 #include <random>
+/*
+void write_to_file(int thread_seed, int L, double T, std::vector<double> thread_avg){
+  std::ofstream ofile;
+  st
+  static int print_prec = 10;
+
+}
+*/
 
 std::vector<double> MCMC(Grid G, int M, int thread_seed){
 
@@ -26,7 +35,8 @@ std::vector<double> MCMC(Grid G, int M, int thread_seed){
     int s_y = dis(generator);
 
     // Compute change in energy:
-    double dE = G.grid((s_x+1) % G.L, s_y) + G.grid((G.L + s_x - 1) % G.L, s_y) + G.grid(s_x, (s_y+1) % G.L) + G.grid(s_x, (G.L + s_y-1) % G.L);
+    double dE = G.grid((s_x+1) % G.L, s_y) + G.grid((G.L + s_x - 1) % G.L, s_y)
+        + G.grid(s_x, (s_y+1) % G.L) + G.grid(s_x, (G.L + s_y-1) % G.L);
     dE = 2 * G.grid(s_x, s_y) * dE;
 
     // Ratio between probability of new state and old state:
@@ -65,14 +75,9 @@ std::vector<double> MCMC(Grid G, int M, int thread_seed){
 
 int main(int argc, char* argv[]){
 
-  //std::mt19937 generator(137);
-
   const int L = atoi(argv[1]);
   const int num_threads = atoi(argv[2]);
   const int num_MC_cycles = atoi(argv[3]);
-
-  //double J = 1.0;//std::pow(10, -23);
-  //double T = 1.0;
 
   const int seed = 137;
   std::mt19937 MC_seed_generator (seed);
@@ -81,6 +86,12 @@ int main(int argc, char* argv[]){
   double T_max = 2.6;
   double dT = (T_max - T_min) / num_threads;
 
+  std::ofstream ofile;
+  static int print_prec = 10;
+  //std::string filename = "averages_" + L + "_" + num_MC_cycles + "_" + num_threads + ".txt";
+  ofile.open("averages_" + std::to_string(L) + "_" + std::to_string(num_MC_cycles) + "_" + std::to_string(num_threads) + ".txt", std::ofstream::trunc);
+
+  ofile << "Thread seed, Temperature, Epsilon, Epsilon squared, Abs(magnetization), Magnetization squared" << std::endl;
   #pragma omp parallel
   {
 
@@ -94,18 +105,24 @@ int main(int argc, char* argv[]){
 
       G.fill_grid(thread_seed);
 
-      std::vector<double> thread_averages = MCMC(G, num_MC_cycles, thread_seed);
+      std::vector<double> thread_avgs = MCMC(G, num_MC_cycles, thread_seed);
+
       /*std::cout << "THREAD SEED: " << thread_seed
           << ", EPSILON_MEAN: " << epsilon_mean << ", TEMPERATURE: " << T << std::endl;
       */
 
       //std::cout << my_thread << ", " << i << std::endl;
-      /*ofile << setprecision(print_precision) << scientific << i << ", "
-            << setprecision(print_precision) << scientific << epsilon_mean << std::endl;
+      /*ofile << std::setprecision(print_prec) << scientific << i << ", "
+            << std::setprecision(print_prec) << scientific << epsilon_mean << std::endl;
       */
+      ofile << std::setprecision(print_prec) << thread_seed << ", "
+            << std::setprecision(print_prec) << T << ", "
+            << std::setprecision(print_prec) << thread_avgs.at(0) << ", "
+            << std::setprecision(print_prec) << thread_avgs.at(1) << ", "
+            << std::setprecision(print_prec) << thread_avgs.at(2) << ", "
+            << std::setprecision(print_prec) << thread_avgs.at(3) << std::endl;
     }
   }
-
 
   return 0;
 }
