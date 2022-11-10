@@ -3,7 +3,7 @@
 
 Grid::Grid(int L, double T, double J){
   this->L = L;    // Number of spins in each dimension.
-  this->T = T;    // Units: [k_B]
+  this->T = T;    // Units: [k_B]                          <--------- J/k_B?
   this->J = J;
   this->N = L*L;  // Total number of spins.
   this->beta = 1/T; // Thermodynamic beta.
@@ -49,7 +49,7 @@ double Grid::get_E(){
 }
 
 /**
- * Flip one of the spins in the grid.
+ * Flip one of the spins in the grid.   <----?
  *
  * @return M Magnetization of the system.
  */
@@ -70,7 +70,7 @@ double Grid::get_M(){
  * @param seed Seed for the psuedo-random number generator.
  */
 void Grid::fill_grid(int seed){
-  std::mt19937 generator (130);
+  std::mt19937 generator (130);  // <------- seed istedet for 130?
   std::uniform_int_distribution<int> dis(0, 1);
 
   int num;
