@@ -14,7 +14,7 @@ void write_to_file(int thread_seed, int L, double T, std::vector<double> thread_
 }
 */
 
-void var_LT(int cycles, arma::vec L, arma::vec T, std::string filename = "var_LT", int seed = 137) {
+void var_LT(int cycles, std::vector<int> L, arma::vec T, std::string filename = "var_LT", int seed = 137) {
   
   // start by opening the file which will gather all the data
   std::ofstream file;
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]){
 
   // results for P8
   // scan area of L and T
-  arma::vec L_p8 = arma::vec("40 60 80 100");
+  std::vector<int> L_p8 = {40, 60, 80, 100};
   arma::vec T_p8 = arma::linspace(2.1, 2.4, 100);
   var_LT(num_MC_cycles, L_p8, T_p8);
 
