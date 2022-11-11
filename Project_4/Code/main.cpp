@@ -14,6 +14,32 @@ void write_to_file(int thread_seed, int L, double T, std::vector<double> thread_
 }
 */
 
+void var_LT(int cycles, arma::vec L, arma::vec T, std::string filename = "var_LT", int seed = 137) {
+  
+  // start by opening the file which will gather all the data
+  std::ofstream file;
+  file.open(filename + ".txt", std::ofstream::trunc);
+  static int print_prec = 10;
+
+  // header of file:
+  file << "Thread seed, Temperature, Epsilon, Epsilon squared, Abs(magnetization), Magnetization squared" << std::endl;
+
+  // start looping through all L and T in parallel
+  #pragma omp parallel for
+  for (double i : L) {
+    for (double ii : T) {
+
+      Grid model = Grid(i, ii); // generate model (create)
+      model.fill_grid(seed);  // generate model (fill)
+      model.MCMC(cycles, seed); // simulate
+
+      // the extraction has to happen based on the fixed L and T
+      #pragma omp critical
+      file << std::setprecision(print_prec) << seed << ", " << std::setprecision(print_prec) << ii << ", " << std::setprecision(print_prec) << model.epsilon << ", " << std::setprecision(print_prec) << model.epsilon_squared << ", " << std::setprecision(print_prec) << model.m_abs << ", " << std::setprecision(print_prec) << model.m_squared << std::endl;
+    }
+  }
+}
+
 
 int main(int argc, char* argv[]){
 
@@ -57,13 +83,14 @@ int main(int argc, char* argv[]){
       /*ofile << std::setprecision(print_prec) << scientific << i << ", "
             << std::setprecision(print_prec) << scientific << epsilon_mean << std::endl;
       */
+     // so writing to file is not chaos
+     #pragma omp critical
       ofile << std::setprecision(print_prec) << thread_seed << ", "
             << std::setprecision(print_prec) << T << ", "
             << std::setprecision(print_prec) << G.epsilon << ", "
             << std::setprecision(print_prec) << G.epsilon_squared << ", "
             << std::setprecision(print_prec) << G.m_abs << ", "
             << std::setprecision(print_prec) << G.m_squared << std::endl;
-
     }
   }
 

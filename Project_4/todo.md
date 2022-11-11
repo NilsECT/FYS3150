@@ -16,6 +16,8 @@ Periodic boundary conditions: we use the modulus operator
 
 * Lager en klasse som inneholder grid, konstantene som definerer gridet, funksjoner for å hente E, M, osv
 
+* Regne Cv og X og legge det til i filen likt som alle andre verdier og samtidig når det er regnet ut.
+
 ## Rapporten
 
 * Teori-del
