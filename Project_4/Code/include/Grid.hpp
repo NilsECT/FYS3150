@@ -11,6 +11,11 @@ public:
   double J;
   double beta;
 
+  double epsilon;
+  double epsilon_squared;
+  double m_abs;
+  double m_squared;
+
   double E;
   double M;
 
@@ -20,9 +25,11 @@ public:
   double get_E();
   double get_M();
   double Z();
-  
-  void fill_grid(int seed = 137);
+
+  void fill_grid(int seed = 137, bool random_config = true);
   void flip_spin(int x, int y);
+
+  void MCMC(int num_MC_cycles, int thread_seed);
 };
 
 
