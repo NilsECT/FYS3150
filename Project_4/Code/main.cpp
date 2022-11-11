@@ -15,7 +15,7 @@ void write_to_file(int thread_seed, int L, double T, std::vector<double> thread_
 */
 
 void var_LT(int cycles, std::vector<int> L, arma::vec T, std::string filename = "var_LT", int seed = 137) {
-  
+
   // start by opening the file which will gather all the data
   std::ofstream file;
   file.open(filename + ".txt", std::ofstream::trunc);
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]){
   //std::string filename = "averages_" + L + "_" + num_MC_cycles + "_" + num_threads + ".txt";
   ofile.open("averages_" + std::to_string(L) + "_" + std::to_string(num_MC_cycles) + "_" + std::to_string(num_threads) + ".txt", std::ofstream::trunc);
 
-  ofile << "Thread seed, Temperature, Epsilon, Epsilon squared, Abs(magnetization), Magnetization squared" << std::endl;
+  ofile << "Thread seed, Temperature, |eps|, eps squared, |m|, m squared, C_v, Chi" << std::endl;
   #pragma omp parallel
   {
 
@@ -73,13 +73,15 @@ int main(int argc, char* argv[]){
 
       G.fill_grid(thread_seed);
       G.MCMC(num_MC_cycles, thread_seed);
-      
+
       ofile << std::setprecision(print_prec) << thread_seed << ", "
             << std::setprecision(print_prec) << T << ", "
             << std::setprecision(print_prec) << G.epsilon << ", "
             << std::setprecision(print_prec) << G.epsilon_squared << ", "
             << std::setprecision(print_prec) << G.m_abs << ", "
-            << std::setprecision(print_prec) << G.m_squared << std::endl;
+            << std::setprecision(print_prec) << G.m_squared << ", "
+            << std::setprecision(print_prec) << G.cv << ", "
+            << std::setprecision(print_prec) << G.chi << std::endl;
     }
   }
 
@@ -87,7 +89,7 @@ int main(int argc, char* argv[]){
   // scan area of L and T
   std::vector<int> L_p8 = {40, 60, 80, 100};
   arma::vec T_p8 = arma::linspace(2.1, 2.4, 100);
-  var_LT(num_MC_cycles, L_p8, T_p8);
+  //var_LT(num_MC_cycles, L_p8, T_p8);
 
   return 0;
 }

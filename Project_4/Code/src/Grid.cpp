@@ -1,6 +1,7 @@
 #include "Grid.hpp"
 #include <armadillo>
 #include <string>
+#include <assert.h>
 
 Grid::Grid(int L, double T, double J){
   this->L = L;    // Number of spins in each dimension.
@@ -72,7 +73,7 @@ double Grid::get_M(){
  * @param random_config Whether the configuration is randomized (with the seed).
  */
 void Grid::fill_grid(int seed, bool random_config){
-  std::mt19937 generator (130);  // <------- seed istedet for 130?
+  std::mt19937 generator (seed);
   std::uniform_int_distribution<int> dis(0, 1);
 
   int num;
@@ -90,6 +91,19 @@ double Grid::Z(){
   double Z = 0.0;
 
   return Z;
+}
+
+void Grid::compute_cv(){
+  //assert this->epsilon != NULL;
+
+  this->cv = (this->epsilon_squared - this->epsilon*this->epsilon);
+  this->cv = this->N *this->cv / ( this->T * this->T);
+
+}
+
+void Grid::compute_chi(){
+  this->chi = (this->m_squared - this->m_abs*this->m_abs);
+  this->chi = this->N *this->chi / (this->T);
 }
 
 void Grid::MCMC(int num_MC_cycles, int thread_seed){
@@ -157,8 +171,11 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
   this->m_abs = m_abs;
   this->m_squared = m_squared;
 
+  this->compute_cv();
+  this->compute_chi();
   std::cout << "THREAD SEED: " << thread_seed
             << ", AVG MAGNETIZATION: " << m_abs
-            << ", EPSILON_MEAN: " << epsilon << ", TEMPERATURE: " << this->T << std::endl;
+            << ", EPSILON_MEAN: " << epsilon << ", TEMPERATURE: " << this->T << " HEAT CAP: " << this->cv
+            << "CHI: " << this->chi << std::endl;
 
 }

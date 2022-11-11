@@ -16,6 +16,10 @@ public:
   double m_abs;
   double m_squared;
 
+  double cv;
+  double chi;
+
+
   double E;
   double M;
 
@@ -30,6 +34,8 @@ public:
   void flip_spin(int x, int y);
 
   void MCMC(int num_MC_cycles, int thread_seed);
+  void compute_cv();
+  void compute_chi();
 };
 
 
