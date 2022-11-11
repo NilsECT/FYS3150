@@ -26,7 +26,7 @@ void var_LT(int cycles, arma::vec L, arma::vec T, std::string filename = "var_LT
 
   // start looping through all L and T in parallel
   #pragma omp parallel for
-  for (double i : L) {
+  for (int i : L) {
     for (double ii : T) {
 
       Grid model = Grid(i, ii); // generate model (create)
@@ -82,6 +82,12 @@ int main(int argc, char* argv[]){
             << std::setprecision(print_prec) << G.m_squared << std::endl;
     }
   }
+
+  // results for P8
+  // scan area of L and T
+  arma::vec L_p8 = arma::vec("40 60 80 100");
+  arma::vec T_p8 = arma::linspace(2.1, 2.4, 100);
+  var_LT(num_MC_cycles, L_p8, T_p8);
 
   return 0;
 }
