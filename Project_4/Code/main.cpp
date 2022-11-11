@@ -40,12 +40,32 @@ void var_LT(int cycles, std::vector<int> L, arma::vec T, std::string filename = 
   }
 }
 
+void var_cycles(std::vector<int> num_MC_cycles, double T, bool random_config, int L = 20, std::string filename = "var_cycles", int seed = 137) {
+
+  // start by opening the file which will gather all the data
+  std::ofstream file;
+  file.open(filename + ".txt", std::ofstream::trunc);
+  static int print_prec = 10;
+
+  // header of file:
+  file << "Thread seed, Temperature, Epsilon, Epsilon squared, Abs(magnetization), Magnetization squared" << std::endl;
+
+  for (int cycles : num_MC_cycles) {
+
+    Grid model = Grid(L, T); // generate model (create)
+    model.fill_grid(seed, random_config);  // generate model (fill)
+    model.MCMC(cycles, seed); // simulate
+
+    file << std::setprecision(print_prec) << seed << ", " << std::setprecision(print_prec) << cycles << ", " << std::setprecision(print_prec) << model.epsilon << ", " << std::setprecision(print_prec) << model.m_abs << std::endl;
+  }
+}
 
 int main(int argc, char* argv[]){
 
   const int L = atoi(argv[1]);
   const int num_threads = atoi(argv[2]);
   const int num_MC_cycles = atoi(argv[3]);
+
 
   const int seed = 137;
   std::mt19937 MC_seed_generator (seed);
@@ -84,12 +104,16 @@ int main(int argc, char* argv[]){
             << std::setprecision(print_prec) << G.chi << std::endl;
     }
   }
+  
 
   // results for P8
   // scan area of L and T
   std::vector<int> L_p8 = {40, 60, 80, 100};
   arma::vec T_p8 = arma::linspace(2.1, 2.4, 100);
   //var_LT(num_MC_cycles, L_p8, T_p8);
+
+  arma::vec cycles_p5 = {10, 100, 1000, 10000, 100000};
+  //var_cycles(cycles_p5);
 
   return 0;
 }

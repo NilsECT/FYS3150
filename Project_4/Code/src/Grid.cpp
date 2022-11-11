@@ -97,13 +97,13 @@ void Grid::compute_cv(){
   //assert this->epsilon != NULL;
 
   this->cv = (this->epsilon_squared - this->epsilon*this->epsilon);
-  this->cv = this->N *this->cv / ( this->T * this->T);
+  this->cv = this->N * this->cv / ( this->T * this->T);
 
 }
 
 void Grid::compute_chi(){
   this->chi = (this->m_squared - this->m_abs*this->m_abs);
-  this->chi = this->N *this->chi / (this->T);
+  this->chi = this->N * this->chi / (this->T);
 }
 
 void Grid::MCMC(int num_MC_cycles, int thread_seed){
