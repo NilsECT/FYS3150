@@ -73,18 +73,7 @@ int main(int argc, char* argv[]){
 
       G.fill_grid(thread_seed);
       G.MCMC(num_MC_cycles, thread_seed);
-      //std::vector<double> thread_avgs = MCMC(G, num_MC_cycles, thread_seed);
-
-      /*std::cout << "THREAD SEED: " << thread_seed
-          << ", EPSILON_MEAN: " << epsilon_mean << ", TEMPERATURE: " << T << std::endl;
-      */
-
-      //std::cout << my_thread << ", " << i << std::endl;
-      /*ofile << std::setprecision(print_prec) << scientific << i << ", "
-            << std::setprecision(print_prec) << scientific << epsilon_mean << std::endl;
-      */
-     // so writing to file is not chaos
-     #pragma omp critical
+      
       ofile << std::setprecision(print_prec) << thread_seed << ", "
             << std::setprecision(print_prec) << T << ", "
             << std::setprecision(print_prec) << G.epsilon << ", "

@@ -1,5 +1,6 @@
 #include "Grid.hpp"
 #include <armadillo>
+#include <string>
 
 Grid::Grid(int L, double T, double J){
   this->L = L;    // Number of spins in each dimension.
@@ -45,11 +46,11 @@ double Grid::get_E(){
       E = E + -this->grid(i, j) * (this->grid((i+1) % this-> L, j) + this->grid(i, (j+1) % this-> L));
     }
   }
-  return E;
+  return this->J * E;
 }
 
 /**
- * Flip one of the spins in the grid.   <----?
+ * Calculate the magnetization of the current state.
  *
  * @return M Magnetization of the system.
  */
@@ -94,35 +95,39 @@ double Grid::Z(){
 void Grid::MCMC(int num_MC_cycles, int thread_seed){
   int L = this->L;
 
+  // Mersenne twister algorithm for generating random numbers:
   std::mt19937 generator (thread_seed);
+  // Distribution for choosing random grid indexes:
   std::uniform_int_distribution<int> dis(0, L-1);
+  // Distribution for r:
   std::uniform_real_distribution<double> spinflip(0, 1);
-  double r;
+  double r; // Random number to which we will compare the probability rati
 
   double epsilon = 0.0;
   double epsilon_squared = 0.0;
   double m_squared = 0.0;
   double m_abs = 0.0;
   double current_magnetization;
+  int index;
 
-  //std::vector<double> dEs = {8, 4, 0};
+  // Ratio between probability of new state and old state, for the
+  // different obtainable values:
+  std::vector<double> dEs = {exp(-1 * this->J * (-8) / this->T), exp(-1 * this->J * (-4) / this->T), 1, exp(-1 * this->J * (4) / this->T), exp(-1 * this->J * (8) / this->T)};
 
   for (int i = 0; i < num_MC_cycles; i++){
-    int s_x = dis(generator);
-    int s_y = dis(generator);
+    int s_x = dis(generator); // Index of "chosen" spin in x-direction
+    int s_y = dis(generator); // Index in y-direction
 
-
-    // Compute change in energy:
+    // Compute change in energy [in units of 1/J]:
     double dE = this->grid((s_x+1) % L, s_y)
         + this->grid((L + s_x - 1) % L, s_y)
         + this->grid(s_x, (s_y+1) % L)
         + this->grid(s_x, (L + s_y-1) % L);
     dE = 2 * this->grid(s_x, s_y) * dE;
 
-    //std::cout << dE << "    " << exp(-dE / G.T) << std::endl;
-
-    // Ratio between probability of new state and old state:
-    dE = exp(-dE / this->T);
+    // Index corresponding to change in energy (to avoid multiple exp()-calls):
+    index = dE / 4 + 2;
+    dE = dEs.at(index);
 
     // Add current energy and magnetization values to average sum:
     epsilon += this->E;
@@ -132,10 +137,11 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
     m_abs = m_abs + std::sqrt(current_magnetization * current_magnetization);
     m_squared = m_squared + current_magnetization * current_magnetization;
 
+    // Generate random float between 0 and 1:
     r = spinflip(generator);
 
     if (r <= dE) {
-      this->flip_spin(s_x, s_y);
+      this->flip_spin(s_x, s_y); // Flip the chosen spin
     }
 
   }
@@ -155,6 +161,4 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
             << ", AVG MAGNETIZATION: " << m_abs
             << ", EPSILON_MEAN: " << epsilon << ", TEMPERATURE: " << this->T << std::endl;
 
-  //std::vector<double> averages = {epsilon, epsilon_squared, m_abs, m_squared};
-  //return averages;
 }
