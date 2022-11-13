@@ -18,4 +18,4 @@ for T in [1, 2.4]:
     plt.title(f'Histogram of $\epsilon$ for T = {T} $J/k_B$')
     plt.xlabel('$\epsilon  [1/J] $')
     plt.ylabel('Frequency, normalized')
-    plt.show()
+    plt.savefig(f"Histogram_of_epsilon_for_T_{T}.pdf")

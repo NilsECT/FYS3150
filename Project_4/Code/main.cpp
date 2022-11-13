@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <iomanip>      // std::setprecision
 
 void generate_histograms(std::vector<double> temperatures, int num_MC_cycles,
                          int seed = 137,
