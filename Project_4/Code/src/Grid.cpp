@@ -16,6 +16,12 @@ Grid::Grid(int L, double T, double J){
   // Store energy and magnetization in initial state:
   this->E = this->get_E();
   this->M = this->get_M();
+
+  // Initialize averages:
+  this->epsilon = 0.0;
+  this->epsilon_squared = 0.0;
+  this-> m_squared = 0.0;
+  this->m_abs = 0.0;
 }
 
 /**
@@ -106,8 +112,16 @@ void Grid::compute_chi(){
   this->chi = this->N * this->chi / (this->T);
 }
 
+
 void Grid::MCMC(int num_MC_cycles, int thread_seed){
   int L = this->L;
+
+  // Parameters for prob. distribution for epsilon:
+  int bin_width = 1;
+  int max_eps = this->N;
+  int min_eps = -this->N;
+
+  arma::vec bins(this->N * 2, arma::fill::zeros);
 
   // Mersenne twister algorithm for generating random numbers:
   std::mt19937 generator (thread_seed);
@@ -117,10 +131,13 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
   std::uniform_real_distribution<double> spinflip(0, 1);
   double r; // Random number to which we will compare the probability rati
 
+  std::cout << "STARTING WITH <eps> = " << this->epsilon << std::endl;
+
   double epsilon = 0.0;
   double epsilon_squared = 0.0;
   double m_squared = 0.0;
   double m_abs = 0.0;
+
   double current_magnetization;
   int index;
 
@@ -143,6 +160,10 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
     index = dE / 4 + 2;
     dE = dEs.at(index);
 
+    // Add current energy to bin:
+    int index = (this->E) / bin_width + 2*this->N;
+    bins.at(index) += 1;
+
     // Add current energy and magnetization values to average sum:
     epsilon += this->E;
     epsilon_squared = epsilon_squared + this->E * this->E;
@@ -161,21 +182,25 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
   }
 
   // Divide averages by number of Monte Carlo cycles (and number of spins):
-  epsilon = epsilon / (L * L * num_MC_cycles);
-  epsilon_squared = epsilon_squared / (num_MC_cycles * std::pow(L, 4));
-  m_abs = m_abs / (num_MC_cycles * L * L);
-  m_squared = m_squared / (num_MC_cycles * std::pow(L, 4));
+  epsilon = epsilon / (this->N * num_MC_cycles);
+  epsilon_squared = epsilon_squared / (num_MC_cycles * this->N * this->N);
+  m_abs = m_abs / (this->N * num_MC_cycles);
+  m_squared = m_squared / (num_MC_cycles * this->N * this->N);
 
-  this->epsilon = epsilon;
-  this->epsilon_squared = epsilon_squared;
-  this->m_abs = m_abs;
-  this->m_squared = m_squared;
+  this->epsilon = this->epsilon + epsilon;
+  this->epsilon_squared = this->epsilon_squared + epsilon_squared;
+  this->m_abs = this->m_abs + m_abs;
+  this->m_squared = this->m_squared + m_squared;
 
   this->compute_cv();
   this->compute_chi();
+
   std::cout << "THREAD SEED: " << thread_seed
             << ", AVG MAGNETIZATION: " << m_abs
             << ", EPSILON_MEAN: " << epsilon << ", TEMPERATURE: " << this->T << " HEAT CAP: " << this->cv
             << "CHI: " << this->chi << std::endl;
+
+
+  this->bins = bins;
 
 }

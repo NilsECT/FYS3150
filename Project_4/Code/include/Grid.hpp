@@ -19,6 +19,7 @@ public:
   double cv;
   double chi;
 
+  arma::vec bins;
 
   double E;
   double M;
