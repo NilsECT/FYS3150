@@ -82,21 +82,21 @@ void Grid::fill_grid(int seed, bool random_config){
   std::mt19937 generator (seed);
   std::uniform_int_distribution<int> dis(0, 1);
 
-  int num;
+  if (random_config){
+    int num;
 
-  for (int i = 0; i < L; i ++){
-    for (int j = 0; j < L; j ++){
-      num = dis(generator);
-      num = num*2 - 1;
-      this->grid(i, j) = num;
+    for (int i = 0; i < L; i ++){
+      for (int j = 0; j < L; j ++){
+        num = dis(generator);
+        num = num*2 - 1;
+        this->grid(i, j) = num;
+      }
     }
   }
-}
+  else {
+    this->grid.ones(this->L, this->L);
+  }
 
-double Grid::Z(){
-  double Z = 0.0;
-
-  return Z;
 }
 
 void Grid::compute_cv(){

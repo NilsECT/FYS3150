@@ -10,9 +10,10 @@ void generate_histograms(std::vector<double> temperatures, int num_MC_cycles,
                          int seed = 137,
                          int L = 20, std::string filename = "histogram"){
 
+  // Unordered initial state:
   // Open file to which we will write the data:
   std::ofstream file;
-  file.open(filename + ".txt", std::ofstream::trunc);
+  file.open(filename + "_unordered.txt", std::ofstream::trunc);
   static int print_prec = 10;
 
   file << std::setprecision(print_prec) << "Seed, "
@@ -20,7 +21,7 @@ void generate_histograms(std::vector<double> temperatures, int num_MC_cycles,
        << std::setprecision(print_prec) << "Energy, "   // Energy per spin [1/J]
        << std::setprecision(print_prec) << "Frequency"  // Frequency, normalized
        << std::endl;
-       
+
   for (double T : temperatures){
 
     Grid model = Grid(L, T);
@@ -32,6 +33,35 @@ void generate_histograms(std::vector<double> temperatures, int num_MC_cycles,
     for (int i = 0; i < model.bins.n_elem; i ++){
 
       file << std::setprecision(print_prec) << seed << ", "
+           << std::setprecision(print_prec) << T << ", "
+           << std::setprecision(print_prec) << (float)(-model.N + i*bin_width) / (float)(model.N) << ", "
+           << std::setprecision(print_prec) << (float)(model.bins.at(i)) / (float) num_MC_cycles << std::endl;
+
+    }
+  }
+
+  // Ordered initial state:
+  // Open file to which we will write the data:
+  std::ofstream ordered_file;
+  ordered_file.open(filename + "_ordered.txt", std::ofstream::trunc);
+
+  ordered_file << std::setprecision(print_prec) << "Seed, "
+       << std::setprecision(print_prec) << "Temperature, "
+       << std::setprecision(print_prec) << "Energy, "   // Energy per spin [1/J]
+       << std::setprecision(print_prec) << "Frequency"  // Frequency, normalized
+       << std::endl;
+
+  for (double T : temperatures){
+
+    Grid model = Grid(L, T);
+    model.fill_grid(seed, false);
+    model.MCMC(num_MC_cycles, seed);
+
+    int bin_width = model.bins.n_elem / (model.N*2);
+
+    for (int i = 0; i < model.bins.n_elem; i ++){
+
+      ordered_file << std::setprecision(print_prec) << seed << ", "
            << std::setprecision(print_prec) << T << ", "
            << std::setprecision(print_prec) << (float)(-model.N + i*bin_width) / (float)(model.N) << ", "
            << std::setprecision(print_prec) << (float)(model.bins.at(i)) / (float) num_MC_cycles << std::endl;
