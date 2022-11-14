@@ -38,6 +38,7 @@ void var_LT(int cycles, std::vector<int> L, arma::vec T, std::string filename = 
       file << std::setprecision(print_prec) << seed << ", " << std::setprecision(print_prec) << ii << ", " << std::setprecision(print_prec) << model.epsilon << ", " << std::setprecision(print_prec) << model.epsilon_squared << ", " << std::setprecision(print_prec) << model.m_abs << ", " << std::setprecision(print_prec) << model.m_squared << std::endl;
     }
   }
+  file.close()
 }
 
 void var_cycles(std::vector<int> num_MC_cycles, double T, bool random_config, int L = 20, std::string filename = "var_cycles", int seed = 137) {
@@ -58,6 +59,7 @@ void var_cycles(std::vector<int> num_MC_cycles, double T, bool random_config, in
 
     file << std::setprecision(print_prec) << seed << ", " << std::setprecision(print_prec) << cycles << ", " << std::setprecision(print_prec) << model.epsilon << ", " << std::setprecision(print_prec) << model.m_abs << std::endl;
   }
+  file.close()
 }
 
 int main(int argc, char* argv[]){
@@ -110,9 +112,11 @@ int main(int argc, char* argv[]){
   // scan area of L and T
   std::vector<int> L_p8 = {40, 60, 80, 100};
   arma::vec T_p8 = arma::linspace(2.1, 2.4, 100);
+  // here too we can run each of these about 10 times to get a confidence interval
   //var_LT(num_MC_cycles, L_p8, T_p8);
 
-  arma::vec cycles_p5 = {10, 100, 1000, 10000, 100000};
+  arma::vec cycles_p5 = {10, 100, 1000, 10000, 100000}; // make logspace(1, 6)? and do so a few, say 10 times, to get a confidence interval?
+  // all of these runs should then be in the same file
   //var_cycles(cycles_p5);
 
   return 0;
