@@ -97,6 +97,14 @@ void Grid::fill_grid(int seed, bool random_config){
     this->grid.ones(this->L, this->L);
   }
 
+  // Initialize averages:
+  this->epsilon = 0.0;
+  this->epsilon_squared = 0.0;
+  this-> m_squared = 0.0;
+  this->m_abs = 0.0;
+
+  this->M = this->get_M();
+
 }
 
 void Grid::compute_cv(){
@@ -113,7 +121,7 @@ void Grid::compute_chi(){
 }
 
 
-void Grid::MCMC(int num_MC_cycles, int thread_seed){
+void Grid::random_walk(int num_MC_cycles, int thread_seed){
   int L = this->L;
 
   // Parameters for prob. distribution for epsilon:
@@ -130,8 +138,6 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
   // Distribution for r:
   std::uniform_real_distribution<double> spinflip(0, 1);
   double r; // Random number to which we will compare the probability rati
-
-  std::cout << "STARTING WITH <eps> = " << this->epsilon << std::endl;
 
   double epsilon = 0.0;
   double epsilon_squared = 0.0;
@@ -181,7 +187,7 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
 
   }
 
-  // Divide averages by number of Monte Carlo cycles (and number of spins):
+  // Divide averages by number of spin flips (and number of spins):
   epsilon = epsilon / (this->N * num_MC_cycles);
   epsilon_squared = epsilon_squared / (num_MC_cycles * this->N * this->N);
   m_abs = m_abs / (this->N * num_MC_cycles);
@@ -195,11 +201,11 @@ void Grid::MCMC(int num_MC_cycles, int thread_seed){
   this->compute_cv();
   this->compute_chi();
 
-  std::cout << "THREAD SEED: " << thread_seed
+  /*std::cout << "THREAD SEED: " << thread_seed
             << ", AVG MAGNETIZATION: " << m_abs
             << ", EPSILON_MEAN: " << epsilon << ", TEMPERATURE: " << this->T << " HEAT CAP: " << this->cv
             << "CHI: " << this->chi << std::endl;
-
+  */
 
   this->bins = bins;
 
