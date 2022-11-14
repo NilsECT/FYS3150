@@ -19,6 +19,7 @@ public:
   double cv;
   double chi;
 
+  arma::vec bins;
 
   double E;
   double M;
@@ -28,7 +29,6 @@ public:
 
   double get_E();
   double get_M();
-  double Z();
 
   void fill_grid(int seed = 137, bool random_config = true);
   void flip_spin(int x, int y);
