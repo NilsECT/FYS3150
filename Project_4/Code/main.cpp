@@ -147,7 +147,7 @@ void var_LT(int cycles, std::vector<int> L, arma::vec T, std::string filename = 
       file << std::setprecision(print_prec) << seed << ", " << std::setprecision(print_prec) << ii << ", " << std::setprecision(print_prec) << model.epsilon << ", " << std::setprecision(print_prec) << model.epsilon_squared << ", " << std::setprecision(print_prec) << model.m_abs << ", " << std::setprecision(print_prec) << model.m_squared << std::endl;
     }
   }
-  file.close()
+  file.close();
 }
 
 void analytical_comparison(std::vector<double> temperatures, int N_spinflips, int N_MC_cycles, std::string filename = "analytical_comparison", const int seed = 137){
@@ -189,7 +189,7 @@ void analytical_comparison(std::vector<double> temperatures, int N_spinflips, in
       }
 
   }
-  file.close()
+  file.close();
 }
 
 void varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::string filename = "varying_cycles", int seed = 137, bool random_config = true, int L = 20, int N_spinflips = 100){
@@ -308,20 +308,10 @@ int main(int argc, char* argv[]){
   // results for P8
   // scan area of L and T
   std::vector<int> L_p8 = {40, 60, 80, 100};
-<<<<<<< HEAD
-  arma::vec T_p8 = arma::linspace(2.1, 2.4, 100);
-  // here too we can run each of these about 10 times to get a confidence interval
-  //var_LT(num_MC_cycles, L_p8, T_p8);
-
-  arma::vec cycles_p5 = {10, 100, 1000, 10000, 100000}; // make logspace(1, 6)? and do so a few, say 10 times, to get a confidence interval?
-  // all of these runs should then be in the same file
-  //var_cycles(cycles_p5);
-=======
   arma::vec T_p8 = arma::linspace(2.1, 2.4, 10);
   //var_LT(num_MC_cycles, L_p8, T_p8);
 
   //phase_transitions(L_p8, T_p8, N_spinflips, N_MC_cycles);
->>>>>>> acef277705b3c5d10634f2bbd019b70228fe3486
 
   return 0;
 }
