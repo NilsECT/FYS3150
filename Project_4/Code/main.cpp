@@ -147,7 +147,7 @@ void generate_histograms(std::vector<double> temperatures, int num_MC_cycles, in
   }
 }
 
-
+/*
 void var_LT(int cycles, std::vector<int> L, arma::vec T, std::string filename = "var_LT", int seed = 137) {
 
   // start by opening the file which will gather all the data
@@ -172,8 +172,9 @@ void var_LT(int cycles, std::vector<int> L, arma::vec T, std::string filename = 
       file << std::setprecision(print_prec) << seed << ", " << std::setprecision(print_prec) << ii << ", " << std::setprecision(print_prec) << model.epsilon << ", " << std::setprecision(print_prec) << model.epsilon_squared << ", " << std::setprecision(print_prec) << model.m_abs << ", " << std::setprecision(print_prec) << model.m_squared << std::endl;
     }
   }
+  file.close()
 }
-
+*/
 void analytical_comparison(std::vector<double> temperatures, int N_spinflips, int N_MC_cycles, std::string filename = "analytical_comparison", const int seed = 137){
 
   std::mt19937 MC_seed_generator (seed);
@@ -213,6 +214,7 @@ void analytical_comparison(std::vector<double> temperatures, int N_spinflips, in
       }
 
   }
+  file.close();
 }
 
 void varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::string filename = "varying_cycles", int seed = 137, bool random_config = true, int L = 20, int N_spinflips = 100){
@@ -343,8 +345,6 @@ int main(int argc, char* argv[]){
 
   }
   */
-
-
 
   return 0;
 }
