@@ -71,6 +71,7 @@ double Grid::get_M(){
   }
   return M;
 }
+
 /**
  * Fills the 2-dimensional grid with random spins using a
  * Mersenne Twister-generator and a uniform distribution function.
@@ -108,6 +109,7 @@ void Grid::fill_grid(int seed, bool random_config){
   this->M = this->get_M();
 
 }
+
 /**
  * Calculate heat capacity with current energy per spin values.
  *
@@ -131,7 +133,6 @@ void Grid::compute_chi(){
   this->chi = (this->m_squared - this->m_abs*this->m_abs);
   this->chi = this->N * this->chi / (this->T);
 }
-
 
 void Grid::random_walk(int N_spinflips, int thread_seed){
   int L = this->L;
@@ -202,6 +203,4 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
 
   this->compute_cv();
   this->compute_chi();
-
-
 }
