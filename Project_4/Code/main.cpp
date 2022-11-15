@@ -60,6 +60,31 @@ std::vector<double> monte_carlo(int N_spinflips, int num_MC_cycles, double T, in
   return avgs;
 }
 
+void monte_carlo222(int N_spinflips, int num_MC_cycles, double &avg_eps, double &avg_eps_sq, double &avg_m_abs, double &avg_m_sq, double T, int seed, int L, bool random_config = true) {
+
+  Grid model = Grid(L, T);
+
+  for (int i = 0; i < num_MC_cycles; i ++){
+
+    model.fill_grid(seed + i, random_config);
+    model.random_walk(N_spinflips, seed + i);
+
+    avg_eps = avg_eps + model.epsilon;
+    avg_eps_sq = avg_eps_sq + model.epsilon_squared;
+
+    avg_m_abs = avg_m_abs + model.m_abs;
+    avg_m_sq = avg_m_sq + model.m_squared;
+
+  }
+
+  avg_eps /= num_MC_cycles;
+  avg_eps_sq /= num_MC_cycles;
+  avg_m_abs /= num_MC_cycles;
+  avg_m_sq /= num_MC_cycles;
+
+}
+
+
 void generate_histograms(std::vector<double> temperatures, int num_MC_cycles, int seed = 137, int L = 20, std::string filename = "histogram"){
 
   // Unordered initial state:
@@ -227,68 +252,70 @@ void varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::string fil
 
   }
 }
-/*
-void phase_transitions(std::vector<int> L, arma::vec temperatures, int N_spinflips, int N_MC_cycles, int seed){
+
+void phase_transitions4(int L, arma::vec &temperatures, int N_spinflips, int N_MC_cycles, int seed, std::string filename = "phase_transition"){
 
   std::mt19937 MC_seed_generator (seed);
 
   std::ofstream file;
-  file.open(filename + "_" + ".txt", std::ofstream::trunc);
+  file.open(filename + "_" + std::to_string(L) + ".txt", std::ofstream::trunc);
   static int print_prec = 10;
 
-  file << std::setprecision(print_prec) << "Seed, "
-       << std::setprecision(print_prec) << "Temperature, "
-       << std::setprecision(print_prec) << "L, "
-       << std::setprecision(print_prec) << "Epsilon (abs), "
-       << std::setprecision(print_prec) << "M (abs), "
-       << std::endl;
+  //sauto thread_seed = MC_seed_generator();
 
-
-  #pragram omp parallel
+  #pragma omp parallel
   {
+    auto thread_seed = MC_seed_generator();
+
     #pragma omp for
     for (double &temperature : temperatures){
-      std::vector<double> res = monte_carlo(N_spinflips, N_MC_cycles, temperature, thread_seed, L, true);
 
-      Cv = (res.at(1) - res.at(0) * res.at(0))
+       double avg_eps = 0.0;
+       double avg_eps_sq = 0.0;
+       double avg_m_abs = 0.0;
+       double avg_m_sq = 0.0;
 
-      file << std::setprecision(print_prec) << thread_seed << ", "
-           << std::setprecision(print_prec) << temperature << ", "
-           << std::setprecision(print_prec) << L << ", "
-           << std::setprecision(print_prec) << res.at(0) << ", "
-           << std::setprecision(print_prec) << res.at(2)
-           << std::endl;
-    }
+       monte_carlo222(N_spinflips, N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, temperature, thread_seed, L, true);
+
+       file << std::setprecision(print_prec) << thread_seed << ", "
+            << std::setprecision(print_prec) << temperature << ", "
+            << std::setprecision(print_prec) << L << ", "
+            << std::setprecision(print_prec) << avg_eps << ", "
+            << std::setprecision(print_prec) << avg_eps_sq << ", "
+            << std::setprecision(print_prec) << avg_m_abs << ", "
+            << std::setprecision(print_prec) << avg_m_sq << ", "
+            << std::endl;
+      }
   }
+
+
 }
-*/
 
 int main(int argc, char* argv[]){
 
-
   const int seed = 137;
-  std::mt19937 MC_seed_generator (seed);
+  //std::mt19937 MC_seed_generator (seed);
 
   // Problem 4: compare with analytical for L = 2
   std::vector<double> temperatures = {1.0, 2.0};
 
-  //int N_MC_cycles = 1000000;
-  //int N_spinflips = 1000;
-
-  int N_MC_cycles = 100;
+  int N_MC_cycles = 1000000;
   int N_spinflips = 1000;
 
+  /*int N_MC_cycles = 1000;
+  int N_spinflips = 10000;
+  */
   analytical_comparison(temperatures, N_spinflips, N_MC_cycles);
 
 
   // Problem 5: study burn-in time
 
-  arma::vec cycles = arma::logspace(1, 7, 7);
-  varying_n_mc_cycles(1.0, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
-  varying_n_mc_cycles(1.0, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
-
-  varying_n_mc_cycles(2.4, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
-  varying_n_mc_cycles(2.4, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
+  // arma::vec cycles = arma::logspace(1, 7, 7);
+  // varying_n_mc_cycles(1.0, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
+  // varying_n_mc_cycles(1.0, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
+  //
+  // varying_n_mc_cycles(2.4, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
+  // varying_n_mc_cycles(2.4, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
 
 
 
@@ -302,14 +329,22 @@ int main(int argc, char* argv[]){
 
   */
 
+  // Problem 8:
+  std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
+  arma::vec temperatures_p8 = arma::linspace(2.1, 2.4, 4);
 
-  // results for P8
-  // scan area of L and T
-  std::vector<int> L_p8 = {40, 60, 80, 100};
-  arma::vec T_p8 = arma::linspace(2.1, 2.4, 10);
-  //var_LT(num_MC_cycles, L_p8, T_p8);
 
-  //phase_transitions(L_p8, T_p8, N_spinflips, N_MC_cycles);
+    phase_transitions4(40, temperatures_p8, N_spinflips, N_MC_cycles, seed);
+
+
+  /*
+  for (double &temperature : temperatures_p8){
+    phase_transitions3(lattice_sizes_p8, temperature, N_spinflips, N_MC_cycles, seed);
+
+  }
+  */
+
+
 
   return 0;
 }

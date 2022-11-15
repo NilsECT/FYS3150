@@ -103,6 +103,7 @@ void Grid::fill_grid(int seed, bool random_config){
   this-> m_squared = 0.0;
   this->m_abs = 0.0;
 
+  this->E = this->get_E();
   this->M = this->get_M();
 
 }
@@ -123,13 +124,6 @@ void Grid::compute_chi(){
 
 void Grid::random_walk(int num_MC_cycles, int thread_seed){
   int L = this->L;
-
-  // Parameters for prob. distribution for epsilon:
-  int bin_width = 1;
-  int max_eps = this->N;
-  int min_eps = -this->N;
-
-  arma::vec bins(this->N * 2, arma::fill::zeros);
 
   // Mersenne twister algorithm for generating random numbers:
   std::mt19937 generator (thread_seed);
@@ -166,17 +160,18 @@ void Grid::random_walk(int num_MC_cycles, int thread_seed){
     index = dE / 4 + 2;
     dE = dEs.at(index);
 
-    // Add current energy to bin:
-    int index = (this->E) / bin_width + 2*this->N;
-    bins.at(index) += 1;
-
     // Add current energy and magnetization values to average sum:
-    epsilon += this->E;
-    epsilon_squared = epsilon_squared + this->E * this->E;
+    epsilon = epsilon + this->E;
+    epsilon_squared = epsilon_squared + (this->E*this->E) / (num_MC_cycles) ;
+
+    //std::cout << epsilon_squared << std::endl;
+
+    //std::cout << "            " << this->E*this->E <<std::endl;
+
 
     current_magnetization = this->M;
     m_abs = m_abs + std::sqrt(current_magnetization * current_magnetization);
-    m_squared = m_squared + current_magnetization * current_magnetization;
+    m_squared = m_squared + current_magnetization * current_magnetization / (num_MC_cycles);
 
     // Generate random float between 0 and 1:
     r = spinflip(generator);
@@ -189,14 +184,18 @@ void Grid::random_walk(int num_MC_cycles, int thread_seed){
 
   // Divide averages by number of spin flips (and number of spins):
   epsilon = epsilon / (this->N * num_MC_cycles);
-  epsilon_squared = epsilon_squared / (num_MC_cycles * this->N * this->N);
+  epsilon_squared = epsilon_squared / ( this->N * this->N);
+
+
   m_abs = m_abs / (this->N * num_MC_cycles);
-  m_squared = m_squared / (num_MC_cycles * this->N * this->N);
+  m_squared = m_squared / (this->N * this->N);
 
   this->epsilon = this->epsilon + epsilon;
   this->epsilon_squared = this->epsilon_squared + epsilon_squared;
   this->m_abs = this->m_abs + m_abs;
   this->m_squared = this->m_squared + m_squared;
+
+  //std::cout << this->epsilon_squared << std::endl;
 
   this->compute_cv();
   this->compute_chi();
@@ -207,6 +206,5 @@ void Grid::random_walk(int num_MC_cycles, int thread_seed){
             << "CHI: " << this->chi << std::endl;
   */
 
-  this->bins = bins;
 
 }
