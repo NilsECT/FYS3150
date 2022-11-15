@@ -34,6 +34,8 @@ public:
   void random_walk(int num_MC_cycles, int thread_seed);
   void compute_cv();
   void compute_chi();
+
+  void one_walk(int thread_seed);
 };
 
 

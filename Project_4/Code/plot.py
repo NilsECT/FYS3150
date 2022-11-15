@@ -116,3 +116,8 @@ def test_line():
     data = sns.load_dataset("flights")
     sns.lineplot(data=data, x="year", y="passengers", hue=None)
     plt.savefig("test.pdf")
+
+data = get_data("epsilon_distribution")
+
+sns.displot(data=data, x="Epsilon", hue="Temperature", stat="density", bins=500, kde=True)
+plt.show()

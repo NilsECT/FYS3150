@@ -155,7 +155,7 @@ void Ising::varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::str
        << std::endl;
 
 
-  Grid model = Grid(L, temperature);
+  // Grid model = Grid(L, temperature);
 
   #pragma omp parallel
   {
@@ -169,7 +169,7 @@ void Ising::varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::str
       double avg_m_sq = 0.0;
 
       auto thread_seed = MC_seed_generator();
-      model.fill_grid(thread_seed, random_config);  // Fill grid
+      // model.fill_grid(thread_seed, random_config);  // Fill grid
 
       monte_carlo(N_spinflips, n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, temperature, thread_seed, 20, random_config);
 
@@ -240,6 +240,86 @@ void Ising::phase_transitions(int L, arma::vec &temperatures, int N_spinflips, i
 
 
 }
+
+
+void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int N_spinflips, std::string filename, int seed) {
+    std::mt19937 MC_seed_generator (seed);
+
+    // Open file to which we write the data:
+    std::ofstream file;
+    file.open(filename + ".txt", std::ofstream::trunc);
+    static int print_prec = 10;
+
+    file << std::setprecision(print_prec) << "Temperature, "
+        << std::setprecision(print_prec) << "Lattice, "
+        << std::setprecision(print_prec) << "Epsilon, "
+        << std::setprecision(print_prec) << "Magnetisation (abs), "
+        << std::endl;
+        
+    auto thread_seed = MC_seed_generator();
+
+    #pragma omp prallel for
+    for (int i = 0; i < N_cycles; i++){
+        for (double &T : temperature) {
+            int seed = thread_seed + i;
+
+            Grid model = Grid(L, T);
+
+            model.fill_grid(seed);
+            model.random_walk(N_spinflips, seed);
+            
+            #pragma omp critical
+            file << std::setprecision(print_prec) << T << ", "
+                << std::setprecision(print_prec) << L << ", "
+                << std::setprecision(print_prec) << model.epsilon << ", "
+                << std::setprecision(print_prec) << model.m_abs
+                << std::endl;
+        }
+    }
+}
+
+// COUNTING EPSILON PER WALK NOT WHAT WE WANT SPENT TOO MUCH TIME ON IT IT'S KINDA SAD, ALSO KIND OF FUNNY
+// void Ising::epsilon_dist(arma::vec &temperatures, int L, int N_flips, std::string filename="distribution", int seed) {
+//     std::mt19937 MC_seed_generator (seed);
+//     auto thread_seed = MC_seed_generator();
+
+//     // Open file to which we write the data:
+//         std::ofstream file;
+//         file.open(filename + ".txt", std::ofstream::trunc);
+//         static int print_prec = 10;
+
+//         file << std::setprecision(print_prec) << "Seed, "
+//             << std::setprecision(print_prec) << "Temperature, "
+//             << std::setprecision(print_prec) << "Epsilon (abs), "
+//             << std::setprecision(print_prec) << "Magnetisation, "
+//             << std::endl;
+
+//     #pragma omp parallel for
+//     for (double &temperature : temperatures) {
+        
+//         Grid model = Grid(L, temperature);
+
+//         #pragma omp critical
+//         file << std::setprecision(print_prec) << thread_seed
+//                 << std::setprecision(print_prec) << temperature
+//                 << std::setprecision(print_prec) << model.E / model.N
+//                 << std::setprecision(print_prec) << model.M / model.N
+//                 << std::endl;
+
+//         for (int i = 0; i < N_flips; i++) {
+//             model.one_walk(thread_seed);
+
+//             #pragma omp critical
+//             file << std::setprecision(print_prec) << thread_seed
+//                 << std::setprecision(print_prec) << temperature
+//                 << std::setprecision(print_prec) << model.E / model.N
+//                 << std::setprecision(print_prec) << model.M / model.N
+//                 << std::endl;
+//         }
+
+//     }
+
+// }
 
 /*
 

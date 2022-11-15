@@ -17,6 +17,9 @@ class Ising{
     void varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::string filename = "varying_cycles", int seed = 137, bool random_config = true, int L = 20, int N_spinflips = 100);
 
     void phase_transitions(int L, arma::vec &temperatures, int N_spinflips, int N_MC_cycles, int seed, std::string filename = "phase_transition");
+
+    void epsilon_dist(arma::vec temperature, int L, int N_cycles, int N_spinflips = 100, std::string filename="epsilon_distribution", int seed = 137);
+
 };
 
 #endif

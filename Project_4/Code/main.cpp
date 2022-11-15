@@ -14,7 +14,7 @@ int main(){
   std::mt19937 MC_seed_generator (seed);
 
   // Problem 4: compare with analytical for L = 2
-  std::vector<double> temperatures = {1.0, 2.0};
+  // std::vector<double> temperatures = {1.0, 2.0};
 
   int N_MC_cycles = 1000000;
   int N_spinflips = 1000;
@@ -22,35 +22,26 @@ int main(){
   // model instance:
   Ising model = Ising();
 
-  std::cout << "Starting analytical comparison" << std::endl;
-  model.analytical_comparison(temperatures, N_spinflips, N_MC_cycles);
+  // std::cout << "Starting analytical comparison" << std::endl;
+  // model.analytical_comparison(temperatures, N_spinflips, N_MC_cycles);
 
 
-  // Problem 5: study burn-in time
-  std::cout << "Starting ordered varying N for T=1.0" << std::endl;
-  arma::vec cycles = arma::logspace(1, 6, 6);
-  model.varying_n_mc_cycles(1.0, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
+  // // Problem 5: study burn-in time
+  // std::cout << "Starting ordered varying N for T=1.0" << std::endl;
+  // arma::vec cycles = arma::logspace(1, 6, 6);
+  // model.varying_n_mc_cycles(1.0, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
 
-  std::cout << "Starting unordered varying N for T=1.0" << std::endl;
-  model.varying_n_mc_cycles(1.0, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
+  // std::cout << "Starting unordered varying N for T=1.0" << std::endl;
+  // model.varying_n_mc_cycles(1.0, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
 
-  std::cout << "Starting ordered varying N for T=2.4" << std::endl;
-  model.varying_n_mc_cycles(2.4, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
+  // std::cout << "Starting ordered varying N for T=2.4" << std::endl;
+  // model.varying_n_mc_cycles(2.4, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
 
-  std::cout << "Starting unordered varying N for T=2.4" << std::endl;
-  model.varying_n_mc_cycles(2.4, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
+  // std::cout << "Starting unordered varying N for T=2.4" << std::endl;
+  // model.varying_n_mc_cycles(2.4, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
 
-
-
-  /*
-
-  // Problem 6:
   std::vector<double> temperatures = {1, 2.4};
-  generate_histograms(temperatures, 1000000);
-  return 0;
-
-
-  */
+  model.epsilon_dist(temperatures, 20, 100000, 10);
 
   // Problem 8:
   // std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};

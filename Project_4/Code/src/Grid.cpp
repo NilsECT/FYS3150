@@ -163,9 +163,9 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
 
     // Compute change in energy [in units of 1/J]:
     double dE = this->grid((s_x+1) % L, s_y)
-        + this->grid((L + s_x - 1) % L, s_y)
-        + this->grid(s_x, (s_y+1) % L)
-        + this->grid(s_x, (L + s_y-1) % L);
+              + this->grid((L + s_x - 1) % L, s_y)
+              + this->grid(s_x, (s_y+1) % L)
+              + this->grid(s_x, (L + s_y-1) % L);
     dE = 2 * this->grid(s_x, s_y) * dE;
 
     // Index corresponding to change in energy (to avoid multiple exp()-calls):
@@ -203,4 +203,48 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
 
   this->compute_cv();
   this->compute_chi();
+}
+
+void Grid::one_walk(int thread_seed){
+  int L = this->L;
+
+  std::mt19937 generator (thread_seed);
+  // Distribution for choosing random grid indexes:
+  std::uniform_int_distribution<int> dis(0, L-1);
+  // Distribution for r:
+  std::uniform_real_distribution<double> spinflip(0, 1);
+  double r; // Random number to which we will compare the probability rati
+
+  double current_magnetization;
+  int index;
+
+  // Ratio between probability of new state and old state, for the
+  // different obtainable values:
+  std::vector<double> dEs = {exp(-1 * this->J * (-8) / this->T), exp(-1 * this->J * (-4) / this->T), 1, exp(-1 * this->J * (4) / this->T), exp(-1 * this->J * (8) / this->T)};
+
+  int s_x = dis(generator); // Index of "chosen" spin in x-direction
+  int s_y = dis(generator); // Index in y-direction
+
+  // Compute change in energy [in units of 1/J]:
+  double dE = this->grid((s_x+1) % L, s_y)
+            + this->grid((L + s_x - 1) % L, s_y)
+            + this->grid(s_x, (s_y+1) % L)
+            + this->grid(s_x, (L + s_y-1) % L);
+  dE = 2 * this->grid(s_x, s_y) * dE;
+
+  // Index corresponding to change in energy (to avoid multiple exp()-calls):
+  index = dE / 4 + 2;
+  dE = dEs.at(index);
+
+  // Add current energy and magnetization values to average sum:
+  epsilon = epsilon + this->E;
+
+  current_magnetization = this->M;
+
+  // Generate random float between 0 and 1:
+  r = spinflip(generator);
+
+  if (r <= dE) {
+    this->flip_spin(s_x, s_y); // Flip the chosen spin
+  }
 }
