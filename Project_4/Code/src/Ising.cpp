@@ -355,6 +355,7 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, arma::vec n_cycles, int l
 
       monte_carlo(N_spinflips, n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, 20, false);
 
+      #pragma omp critical
       file << std::setprecision(print_prec) << order << ", "
             << std::setprecision(print_prec) << T << ", "
             << std::setprecision(print_prec) << n << ", "
@@ -380,6 +381,7 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, arma::vec n_cycles, int l
 
       monte_carlo(N_spinflips, n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, 20, true);
 
+      #pragma omp critical
       file << std::setprecision(print_prec) << order << ", "
             << std::setprecision(print_prec) << T << ", "
             << std::setprecision(print_prec) << n << ", "
