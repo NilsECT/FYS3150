@@ -161,11 +161,14 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
     int s_x = dis(generator); // Index of "chosen" spin in x-direction
     int s_y = dis(generator); // Index in y-direction
 
+    // ? : is a conditional checks a condition () ? and takes a value True : False
+    // that is faster than modulus
+
     // Compute change in energy [in units of 1/J]:
-    double dE = this->grid((s_x+1) % L, s_y)
-              + this->grid((L + s_x - 1) % L, s_y)
-              + this->grid(s_x, (s_y+1) % L)
-              + this->grid(s_x, (L + s_y-1) % L);
+    double dE = this->grid(((s_x+1) == L) ? 0 : (s_x + 1), s_y)
+              + this->grid(((s_x - 1) < 0) ? (L - 1) : (s_x - 1), s_y)
+              + this->grid(s_x, ((s_y+1) == L) ? 0 : (s_y + 1))
+              + this->grid(s_x, ((s_y - 1) < 0) ? (L - 1) : (s_y - 1));
     dE = 2 * this->grid(s_x, s_y) * dE;
 
     // Index corresponding to change in energy (to avoid multiple exp()-calls):
