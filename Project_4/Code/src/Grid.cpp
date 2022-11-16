@@ -49,8 +49,11 @@ double Grid::get_E(){
   double E = 0.0;
 
   for (int j = 0; j < this->L; j ++){
+    arma::vec temp_col = this->grid.col(j);
+    arma::vec temp_col_jj = this->grid.col(((j+1) == L) ? 0 : (j + 1)); // optimise prime
+
     for (int i = 0; i < this->L; i ++){   // Optimize prime
-      E = E + -this->grid(i, j) * (this->grid(((i+1) == L) ? 0 : (i + 1), j) + this->grid(i, ((j+1) == L) ? 0 : (j + 1)));
+      E = E + -temp_col(i)* (temp_col(((i+1) == L) ? 0 : (i + 1)) + temp_col_jj(i));
     }
   }
   return this->J * E;
@@ -65,8 +68,10 @@ double Grid::get_M(){
   double M = 0.0;
 
   for (int j = 0; j < this->L; j++){
+    arma::vec temp_col = this->grid.col(j); // optimise prime
+
     for (int i = 0; i < this->L; i++){ // Optimize prime
-      M = M + this->grid(i, j);
+      M = M + temp_col(i);
     }
   }
   return M;
@@ -91,7 +96,7 @@ void Grid::fill_grid(int seed, bool random_config){
       for (int i = 0; i < L; i ++){   // Optimize prime
         num = dis(generator);
         num = num*2 - 1;
-        this->grid(i, j) = num;
+        this->grid(i, j) = num; // I think we can optimise this, but unsure, we'd have to deal with references or pointers
       }
     }
   }
