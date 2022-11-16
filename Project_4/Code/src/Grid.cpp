@@ -48,8 +48,8 @@ void Grid::flip_spin(int x, int y){
 double Grid::get_E(){
   double E = 0.0;
 
-  for (int i = 0; i < this->L; i ++){
-    for (int j = 0; j < this->L; j ++){
+  for (int j = 0; j < this->L; j ++){
+    for (int i = 0; i < this->L; i ++){   // Optimize prime
       E = E + -this->grid(i, j) * (this->grid(((i+1) == L) ? 0 : (i + 1), j) + this->grid(i, ((j+1) == L) ? 0 : (j + 1)));
     }
   }
@@ -64,8 +64,8 @@ double Grid::get_E(){
 double Grid::get_M(){
   double M = 0.0;
 
-  for (int i = 0; i < this->L; i++){
-    for (int j = 0; j < this->L; j++){
+  for (int j = 0; j < this->L; j++){
+    for (int i = 0; i < this->L; i++){ // Optimize prime
       M = M + this->grid(i, j);
     }
   }
@@ -87,8 +87,8 @@ void Grid::fill_grid(int seed, bool random_config){
   if (random_config){
     int num;
 
-    for (int i = 0; i < L; i ++){
-      for (int j = 0; j < L; j ++){
+    for (int j = 0; j < L; j ++){
+      for (int i = 0; i < L; i ++){   // Optimize prime
         num = dis(generator);
         num = num*2 - 1;
         this->grid(i, j) = num;
@@ -207,7 +207,7 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
   this->compute_cv();
   this->compute_chi();
 }
-
+/*
 void Grid::one_walk(int thread_seed){
   int L = this->L;
 
@@ -251,3 +251,4 @@ void Grid::one_walk(int thread_seed){
     this->flip_spin(s_x, s_y); // Flip the chosen spin
   }
 }
+*/
