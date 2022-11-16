@@ -22,6 +22,8 @@ public:
   double E;
   double M;
 
+  arma::vec dEs;
+
   Grid(int L, double T, double J = 1.0);
   arma::mat grid;
 
@@ -35,7 +37,7 @@ public:
   void compute_cv();
   void compute_chi();
 
-  void one_walk(int thread_seed);
+  void one_walk(int thread_seed = 137);
 };
 
 

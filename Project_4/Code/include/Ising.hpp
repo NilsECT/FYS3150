@@ -23,6 +23,8 @@ class Ising{
     void epsilon_dist(arma::vec temperature, int L, int N_cycles, int N_spinflips = 100, std::string filename="epsilon_distribution", int seed = 137);
 
     void varying_n_mc_cycles(arma::vec temperature, arma::vec n_cycles, int lattice = 20, std::string filename = "varying_cycles", int seed = 137, int N_spinflips = 100);
+
+    void varying_n_walk(arma::vec temperature, std::vector<int> n_walks, std::vector<int> lattice, int num_samples = 100, std::string filename = "varying_walk", int seed = 137);
 };
 
 #endif

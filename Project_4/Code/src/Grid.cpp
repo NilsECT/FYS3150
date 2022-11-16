@@ -13,6 +13,10 @@ Grid::Grid(int L, double T, double J){
   arma::mat grid = arma::mat(L, L, arma::fill::zeros);
   this->grid = grid;
 
+  // Ratio between probability of new state and old state, for the
+  // different obtainable values:
+  this->dEs = {exp(-1 * this->J * (-8) / this->T), exp(-1 * this->J * (-4) / this->T), 1, exp(-1 * this->J * (4) / this->T), exp(-1 * this->J * (8) / this->T)};
+
   // Store energy and magnetization in initial state:
   this->E = this->get_E();
   this->M = this->get_M();
@@ -158,10 +162,6 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
   double current_magnetization;
   int index;
 
-  // Ratio between probability of new state and old state, for the
-  // different obtainable values:
-  std::vector<double> dEs = {exp(-1 * this->J * (-8) / this->T), exp(-1 * this->J * (-4) / this->T), 1, exp(-1 * this->J * (4) / this->T), exp(-1 * this->J * (8) / this->T)};
-
   for (int i = 0; i < N_spinflips; i++){
     int s_x = dis(generator); // Index of "chosen" spin in x-direction
     int s_y = dis(generator); // Index in y-direction
@@ -178,7 +178,7 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
 
     // Index corresponding to change in energy (to avoid multiple exp()-calls):
     index = dE / 4 + 2;
-    dE = dEs.at(index);
+    dE = this->dEs.at(index);
 
     // Add current energy and magnetization values to average sum:
     epsilon = epsilon + this->E;
@@ -212,7 +212,7 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
   this->compute_cv();
   this->compute_chi();
 }
-/*
+
 void Grid::one_walk(int thread_seed){
   int L = this->L;
 
@@ -226,28 +226,19 @@ void Grid::one_walk(int thread_seed){
   double current_magnetization;
   int index;
 
-  // Ratio between probability of new state and old state, for the
-  // different obtainable values:
-  std::vector<double> dEs = {exp(-1 * this->J * (-8) / this->T), exp(-1 * this->J * (-4) / this->T), 1, exp(-1 * this->J * (4) / this->T), exp(-1 * this->J * (8) / this->T)};
-
   int s_x = dis(generator); // Index of "chosen" spin in x-direction
   int s_y = dis(generator); // Index in y-direction
 
   // Compute change in energy [in units of 1/J]:
-  double dE = this->grid((s_x+1) % L, s_y)
-            + this->grid((L + s_x - 1) % L, s_y)
-            + this->grid(s_x, (s_y+1) % L)
-            + this->grid(s_x, (L + s_y-1) % L);
-  dE = 2 * this->grid(s_x, s_y) * dE;
+    double dE = this->grid(((s_x+1) == L) ? 0 : (s_x + 1), s_y)
+              + this->grid(((s_x - 1) < 0) ? (L - 1) : (s_x - 1), s_y)
+              + this->grid(s_x, ((s_y+1) == L) ? 0 : (s_y + 1))
+              + this->grid(s_x, ((s_y - 1) < 0) ? (L - 1) : (s_y - 1));
+    dE = 2 * this->grid(s_x, s_y) * dE;
 
   // Index corresponding to change in energy (to avoid multiple exp()-calls):
   index = dE / 4 + 2;
-  dE = dEs.at(index);
-
-  // Add current energy and magnetization values to average sum:
-  epsilon = epsilon + this->E;
-
-  current_magnetization = this->M;
+  dE = this->dEs.at(index);
 
   // Generate random float between 0 and 1:
   r = spinflip(generator);
@@ -255,5 +246,7 @@ void Grid::one_walk(int thread_seed){
   if (r <= dE) {
     this->flip_spin(s_x, s_y); // Flip the chosen spin
   }
+
+  // what we want
+  epsilon = this->E/this->N;
 }
-*/
