@@ -27,8 +27,8 @@ int main(){
 
 
   // // Problem 5: study burn-in time
+  arma::vec cycles = arma::logspace(1, 10, 50);
   // std::cout << "Starting ordered varying N for T=1.0" << std::endl;
-  // arma::vec cycles = arma::logspace(1, 6, 6);
   // model.varying_n_mc_cycles(1.0, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
 
   // std::cout << "Starting unordered varying N for T=1.0" << std::endl;
@@ -39,6 +39,9 @@ int main(){
 
   // std::cout << "Starting unordered varying N for T=2.4" << std::endl;
   // model.varying_n_mc_cycles(2.4, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
+
+  arma::vec temperatures_p5 = arma::vec {1.0, 2.4};
+  model.varying_n_mc_cycles(temperatures_p5, cycles);
 
   // std::vector<double> temperatures = {1, 2.4};
   // model.epsilon_dist(temperatures, 20, 100000, 10);
