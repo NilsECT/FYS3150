@@ -27,7 +27,7 @@ int main(){
 
 
   // // Problem 5: study burn-in time
-  arma::vec cycles = arma::logspace(1, 10, 50);
+  arma::vec cycles = arma::logspace(1, 7, 50);
   // std::cout << "Starting ordered varying N for T=1.0" << std::endl;
   // model.varying_n_mc_cycles(1.0, cycles, "varying_cycles_ordered", MC_seed_generator(), true);
 
@@ -43,15 +43,14 @@ int main(){
   arma::vec temperatures_p5 = arma::vec {1.0, 2.4};
   model.varying_n_mc_cycles(temperatures_p5, cycles);
 
-  // std::vector<double> temperatures = {1, 2.4};
-  // model.epsilon_dist(temperatures, 20, 100000, 10);
+  // Problem 6 : find distribution of the energy
+  std::vector<double> temperatures = {1, 2.4};
+  model.epsilon_dist(temperatures, 20, 500000, 10);
 
-  // Problem 8:
-  std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
-  arma::vec temperatures_p8 = arma::linspace(2.1, 2.4, 4);
-  
-  
-  model.phase_transitions(lattice_sizes_p8, temperatures_p8, N_spinflips, N_MC_cycles, seed);
+  // // Problem 8:
+  // std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
+  // arma::vec temperatures_p8 = arma::linspace(2.1, 2.4, 4);
+  // model.phase_transitions(lattice_sizes_p8, temperatures_p8, N_spinflips, N_MC_cycles, seed);
 
   return 0;
 }
