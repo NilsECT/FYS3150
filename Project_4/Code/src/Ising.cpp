@@ -238,7 +238,6 @@ void Ising::phase_transitions(int lattice, arma::vec &temperatures, int N_spinfl
   file.close();
 }
 
-
 void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int N_spinflips, std::string filename, int seed) {
     std::mt19937 MC_seed_generator (seed);
 
@@ -256,8 +255,8 @@ void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int N_spinf
     auto thread_seed = MC_seed_generator();
 
     #pragma omp prallel for
-    for (int i = 0; i < N_cycles; i++){
-        for (double &T : temperature) {
+    for (double &T : temperature){
+        for (int i = 0; i < N_cycles; i++) {
             int seed = thread_seed + i;
 
             Grid model = Grid(L, T);
