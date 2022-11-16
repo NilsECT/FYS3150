@@ -393,3 +393,48 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, arma::vec n_cycles, int l
 
   file.close();
 }
+
+void Ising::varying_n_walk(arma::vec temperature, std::vector<int> n_walks, std::vector<int> lattice, int num_samples, std::string filename, int seed) {
+
+  // Open file to which we write the data:
+  std::ofstream file;
+  file.open(filename + ".txt", std::ofstream::trunc);
+  static int print_prec = 10;
+
+  file << std::setprecision(print_prec) << "Sample, "
+       << std::setprecision(print_prec) << "Total walks, "
+       << std::setprecision(print_prec) << "Walk, "
+       << std::setprecision(print_prec) << "Temperature [J/kb], "
+       << std::setprecision(print_prec) << "Lattice, "
+       << std::setprecision(print_prec) << "Energy [J], "
+       << std::endl;
+
+  #pragma omp parallel for
+  for (int &L : lattice) {
+    for (double &T : temperature) {
+
+      #pragma omp prallel for
+      for (int &i : n_walks) {
+        for (int ii = 0; ii < num_samples; ii++) {
+
+          Grid model = Grid(L, T);
+          model.fill_grid();
+
+          for (int iii = 0; iii < i; iii++) {
+            model.one_walk();
+
+            #pragma omp critical
+            file << std::setprecision(print_prec) << ii << ", "
+                  << std::setprecision(print_prec) << i << ", "
+                  << std::setprecision(print_prec) << iii << ", "
+                  << std::setprecision(print_prec) << T << ", "
+                  << std::setprecision(print_prec) << L << ", "
+                  << std::setprecision(print_prec) << model.epsilon
+                  << std::endl;
+          }
+        }
+      }
+    }
+  }
+  file.close();
+}
