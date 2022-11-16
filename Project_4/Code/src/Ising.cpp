@@ -195,12 +195,12 @@ void Ising::varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::str
  * @param seed
  * @param filename
  */
-void Ising::phase_transitions(int L, arma::vec &temperatures, int N_spinflips, int N_MC_cycles, int seed, std::string filename){
+void Ising::phase_transitions(int lattice, arma::vec &temperatures, int N_spinflips, int N_MC_cycles, int seed, std::string filename){
 
   std::mt19937 MC_seed_generator (seed);
 
   std::ofstream file;
-  file.open(filename + "_" + std::to_string(L) + ".txt", std::ofstream::trunc);
+  file.open(filename + "_" + std::to_string(lattice) + ".txt", std::ofstream::trunc);
   static int print_prec = 10;
 
   file << std::setprecision(print_prec) << "Seed, "
@@ -224,11 +224,11 @@ void Ising::phase_transitions(int L, arma::vec &temperatures, int N_spinflips, i
        double avg_m_abs = 0.0;
        double avg_m_sq = 0.0;
 
-       monte_carlo(N_spinflips, N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, temperature, thread_seed, L, true);
+       monte_carlo(N_spinflips, N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, temperature, thread_seed, lattice, true);
 
        file << std::setprecision(print_prec) << thread_seed << ", "
             << std::setprecision(print_prec) << temperature << ", "
-            << std::setprecision(print_prec) << L << ", "
+            << std::setprecision(print_prec) << lattice << ", "
             << std::setprecision(print_prec) << avg_eps << ", "
             << std::setprecision(print_prec) << avg_eps_sq << ", "
             << std::setprecision(print_prec) << avg_m_abs << ", "
@@ -237,8 +237,6 @@ void Ising::phase_transitions(int L, arma::vec &temperatures, int N_spinflips, i
       }
   }
   file.close();
-
-
 }
 
 
@@ -276,4 +274,49 @@ void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int N_spinf
                 << std::endl;
         }
     }
+}
+
+void Ising::phase_transitions(std::vector<int> lattice, arma::vec &temperatures, int N_spinflips, int N_MC_cycles, int seed, std::string filename){
+
+  std::mt19937 MC_seed_generator (seed);
+
+  std::ofstream file;
+  file.open(filename + ".txt", std::ofstream::trunc);
+  static int print_prec = 10;
+
+  file << std::setprecision(print_prec) << "Seed, "
+       << std::setprecision(print_prec) << "Temperature [J/kb], "
+       << std::setprecision(print_prec) << "Lattice, "
+       << std::setprecision(print_prec) << "Energy [J], "
+       << std::setprecision(print_prec) << "Energy squared [J^2], "
+       << std::setprecision(print_prec) << "Magnetisation, "
+       << std::setprecision(print_prec) << "Magnetisation squared"
+       << std::endl;
+
+  #pragma omp parallel for
+  for (int &L : lattice) {
+    auto thread_seed = MC_seed_generator();
+
+    #pragma omp parallel for
+    for (double &temperature : temperatures){
+
+       double avg_eps = 0.0;
+       double avg_eps_sq = 0.0;
+       double avg_m_abs = 0.0;
+       double avg_m_sq = 0.0;
+
+       monte_carlo(N_spinflips, N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, temperature, thread_seed, L, true);
+
+        #pragma omp critical
+       file << std::setprecision(print_prec) << thread_seed << ", "
+            << std::setprecision(print_prec) << temperature << ", "
+            << std::setprecision(print_prec) << L << ", "
+            << std::setprecision(print_prec) << avg_eps << ", "
+            << std::setprecision(print_prec) << avg_eps_sq << ", "
+            << std::setprecision(print_prec) << avg_m_abs << ", "
+            << std::setprecision(print_prec) << avg_m_sq
+            << std::endl;
+      }
+  }
+  file.close();
 }
