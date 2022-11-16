@@ -8,7 +8,7 @@ Ta med flagget du trenger for å få OMP
 
 '''
 For Sigurd:
-Comp:   g++ main.cpp src/Grid.cpp -I include/  -o main.exe -larmadillo -O2 -fopenmp
+Comp:   g++ main.cpp src/Grid.cpp src/Ising.cpp -I include/  -o main.exe -larmadillo -O2 -fopenmp
 exe:    ./main.exe 10 10 4000000
 plot:   python3 plotting.py
 vis:    xdg-open Histogram_of_epsilon_for_T_1.pdf && xdg-open Histogram_of_epsilon_for_T_2.4.pdf
