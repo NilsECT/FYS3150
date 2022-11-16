@@ -91,13 +91,13 @@ void Ising::analytical_comparison(std::vector<double> temperatures, int N_spinfl
   static int print_prec = 10;
 
   file << std::setprecision(print_prec) << "Seed, "
-       << std::setprecision(print_prec) << "Temperature, "
-       << std::setprecision(print_prec) << "Epsilon (abs), "
-       << std::setprecision(print_prec) << "Epsilon (squared), "
-       << std::setprecision(print_prec) << "M (abs), "
-       << std::setprecision(print_prec) << "M (squared), "
-       << std::setprecision(print_prec) << "Analytical epsilon (abs), "
-       << std::setprecision(print_prec) << "Analytical epsilon (squared)"
+       << std::setprecision(print_prec) << "Temperature [J/kb], "
+       << std::setprecision(print_prec) << "Energy (abs) [J], "
+       << std::setprecision(print_prec) << "Energy squared [J^2], "
+       << std::setprecision(print_prec) << "Magnetisation, "
+       << std::setprecision(print_prec) << "Magnetisation squared, "
+       << std::setprecision(print_prec) << "Analytical energy [J], "
+       << std::setprecision(print_prec) << "Analytical energy squared [J^2]"
        << std::endl;
 
   #pragma omp parallel for
@@ -148,10 +148,10 @@ void Ising::varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::str
   static int print_prec = 10;
 
   file << std::setprecision(print_prec) << "Seed, "
-       << std::setprecision(print_prec) << "Temperature, "
+       << std::setprecision(print_prec) << "Temperature [J/kb], "
        << std::setprecision(print_prec) << "MC cycles, "
-       << std::setprecision(print_prec) << "Epsilon (abs), "
-       << std::setprecision(print_prec) << "M (abs), "
+       << std::setprecision(print_prec) << "Energy [J], "
+       << std::setprecision(print_prec) << "Magnetisation, "
        << std::endl;
 
 
@@ -204,12 +204,12 @@ void Ising::phase_transitions(int L, arma::vec &temperatures, int N_spinflips, i
   static int print_prec = 10;
 
   file << std::setprecision(print_prec) << "Seed, "
-       << std::setprecision(print_prec) << "Temperature, "
-       << std::setprecision(print_prec) << "L, "
-       << std::setprecision(print_prec) << "Epsilon (abs), "
-       << std::setprecision(print_prec) << "Epsilon (squared), "
-       << std::setprecision(print_prec) << "M (abs), "
-       << std::setprecision(print_prec) << "M (squared)"
+       << std::setprecision(print_prec) << "Temperature [J/kb], "
+       << std::setprecision(print_prec) << "Lattice, "
+       << std::setprecision(print_prec) << "Energy [J], "
+       << std::setprecision(print_prec) << "Energy squared [J^2], "
+       << std::setprecision(print_prec) << "Magnetisation, "
+       << std::setprecision(print_prec) << "Magnetisation squared"
        << std::endl;
 
   #pragma omp parallel
@@ -250,10 +250,10 @@ void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int N_spinf
     file.open(filename + ".txt", std::ofstream::trunc);
     static int print_prec = 10;
 
-    file << std::setprecision(print_prec) << "Temperature, "
+    file << std::setprecision(print_prec) << "Temperature [J/kb], "
         << std::setprecision(print_prec) << "Lattice, "
-        << std::setprecision(print_prec) << "Epsilon, "
-        << std::setprecision(print_prec) << "Magnetisation (abs), "
+        << std::setprecision(print_prec) << "Energy [J], "
+        << std::setprecision(print_prec) << "Magnetisation, "
         << std::endl;
         
     auto thread_seed = MC_seed_generator();
@@ -277,111 +277,3 @@ void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int N_spinf
         }
     }
 }
-
-// COUNTING EPSILON PER WALK NOT WHAT WE WANT SPENT TOO MUCH TIME ON IT IT'S KINDA SAD, ALSO KIND OF FUNNY
-// void Ising::epsilon_dist(arma::vec &temperatures, int L, int N_flips, std::string filename="distribution", int seed) {
-//     std::mt19937 MC_seed_generator (seed);
-//     auto thread_seed = MC_seed_generator();
-
-//     // Open file to which we write the data:
-//         std::ofstream file;
-//         file.open(filename + ".txt", std::ofstream::trunc);
-//         static int print_prec = 10;
-
-//         file << std::setprecision(print_prec) << "Seed, "
-//             << std::setprecision(print_prec) << "Temperature, "
-//             << std::setprecision(print_prec) << "Epsilon (abs), "
-//             << std::setprecision(print_prec) << "Magnetisation, "
-//             << std::endl;
-
-//     #pragma omp parallel for
-//     for (double &temperature : temperatures) {
-        
-//         Grid model = Grid(L, temperature);
-
-//         #pragma omp critical
-//         file << std::setprecision(print_prec) << thread_seed
-//                 << std::setprecision(print_prec) << temperature
-//                 << std::setprecision(print_prec) << model.E / model.N
-//                 << std::setprecision(print_prec) << model.M / model.N
-//                 << std::endl;
-
-//         for (int i = 0; i < N_flips; i++) {
-//             model.one_walk(thread_seed);
-
-//             #pragma omp critical
-//             file << std::setprecision(print_prec) << thread_seed
-//                 << std::setprecision(print_prec) << temperature
-//                 << std::setprecision(print_prec) << model.E / model.N
-//                 << std::setprecision(print_prec) << model.M / model.N
-//                 << std::endl;
-//         }
-
-//     }
-
-// }
-
-/*
-
-void generate_histograms(std::vector<double> temperatures, int num_MC_cycles, int seed = 137, int L = 20, std::string filename = "histogram"){
-
-  // Unordered initial state:
-  // Open file to which we will write the data:
-  std::ofstream file;
-  file.open(filename + "_unordered.txt", std::ofstream::trunc);
-  static int print_prec = 10;
-
-  file << std::setprecision(print_prec) << "Seed, "
-       << std::setprecision(print_prec) << "Temperature, "
-       << std::setprecision(print_prec) << "Energy, "   // Energy per spin [1/J]
-       << std::setprecision(print_prec) << "Frequency"  // Frequency, normalized
-       << std::endl;
-
-  for (double T : temperatures){
-
-    Grid model = Grid(L, T);
-    model.fill_grid(seed);
-    model.random_walk(num_MC_cycles, seed);
-
-    int bin_width = model.bins.n_elem / (model.N*2);
-
-    for (int i = 0; i < model.bins.n_elem; i ++){
-
-      file << std::setprecision(print_prec) << seed << ", "
-           << std::setprecision(print_prec) << T << ", "
-           << std::setprecision(print_prec) << (float)(-model.N + i*bin_width) / (float)(model.N) << ", "
-           << std::setprecision(print_prec) << (float)(model.bins.at(i)) / (float) num_MC_cycles << std::endl;
-
-    }
-  }
-
-  // Ordered initial state:
-  // Open file to which we will write the data:
-  std::ofstream ordered_file;
-  ordered_file.open(filename + "_ordered.txt", std::ofstream::trunc);
-
-  ordered_file << std::setprecision(print_prec) << "Seed, "
-       << std::setprecision(print_prec) << "Temperature, "
-       << std::setprecision(print_prec) << "Energy, "   // Energy per spin [1/J]
-       << std::setprecision(print_prec) << "Frequency"  // Frequency, normalized
-       << std::endl;
-
-  for (double T : temperatures){
-
-    Grid model = Grid(L, T);
-    model.fill_grid(seed, false);
-    model.random_walk(num_MC_cycles, seed);
-
-    int bin_width = model.bins.n_elem / (model.N*2);
-
-    for (int i = 0; i < model.bins.n_elem; i ++){
-
-      ordered_file << std::setprecision(print_prec) << seed << ", "
-           << std::setprecision(print_prec) << T << ", "
-           << std::setprecision(print_prec) << (float)(-model.N + i*bin_width) / (float)(model.N) << ", "
-           << std::setprecision(print_prec) << (float)(model.bins.at(i)) / (float) num_MC_cycles << std::endl;
-
-    }
-  }
-}
-*/
