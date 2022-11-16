@@ -50,7 +50,7 @@ double Grid::get_E(){
 
   for (int i = 0; i < this->L; i ++){
     for (int j = 0; j < this->L; j ++){
-      E = E + -this->grid(i, j) * (this->grid((i+1) % this-> L, j) + this->grid(i, (j+1) % this-> L));
+      E = E + -this->grid(i, j) * (this->grid(((i+1) == L) ? 0 : (i + 1), j) + this->grid(i, ((j+1) == L) ? 0 : (j + 1)));
     }
   }
   return this->J * E;
