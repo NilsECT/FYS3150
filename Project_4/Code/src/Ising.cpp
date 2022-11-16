@@ -90,8 +90,7 @@ void Ising::analytical_comparison(std::vector<double> temperatures, int N_spinfl
   file.open(filename + "_" + std::to_string(N_spinflips) + "_" + std::to_string(N_MC_cycles) + ".txt", std::ofstream::trunc);
   static int print_prec = 10;
 
-  file << std::setprecision(print_prec) << "Seed, "
-       << std::setprecision(print_prec) << "Temperature [J/kb], "
+  file<< std::setprecision(print_prec) << "Temperature [J/kb], "
        << std::setprecision(print_prec) << "Energy (abs) [J], "
        << std::setprecision(print_prec) << "Energy squared [J^2], "
        << std::setprecision(print_prec) << "Magnetisation, "
@@ -318,5 +317,78 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec &temperatures,
             << std::endl;
       }
   }
+  file.close();
+}
+
+void Ising::varying_n_mc_cycles(arma::vec temperature, arma::vec n_cycles, int lattice, std::string filename, int seed, int N_spinflips){
+
+  std::mt19937 MC_seed_generator (seed);
+
+  // Open file to which we write the data:
+  std::ofstream file;
+  file.open(filename + ".txt", std::ofstream::trunc);
+  static int print_prec = 10;
+
+  file << std::setprecision(print_prec) << "Order, "
+       << std::setprecision(print_prec) << "Temperature [J/kb], "
+       << std::setprecision(print_prec) << "MC cycles, "
+       << std::setprecision(print_prec) << "Energy [J], "
+       << std::setprecision(print_prec) << "Magnetisation, "
+       << std::endl;
+
+
+  // Grid model = Grid(L, temperature);
+
+  std::string order = "Ordered";
+
+  #pragma omp parallel for
+  for (double &T : temperature) {
+    for (double &n : n_cycles){
+
+      // Initialize averages:
+      double avg_eps = 0.0;
+      double avg_eps_sq = 0.0;
+      double avg_m_abs = 0.0;
+      double avg_m_sq = 0.0;
+
+      auto thread_seed = MC_seed_generator();
+      // model.fill_grid(thread_seed, random_config);  // Fill grid
+
+      monte_carlo(N_spinflips, n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, 20, false);
+
+      file << std::setprecision(print_prec) << order << ", "
+            << std::setprecision(print_prec) << T << ", "
+            << std::setprecision(print_prec) << n << ", "
+            << std::setprecision(print_prec) << avg_eps << ", "
+            << std::setprecision(print_prec) << avg_m_abs
+            << std::endl;
+    }
+  }
+
+  order = "Unordered";
+  #pragma omp parallel for
+  for (double &T : temperature) {
+    for (double &n : n_cycles){
+
+      // Initialize averages:
+      double avg_eps = 0.0;
+      double avg_eps_sq = 0.0;
+      double avg_m_abs = 0.0;
+      double avg_m_sq = 0.0;
+
+      auto thread_seed = MC_seed_generator();
+      // model.fill_grid(thread_seed, random_config);  // Fill grid
+
+      monte_carlo(N_spinflips, n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, 20, true);
+
+      file << std::setprecision(print_prec) << order << ", "
+            << std::setprecision(print_prec) << T << ", "
+            << std::setprecision(print_prec) << n << ", "
+            << std::setprecision(print_prec) << avg_eps << ", "
+            << std::setprecision(print_prec) << avg_m_abs
+            << std::endl;
+    }
+  }
+
   file.close();
 }
