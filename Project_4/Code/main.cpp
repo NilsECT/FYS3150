@@ -40,15 +40,15 @@ int main(){
   // std::cout << "Starting unordered varying N for T=2.4" << std::endl;
   // model.varying_n_mc_cycles(2.4, cycles, "varying_cycles_unordered", MC_seed_generator(), false);
 
-  std::vector<double> temperatures = {1, 2.4};
-  model.epsilon_dist(temperatures, 20, 100000, 10);
+  // std::vector<double> temperatures = {1, 2.4};
+  // model.epsilon_dist(temperatures, 20, 100000, 10);
 
   // Problem 8:
-  // std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
-  // arma::vec temperatures_p8 = arma::linspace(2.1, 2.4, 4);
-  //
-  //
-  // phase_transitions(40, temperatures_p8, N_spinflips, N_MC_cycles, seed);
+  std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
+  arma::vec temperatures_p8 = arma::linspace(2.1, 2.4, 4);
+  
+  
+  model.phase_transitions(lattice_sizes_p8, temperatures_p8, N_spinflips, N_MC_cycles, seed);
 
   return 0;
 }
