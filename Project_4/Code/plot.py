@@ -77,6 +77,13 @@ def get_data(filename, delimiter=", ", col_names_ind=0):
     
     return data
 
+def load_multiple(filenames):
+    temp = []
+    for i in filenames:
+        temp.append(get_data(i))
+    
+    return pd.concat(temp, ignore_index=True)
+
 
 def sortdata(data, col_name):
     '''sorts the dataframe data by column names, can be a list, the first will have biggest importance.
@@ -105,19 +112,23 @@ def sortdata(data, col_name):
     
     return data.sort_values(by=col_name, ignore_index=True)
 
-# histogram is made using sns.displot()
-# https://seaborn.pydata.org/generated/seaborn.displot.html#seaborn.displot
 
-# lineplots are made with sns.lineplot()
-# if you want to combine it with facetgrid
+# eps_dist = get_data("epsilon_distribution")
 
-def test_line():
-    plt.figure(figsize=(17, 15))
-    data = sns.load_dataset("flights")
-    sns.lineplot(data=data, x="year", y="passengers", hue=None)
-    plt.savefig("test.pdf")
+# sns.displot(data=eps_dist, x="Energy [J]", col="Temperature [J/kb]", stat="probability", bins=100, kde=True)
+# plt.show()
 
-data = get_data("epsilon_distribution")
+# ordered_1 = get_data("varying_cycles_ordered_1.000000")
+# ordered_2 = get_data("varying_cycles_ordered_2.400000")
+# unordered_1 = get_data("varying_cycles_unordered_1.000000")
+# unordered_2 = get_data("varying_cycles_unordered_2.400000")
 
-sns.displot(data=data, x="Epsilon", hue="Temperature", stat="density", bins=500, kde=True)
+var_N = get_data("varying_cycles_1")
+
+sns.lineplot(data=var_N.loc[var_N["Order"] == "Ordered"], x="MC cycles", y="Energy [J]", hue="Temperature [J/kb]")
+plt.xscale("log")
+plt.show()
+
+sns.lineplot(data=var_N.loc[var_N["Order"] == "Unordered"], x="MC cycles", y="Energy [J]", hue="Temperature [J/kb]")
+plt.xscale("log")
 plt.show()
