@@ -143,11 +143,11 @@ void Grid::compute_chi(){
   this->chi = this->N * this->chi / (this->T);
 }
 
-void Grid::random_walk(int N_spinflips, int thread_seed){
+void Grid::random_walk(int seed){
   int L = this->L;
 
   // Mersenne twister algorithm for generating random numbers:
-  std::mt19937 generator (thread_seed);
+  std::mt19937 generator (seed);
   // Distribution for choosing random grid indexes:
   std::uniform_int_distribution<int> dis(0, L-1);
   // Distribution for r:
@@ -162,7 +162,7 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
   double current_magnetization;
   int index;
 
-  for (int i = 0; i < N_spinflips; i++){
+  for (int i = 0; i < L*L; i++){
     int s_x = dis(generator); // Index of "chosen" spin in x-direction
     int s_y = dis(generator); // Index in y-direction
 
@@ -182,11 +182,11 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
 
     // Add current energy and magnetization values to average sum:
     epsilon = epsilon + this->E;
-    epsilon_squared = epsilon_squared + (this->E*this->E) / (N_spinflips) ;
+    epsilon_squared = epsilon_squared + (this->E*this->E);
 
     current_magnetization = this->M;
     m_abs = m_abs + std::sqrt(current_magnetization * current_magnetization);
-    m_squared = m_squared + current_magnetization * current_magnetization / (N_spinflips);
+    m_squared = m_squared + current_magnetization * current_magnetization;
 
     // Generate random float between 0 and 1:
     r = spinflip(generator);
@@ -198,10 +198,10 @@ void Grid::random_walk(int N_spinflips, int thread_seed){
   }
 
   // Divide averages by number of spin flips (and number of spins):
-  epsilon = epsilon / (this->N * N_spinflips);
+  epsilon = epsilon / (this->N);
   epsilon_squared = epsilon_squared / ( this->N * this->N);
 
-  m_abs = m_abs / (this->N * N_spinflips);
+  m_abs = m_abs / (this->N);
   m_squared = m_squared / (this->N * this->N);
 
   this->epsilon = this->epsilon + epsilon;

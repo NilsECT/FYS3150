@@ -11,7 +11,6 @@
 int main(){
 
   const int seed = 137;
-  std::mt19937 MC_seed_generator (seed);
 
   // Problem 4: compare with analytical for L = 2
   //std::vector<double> temperatures = {1.0, 2.0};

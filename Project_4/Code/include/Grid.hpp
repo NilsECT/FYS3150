@@ -33,7 +33,7 @@ public:
   void fill_grid(int seed = 137, bool random_config = true);
   void flip_spin(int x, int y);
 
-  void random_walk(int num_MC_cycles, int thread_seed);
+  void random_walk(int thread_seed);
   void compute_cv();
   void compute_chi();
 
