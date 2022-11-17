@@ -51,10 +51,10 @@ std::vector<double> Ising::analytical(int L, double T){
 void Ising::monte_carlo(int N_spinflips, int num_MC_cycles, double &avg_eps, double &avg_eps_sq, double &avg_m_abs, double &avg_m_sq, double T, int seed, int L, bool random_config) {
 
   Grid model = Grid(L, T);
+  model.fill_grid(seed, random_config);
 
   for (int i = 0; i < num_MC_cycles; i ++){
 
-    model.fill_grid(seed + i, random_config);
     model.random_walk(N_spinflips, seed + i);
 
     avg_eps = avg_eps + model.epsilon;
@@ -406,7 +406,7 @@ void Ising::varying_n_walk(arma::vec temperature, std::vector<int> n_walks, std:
        << std::setprecision(print_prec) << "Walk, "
        << std::setprecision(print_prec) << "Temperature [J/kb], "
        << std::setprecision(print_prec) << "Lattice, "
-       << std::setprecision(print_prec) << "Energy [J], "
+       << std::setprecision(print_prec) << "Energy [J]"
        << std::endl;
 
   #pragma omp parallel for
@@ -417,11 +417,13 @@ void Ising::varying_n_walk(arma::vec temperature, std::vector<int> n_walks, std:
       for (int &i : n_walks) {
         for (int ii = 0; ii < num_samples; ii++) {
 
+          int seed_other = seed +100 +i +ii;
           Grid model = Grid(L, T);
-          model.fill_grid();
+          model.fill_grid(seed_other);
 
           for (int iii = 0; iii < i; iii++) {
-            model.one_walk();
+            int rand_seed = seed + iii + ii + i;
+            model.one_walk(rand_seed);
 
             #pragma omp critical
             file << std::setprecision(print_prec) << ii << ", "
@@ -432,6 +434,51 @@ void Ising::varying_n_walk(arma::vec temperature, std::vector<int> n_walks, std:
                   << std::setprecision(print_prec) << model.epsilon
                   << std::endl;
           }
+        }
+      }
+    }
+  }
+  file.close();
+}
+
+void Ising::varying_n_walk(arma::vec temperature, int n_walks, std::vector<int> lattice, int num_samples, std::string filename, int seed) {
+
+  // Open file to which we write the data:
+  std::ofstream file;
+  file.open(filename + ".txt", std::ofstream::trunc);
+  static int print_prec = 10;
+
+  file << std::setprecision(print_prec) << "Sample, "
+       << std::setprecision(print_prec) << "Total walks, "
+       << std::setprecision(print_prec) << "Walk, "
+       << std::setprecision(print_prec) << "Temperature [J/kb], "
+       << std::setprecision(print_prec) << "Lattice, "
+       << std::setprecision(print_prec) << "Energy [J]"
+       << std::endl;
+
+  #pragma omp parallel for
+  for (int &L : lattice) {
+    for (double &T : temperature) {
+
+      #pragma omp prallel for
+      for (int ii = 0; ii < num_samples; ii++) {
+
+        int seed_other = seed +100 +ii;
+        Grid model = Grid(L, T);
+        model.fill_grid(seed_other);
+
+        for (int iii = 0; iii < n_walks; iii++) {
+          int rand_seed = seed + iii + ii;
+          model.one_walk(rand_seed);
+
+          #pragma omp critical
+          file << std::setprecision(print_prec) << ii << ", "
+                << std::setprecision(print_prec) << n_walks << ", "
+                << std::setprecision(print_prec) << iii << ", "
+                << std::setprecision(print_prec) << T << ", "
+                << std::setprecision(print_prec) << L << ", "
+                << std::setprecision(print_prec) << model.epsilon
+                << std::endl;
         }
       }
     }

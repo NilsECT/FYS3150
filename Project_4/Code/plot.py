@@ -113,22 +113,38 @@ def sortdata(data, col_name):
     return data.sort_values(by=col_name, ignore_index=True)
 
 
-# eps_dist = get_data("epsilon_distribution")
+eps_dist = get_data("epsilon_distribution")
 
-# sns.displot(data=eps_dist, x="Energy [J]", col="Temperature [J/kb]", stat="probability", bins=100, kde=True)
-# plt.show()
+# eps_dist = eps_dist.loc[eps_dist["Temperature [J/kb]"] == (1. or 2.4)]
+
+plt.figure(figsize=(15, 13))
+sns.displot(data=eps_dist, x="Energy [J]", col="Temperature [J/kb]", stat="probability", bins=100, kde=True)
+plt.savefig("energy_dist_1.pdf")
 
 # ordered_1 = get_data("varying_cycles_ordered_1.000000")
 # ordered_2 = get_data("varying_cycles_ordered_2.400000")
 # unordered_1 = get_data("varying_cycles_unordered_1.000000")
 # unordered_2 = get_data("varying_cycles_unordered_2.400000")
 
-var_N = get_data("varying_cycles_1")
+# var_N = get_data("varying_cycles_1")
 
-sns.lineplot(data=var_N.loc[var_N["Order"] == "Ordered"], x="MC cycles", y="Energy [J]", hue="Temperature [J/kb]")
-plt.xscale("log")
-plt.show()
+# plt.figure(figsize=(15, 13))
+# sns.lineplot(data=var_N.loc[var_N["Order"] == "Ordered"], x="MC cycles", y="Energy [J]", hue="Temperature [J/kb]")
+# plt.xscale("log")
+# plt.savefig("ordered_var_MC.pdf")
+# plt.show()
 
-sns.lineplot(data=var_N.loc[var_N["Order"] == "Unordered"], x="MC cycles", y="Energy [J]", hue="Temperature [J/kb]")
-plt.xscale("log")
-plt.show()
+# plt.figure(figsize=(15, 13))
+# sns.lineplot(data=var_N.loc[var_N["Order"] == "Unordered"], x="MC cycles", y="Energy [J]", hue="Temperature [J/kb]")
+# plt.xscale("log")
+# plt.savefig("unordered_var_MC.pdf")
+# plt.show()
+
+# data = get_data("varying_walk")
+# data = data.loc[data["Walk"] < 10e2]
+# data = data.iloc[::156, :]
+
+# plt.figure(figsize=(15, 13))
+# sns.lineplot(data=data, x="Walk", y="Energy [J]", hue="Temperature [J/kb]")
+# plt.xscale("log")
+# plt.savefig("tertiary_burn_in.pdf")
