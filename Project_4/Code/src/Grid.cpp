@@ -181,12 +181,12 @@ void Grid::random_walk(int seed){
     dE = this->dEs.at(index);
 
     // Add current energy and magnetization values to average sum:
-    epsilon = epsilon + this->E;
-    epsilon_squared = epsilon_squared + (this->E*this->E);
-
-    current_magnetization = this->M;
-    m_abs = m_abs + std::sqrt(current_magnetization * current_magnetization);
-    m_squared = m_squared + current_magnetization * current_magnetization;
+    // epsilon = epsilon + this->E;
+    // epsilon_squared = epsilon_squared + (this->E*this->E);
+    //
+    // current_magnetization = this->M;
+    // m_abs = m_abs + std::sqrt(current_magnetization * current_magnetization);
+    // m_squared = m_squared + current_magnetization * current_magnetization;
 
     // Generate random float between 0 and 1:
     r = spinflip(generator);
@@ -198,16 +198,21 @@ void Grid::random_walk(int seed){
   }
 
   // Divide averages by number of spin flips (and number of spins):
-  epsilon = epsilon / (this->N);
-  epsilon_squared = epsilon_squared / ( this->N * this->N);
+  // epsilon = epsilon / (this->N);
+  // epsilon_squared = epsilon_squared / ( this->N * this->N);
+  //
+  // m_abs = m_abs / (this->N);
+  // m_squared = m_squared / (this->N * this->N);
+  //
+  // this->epsilon = this->epsilon + epsilon;
+  // this->epsilon_squared = this->epsilon_squared + epsilon_squared;
+  // this->m_abs = this->m_abs + m_abs;
+  // this->m_squared = this->m_squared + m_squared;
 
-  m_abs = m_abs / (this->N);
-  m_squared = m_squared / (this->N * this->N);
-
-  this->epsilon = this->epsilon + epsilon;
-  this->epsilon_squared = this->epsilon_squared + epsilon_squared;
-  this->m_abs = this->m_abs + m_abs;
-  this->m_squared = this->m_squared + m_squared;
+  this->epsilon = this->get_E() / N;
+  this->epsilon_squared = this->get_E() * this->get_E() / (N * N);
+  this->m_abs = std::sqrt(this->M * this->M) / (N);
+  this->m_squared = this->M * this->M / (N * N);
 
   this->compute_cv();
   this->compute_chi();

@@ -260,7 +260,7 @@ void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int n_sampl
       << std::setprecision(print_prec) << "Sample, "
       << std::setprecision(print_prec) << "Cycle"
       << std::endl;
-  
+
   int l_sq = L*L;
 
   #pragma omp prallel for
@@ -275,7 +275,7 @@ void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int n_sampl
           int seed = thread_seed + i;
 
           model.random_walk(seed);
-          
+
           #pragma omp critical
           file << std::setprecision(print_prec) << T << ", "
               << std::setprecision(print_prec) << L << ", "

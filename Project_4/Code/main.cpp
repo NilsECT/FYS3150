@@ -20,6 +20,14 @@ int main(){
   // model instance:
   Ising model = Ising();
 
+  // Working code for comparing with analytical solution (currently missing magnetization, will fix soon):
+  std::vector<double> temps = {1.0, 2.4};
+  model.analytical_comparison(temps, 10000000, "analytical_comparison", seed);
+
+  // --------
+  
+  // Code that currently does not work:
+
   // trying to find burn in time based on walks
   arma::vec temperatures_burn = arma::vec {1., 1.5, 2., 2.4, 3.};
   // std::vector<int> n_walks = {15000};
@@ -48,12 +56,12 @@ int main(){
   // // Nils:
   int T_max = 2.2;
   int T_min = 2.1;
-  
+
 
   // // Brage:
   // int T_max = 2.28;
   // int T_min = 2.22;
-  
+
 
   // // // Problem 8:
   std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
