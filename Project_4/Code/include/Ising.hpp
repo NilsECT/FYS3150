@@ -2,13 +2,14 @@
 #define __Ising__
 #include <armadillo>
 #include <string>
+#include "Grid.hpp"
 
 class Ising{
 
     public:
     Ising() = default;
 
-    void monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, double &avg_m_abs, double &avg_m_sq, double T, int seed, int L, int burn=0, bool random_config=true);
+    void monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, double &avg_m_abs, double &avg_m_sq, Grid &model, int seed, int burn=0);
 
     std::vector<double> analytical(int L, double T);
 
@@ -31,6 +32,8 @@ class Ising{
     void varying_n_walk(arma::vec temperature, std::vector<int> n_walks, std::vector<int> lattice, int num_samples = 100, std::string filename = "varying_walk", int seed = 137);
 
     void varying_n_walk(arma::vec temperature, int n_walks, std::vector<int> lattice, int num_samples = 100, std::string filename = "varying_walk", int seed = 137);
+
+    void burn_in(Grid &model, int burn, int seed=137);
 };
 
 #endif

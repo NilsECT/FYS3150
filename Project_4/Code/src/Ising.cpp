@@ -48,18 +48,10 @@ std::vector<double> Ising::analytical(int L, double T){
  * @param burn Burn in time in number of cycles
  * @param random_config Whether initial configuration is randomized
  */
-void Ising::monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, double &avg_m_abs, double &avg_m_sq,double T, int seed, int L, int burn, bool random_config) {
-
-  Grid model = Grid(L, T);
-  model.fill_grid(seed, random_config);
+void Ising::monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, double &avg_m_abs, double &avg_m_sq, Grid &model, int seed,int burn) {
   int flips = model.N;
 
-  // Burn in
-  for (int i = 0; i < burn; i ++) {
-    int new_seed = seed - i;
-
-    model.random_walk(new_seed);
-  }
+  this->burn_in(model, burn, seed-1);
 
   for (int i = 0; i < (num_MC_cycles - burn); i ++){
 
@@ -118,8 +110,12 @@ void Ising::analytical_comparison(std::vector<double> temperatures, int N_MC_cyc
 
         auto thread_seed = MC_seed_generator();
 
+        // make grid
+        Grid model = Grid(2, temperature);
+        model.fill_grid(thread_seed);
+
         // Compute averages from model:
-        monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, temperature, thread_seed, 2);
+        monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed);
 
         // Analytical values:
         std::vector<double> avgs = analytical(2, temperature);
@@ -177,7 +173,11 @@ void Ising::phase_transitions(int lattice, arma::vec &temperatures, int N_MC_cyc
       double avg_m_abs = 0.0;
       double avg_m_sq = 0.0;
 
-      monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, temperature, thread_seed, lattice, burn);
+      // make grid
+      Grid model = Grid(lattice, temperature);
+      model.fill_grid(thread_seed);
+
+      monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed, burn);
 
       double chi = (lattice*lattice) * (avg_m_sq - avg_m_abs*avg_m_abs) / temperature;
       double cv = (lattice*lattice) * (avg_eps_sq - avg_eps*avg_eps) / (temperature*temperature);
@@ -231,7 +231,11 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,i
         double avg_m_abs = 0.0;
         double avg_m_sq = 0.0;
 
-        monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, temperature, thread_seed, L, burn);
+        // make grid
+        Grid model = Grid(L, temperature);
+        model.fill_grid(thread_seed);
+
+        monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed, burn);
 
         double chi = (L*L) * (avg_m_sq - avg_m_abs*avg_m_abs) / temperature;
         double cv = (L*L) * (avg_eps_sq - avg_eps*avg_eps) / (temperature*temperature);
@@ -405,42 +409,20 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
        << std::setprecision(print_prec) << "Sample"
        << std::endl;
 
-  std::string order = "Ordered";
-  std::string unorder = "Unordered";
-
   #pragma omp parallel for
   for (double &T : temperature) {
+    for (int i = 0; i < n_samples; i++) {
 
-    #pragma omp parallel for
-    for(int n = 25; n <= n_cycles; n+=25) {
-      for (int i = 0; i < n_samples; i++) {
+      auto thread_seed = MC_seed_generator();
 
-        // Initialize averages:
-        double avg_eps = 0.0;
-        double avg_eps_sq = 0.0;
-        double avg_m_abs = 0.0;
-        double avg_m_sq = 0.0;
+      std::vector<bool> container = std::vector<bool>{true, false};
 
-        auto thread_seed = MC_seed_generator();
-        // model.fill_grid(thread_seed, random_config);  // Fill grid
+      #pragma omp parallel for
+      for (bool start : container) {
 
-        monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, lattice, burn, false);
-
-        #pragma omp critical
-        file << std::setprecision(print_prec) << order << ", "
-                << std::setprecision(print_prec) << T << ", "
-                << std::setprecision(print_prec) << n << ", "
-                << std::setprecision(print_prec) << avg_eps << ", "
-                << std::setprecision(print_prec) << avg_m_abs << ", "
-                << std::setprecision(print_prec) << lattice << ", "
-                << std::setprecision(print_prec) << i
-                << std::endl;
-      }
-    }
-
-    #pragma omp parallel for
-    for(int n = 25; n <= n_cycles; n+=25) {
-      for (int i = 0; i < n_samples; i++) {
+        Grid model = Grid(lattice, T);
+        model.fill_grid(thread_seed, start);
+        this->burn_in(model, burn, thread_seed);
 
         // Initialize averages:
         double avg_eps = 0.0;
@@ -448,20 +430,21 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
         double avg_m_abs = 0.0;
         double avg_m_sq = 0.0;
 
-        auto thread_seed = MC_seed_generator();
-        // model.fill_grid(thread_seed, random_config);  // Fill grid
+        std::string order = start ? ("Ordered") : ("Unordered");
 
-        monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, lattice, burn, false);
+        for (int n=25; n < n_cycles; n+=25) {
+          monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed);
 
-        #pragma omp critical
-        file << std::setprecision(print_prec) << order << ", "
-                << std::setprecision(print_prec) << T << ", "
-                << std::setprecision(print_prec) << n << ", "
-                << std::setprecision(print_prec) << avg_eps << ", "
-                << std::setprecision(print_prec) << avg_m_abs << ", "
-                << std::setprecision(print_prec) << lattice << ", "
-                << std::setprecision(print_prec) << i
-                << std::endl;
+          #pragma omp critical
+          file << std::setprecision(print_prec) << order << ", "
+                  << std::setprecision(print_prec) << T << ", "
+                  << std::setprecision(print_prec) << n << ", "
+                  << std::setprecision(print_prec) << avg_eps << ", "
+                  << std::setprecision(print_prec) << avg_m_abs << ", "
+                  << std::setprecision(print_prec) << lattice << ", "
+                  << std::setprecision(print_prec) << i
+                  << std::endl;
+        }
       }
     }
   }
@@ -496,16 +479,21 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
        << std::setprecision(print_prec) << "Sample"
        << std::endl;
 
-  std::string order = "Ordered";
-  std::string unorder = "Unordered";
-
   #pragma omp parallel for
   for (double &T : temperature) {
-    for (int &L : lattice) {
+    for (int i = 0; i < n_samples; i++) {
+
+      auto thread_seed = MC_seed_generator();
+
+      std::vector<bool> container = std::vector<bool>{true, false};
 
       #pragma omp parallel for
-      for(int n = 25; n <= n_cycles; n+=25) {
-        for (int i = 0; i < n_samples; i++) {
+      for (int &L : lattice) {
+        for (bool start : container) {
+
+          Grid model = Grid(L, T);
+          model.fill_grid(thread_seed, start);
+          this->burn_in(model, burn, thread_seed);
 
           // Initialize averages:
           double avg_eps = 0.0;
@@ -513,46 +501,21 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
           double avg_m_abs = 0.0;
           double avg_m_sq = 0.0;
 
-          auto thread_seed = MC_seed_generator();
-          // model.fill_grid(thread_seed, random_config);  // Fill grid
+          std::string order = start ? ("Ordered") : ("Unordered");
 
-          monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, L, burn, false);
+          for (int n=25; n < n_cycles; n+=25) {
+            monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed);
 
-          #pragma omp critical
-          file << std::setprecision(print_prec) << order << ", "
-                << std::setprecision(print_prec) << T << ", "
-                << std::setprecision(print_prec) << n << ", "
-                << std::setprecision(print_prec) << avg_eps << ", "
-                << std::setprecision(print_prec) << avg_m_abs << ", "
-                << std::setprecision(print_prec) << L << ", "
-                << std::setprecision(print_prec) << i
-                << std::endl;
-        }
-      }
-
-      #pragma omp parallel for
-      for(int n = 25; n <= n_cycles; n+=25) {
-        for (int i = 0; i < n_samples; i++) {
-          // Initialize averages:
-          double avg_eps = 0.0;
-          double avg_eps_sq = 0.0;
-          double avg_m_abs = 0.0;
-          double avg_m_sq = 0.0;
-
-          auto thread_seed = MC_seed_generator();
-          // model.fill_grid(thread_seed, random_config);  // Fill grid
-
-          monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, L, burn, true);
-
-          #pragma omp critical
-          file << std::setprecision(print_prec) << unorder << ", "
-                << std::setprecision(print_prec) << T << ", "
-                << std::setprecision(print_prec) << n << ", "
-                << std::setprecision(print_prec) << avg_eps << ", "
-                << std::setprecision(print_prec) << avg_m_abs << ", "
-                << std::setprecision(print_prec) << L << ", "
-                << std::setprecision(print_prec) << i
-                << std::endl;
+            #pragma omp critical
+            file << std::setprecision(print_prec) << order << ", "
+                    << std::setprecision(print_prec) << T << ", "
+                    << std::setprecision(print_prec) << n << ", "
+                    << std::setprecision(print_prec) << avg_eps << ", "
+                    << std::setprecision(print_prec) << avg_m_abs << ", "
+                    << std::setprecision(print_prec) << L << ", "
+                    << std::setprecision(print_prec) << i
+                    << std::endl;
+          }
         }
       }
     }
@@ -560,7 +523,13 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
   file.close();
 }
 
-
+void Ising::burn_in(Grid &model, int burn, int seed) {
+  // Burn in
+  for (int i = 0; i < burn; i ++) {
+    int new_seed = seed - i;
+    model.random_walk(new_seed);
+  }
+}
 // THESE TWO LAST ONES STILL NEED CHANGING
 
 // void Ising::varying_n_walk(arma::vec temperature, std::vector<int> n_walks, std::vector<int> lattice, int num_samples, std::string filename, int seed) {
