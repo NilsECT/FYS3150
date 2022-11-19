@@ -29,14 +29,16 @@ int main(){
 
   // Sigurd spesial
   // std::vector<int> lattices = std::vector<int> {20, 40, 60, 100};
-  // model.varying_n_mc_cycles(temperatures, 5000, 25, lattices);
+  // model.varying_n_mc_cycles(temperatures, 10000, 25, 20, 0, "varying_cycles_no_burn");
+  // model.varying_n_mc_cycles(temperatures, 5000, 25, 20, 1000, "varying_cycles_yes_burn");
 
 
   // // looking for the distribution of the energies
   // model.epsilon_dist(temperatures, lattices, 2000, 25);
 
-  // Everyone else
-  // model.varying_n_mc_cycles(temperatures, 5000, 25, 20);
+  // Everyone else DO NOT RUN IF YOUR PC IS WEAK
+  // model.varying_n_mc_cycles(temperatures, 10000, 25, 20, 0, "varying_cycles_no_burn");
+  // model.varying_n_mc_cycles(temperatures, 5000, 25, 20, 1000, "varying_cycles_yes_burn");
   // looking for the distribution of the energies
   // model.epsilon_dist(temperatures, 20, 2000, 25);
 
@@ -58,9 +60,9 @@ int main(){
 
   // // Problem 8:
   std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
-  // std::vector<int> lattice_sizes_p8 = {20};
+  // // std::vector<int> lattice_sizes_p8 = {20};
   arma::vec temperatures_p8 = arma::linspace(T_min, T_max, 200);  // if we get results we need to upgrade this to more values
-  model.phase_transitions(lattice_sizes_p8, temperatures_p8, 3000, 50, seed, 1000);
+  model.phase_transitions(lattice_sizes_p8, temperatures_p8, 5000, 50, seed, 1000);
 
   return 0;
 }
