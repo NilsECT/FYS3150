@@ -3,6 +3,8 @@ import numpy as np
 import seaborn as sns
 import pandas as pd
 
+sns.set(rc={'figure.figsize':(8,7)})
+
 sns.set_context({'axes.linewidth': 0.9,
  'grid.linewidth': 0.6,
  'lines.linewidth': 1.5,
@@ -16,13 +18,13 @@ sns.set_context({'axes.linewidth': 0.9,
  'ytick.major.size': 9.0,
  'xtick.minor.size': 6.0,
  'ytick.minor.size': 6.0,
- 'font.size': 25.0,
- 'axes.labelsize': 25.0,
- 'axes.titlesize': 25.0,
- 'xtick.labelsize': 25.0,
- 'ytick.labelsize': 25.0,
- 'legend.fontsize': 25.0,
-'legend.title_fontsize': 18.0})
+ 'font.size': 16.,
+ 'axes.labelsize': 16.,
+ 'axes.titlesize': 16.,
+ 'xtick.labelsize': 16.,
+ 'ytick.labelsize': 16.,
+ 'legend.fontsize': 16.,
+'legend.title_fontsize': 16.0})
 
 sns.set_style({'axes.facecolor': 'white',
  'axes.edgecolor': 'black',
@@ -112,39 +114,75 @@ def sortdata(data, col_name):
     
     return data.sort_values(by=col_name, ignore_index=True)
 
+cycles = "Cycle"
+temperature = "Temperature [J/kb]"
+lattice = "Lattice"
+energy = "Energy [J]"
+sample = "Sample"
+magnet = "Magnetisation"
+burn = "Burn in [cycles]"
+cv = "Heat capacity"
+chi = "Susceptibility"
 
-eps_dist = get_data("epsilon_distribution")
 
-# eps_dist = eps_dist.loc[eps_dist["Temperature [J/kb]"] == (1. or 2.4)]
+###########  LOOKING AT BURN IN ORDERED VS UNORDERED #######
 
-plt.figure(figsize=(15, 13))
-sns.displot(data=eps_dist, x="Energy [J]", col="Temperature [J/kb]", stat="probability", bins=100, kde=True)
-plt.savefig("energy_dist_1.pdf")
+# var_N = get_data("varying_cycles")
 
-# ordered_1 = get_data("varying_cycles_ordered_1.000000")
-# ordered_2 = get_data("varying_cycles_ordered_2.400000")
-# unordered_1 = get_data("varying_cycles_unordered_1.000000")
-# unordered_2 = get_data("varying_cycles_unordered_2.400000")
+lattices = [20]    # [20, 40, 60, 100]
 
-# var_N = get_data("varying_cycles_1")
+# for lat in lattices:
 
-# plt.figure(figsize=(15, 13))
-# sns.lineplot(data=var_N.loc[var_N["Order"] == "Ordered"], x="MC cycles", y="Energy [J]", hue="Temperature [J/kb]")
-# plt.xscale("log")
-# plt.savefig("ordered_var_MC.pdf")
-# plt.show()
+    # using fontsizes 16
 
-# plt.figure(figsize=(15, 13))
-# sns.lineplot(data=var_N.loc[var_N["Order"] == "Unordered"], x="MC cycles", y="Energy [J]", hue="Temperature [J/kb]")
-# plt.xscale("log")
-# plt.savefig("unordered_var_MC.pdf")
-# plt.show()
+    # # plt.figure(figsize=(12, 10))
+    # ordered = var_N.loc[var_N["Order"] == "Ordered"]
+    # sns.lineplot(data=ordered.loc[ordered[lattice] == lat], x=cycles, y=energy, hue=temperature)
+    # plt.xscale("log")
+    # plt.savefig("ordered_var_MC_%d.pdf" %lat)
+    # plt.show()
 
-# data = get_data("varying_walk")
-# data = data.loc[data["Walk"] < 10e2]
-# data = data.iloc[::156, :]
+    # # plt.figure(figsize=(12, 10))
+    # unordered = var_N.loc[var_N["Order"] == "Unordered"]
+    # sns.lineplot(data=unordered.loc[unordered[lattice] == lat], x=cycles, y=energy, hue=temperature)
+    # plt.xscale("log")
+    # plt.savefig("unordered_var_MC_%d.pdf" %lat)
+    # plt.show()
 
-# plt.figure(figsize=(15, 13))
-# sns.lineplot(data=data, x="Walk", y="Energy [J]", hue="Temperature [J/kb]")
-# plt.xscale("log")
-# plt.savefig("tertiary_burn_in.pdf")
+    # # plt.figure(figsize=(12, 10))
+    # sns.lineplot(data=var_N, x=cycles, y=energy, hue=temperature, style="Order")
+    # plt.xscale("log")
+    # plt.savefig("var_MC_%d.pdf" %lat)
+    # plt.show()
+
+###########################################################
+
+################### LOOKING AT ENERGY DISTRINUTION #######
+
+# eps_dist = get_data("epsilon_distribution")
+
+# using fontsizes 12
+
+# temp = [1., 1.5, 2., 2.4]
+
+# for i in temp:
+#     data = eps_dist.loc[eps_dist[temperature] == i]
+#     for lat in lattices:
+
+#         # plt.figure(figsize=(15, 13))
+#         sns.displot(data=data.loc[data[lattice] == lat], x="Energy [J]", stat="probability", bins=75, kde=True)
+#         # title_temp_lattice_#MC_#samples
+#         plt.savefig("energy_dist_%.d_%d.pdf" %(i*10, lat))
+#         plt.show()
+
+#######################################################
+
+phase = get_data("phase_transition_varL")
+
+sns.lineplot(data=phase, x=temperature, y=cv)
+plt.savefig("cv_20.pdf")
+plt.show()
+
+sns.lineplot(data=phase, x=temperature, y=chi)
+plt.savefig("chi_20.pdf")
+plt.show()
