@@ -61,7 +61,7 @@ void Ising::monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, 
     model.random_walk(new_seed);
   }
 
-  for (int i = 0; i < num_MC_cycles; i ++){
+  for (int i = 0; i < (num_MC_cycles - burn); i ++){
 
     int new_seed = seed + i;
 
@@ -387,7 +387,7 @@ void Ising::epsilon_dist(arma::vec temperature, std::vector<int> lattice, int N_
  * @param filename
  * @param seed For generating thread seeds.
  */
-void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_samples, int lattice, std::string filename, int seed){
+void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_samples, int lattice, int burn, std::string filename, int seed){
 
   std::mt19937 MC_seed_generator (seed);
 
@@ -476,7 +476,7 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
  * @param filename
  * @param seed For generating thread seeds.
  */
-void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_samples, std::vector<int> lattice, std::string filename, int seed){
+void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_samples, std::vector<int> lattice, int burn, std::string filename, int seed){
 
   std::mt19937 MC_seed_generator (seed);
 
@@ -514,7 +514,7 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
           auto thread_seed = MC_seed_generator();
           // model.fill_grid(thread_seed, random_config);  // Fill grid
 
-          monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, L, 0, false);
+          monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, L, burn, false);
 
           #pragma omp critical
           file << std::setprecision(print_prec) << order << ", "
@@ -540,7 +540,7 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
           auto thread_seed = MC_seed_generator();
           // model.fill_grid(thread_seed, random_config);  // Fill grid
 
-          monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, L, 0, true);
+          monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, T, thread_seed, L, burn, true);
 
           #pragma omp critical
           file << std::setprecision(print_prec) << unorder << ", "
