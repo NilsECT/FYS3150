@@ -213,9 +213,6 @@ void Grid::random_walk(int seed){
   this->epsilon_squared = this->get_E() * this->get_E() / (N * N);
   this->m_abs = std::sqrt(this->M * this->M) / (N);
   this->m_squared = this->M * this->M / (N * N);
-
-  this->compute_cv();
-  this->compute_chi();
 }
 
 void Grid::one_walk(int thread_seed){

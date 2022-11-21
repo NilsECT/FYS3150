@@ -53,7 +53,7 @@ void Ising::monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, 
 
   this->burn_in(model, burn, seed-1);
 
-  for (int i = 0; i < (num_MC_cycles - burn); i ++){
+  for (int i = 0; i < (num_MC_cycles); i ++){
 
     int new_seed = seed + i;
 
@@ -217,14 +217,16 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,i
        << std::setprecision(print_prec) << "Heat capacity, "
        << std::setprecision(print_prec) << "Susceptibility"
        << std::endl;
-
-  #pragma omp parallel for
+  auto thread_seed = MC_seed_generator();
+  omp_set_nested(1);
+  #pragma omp parallel for num_threads(5)
   for (int i = 0; i < n_samples; i++) {
-    for (int &L : lattice) {
-      auto thread_seed = MC_seed_generator();
 
-      #pragma omp parallel for
+    #pragma omp parallel for 
+    for (int &L : lattice) {
       for (double &temperature : temperatures){
+
+        int new_seed = thread_seed + temperature + L + i;
 
         double avg_eps = 0.0;
         double avg_eps_sq = 0.0;
@@ -233,12 +235,12 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,i
 
         // make grid
         Grid model = Grid(L, temperature);
-        model.fill_grid(thread_seed);
+        model.fill_grid(new_seed);
 
-        monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed, burn);
+        monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, new_seed, burn);
 
-        double chi = (L*L) * (avg_m_sq - avg_m_abs*avg_m_abs) / temperature;
-        double cv = (L*L) * (avg_eps_sq - avg_eps*avg_eps) / (temperature*temperature);
+        double chi = (avg_m_sq - (avg_m_abs*avg_m_abs)) / (temperature*L*L);
+        double cv = (avg_eps_sq - (avg_eps*avg_eps)) / (temperature*temperature*L*L);
 
         #pragma omp critical
         file << std::setprecision(print_prec) << burn << ", "

@@ -25,7 +25,7 @@ int main(){
   // model.analytical_comparison(temps, 10000000, "analytical_comparison", seed);
 
   // trying to find burn in time based on cycles
-  arma::vec temperatures = arma::vec {1., 1.5, 2., 2.4};
+  // arma::vec temperatures = arma::vec {1., 1.5, 2., 2.4};
 
   // Sigurd spesial
   // std::vector<int> lattices = std::vector<int> {20, 40, 60, 100};
@@ -44,8 +44,8 @@ int main(){
 
 
   // // sigurd:
-  // double T_max = 2.4;
-  // double T_min = 2.1;
+  double T_max = 2.35;
+  double T_min = 2.2;
 
 
   // // Nils:
@@ -59,10 +59,10 @@ int main(){
 
 
   // // Problem 8:
-  std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
-  // // std::vector<int> lattice_sizes_p8 = {20};
-  arma::vec temperatures_p8 = arma::linspace(T_min, T_max, 200);  // if we get results we need to upgrade this to more values
-  model.phase_transitions(lattice_sizes_p8, temperatures_p8, 5000, 50, seed, 1000);
+  // std::vector<int> lattice_sizes_p8 = {40, 60, 80, 100};
+  std::vector<int> lattice_sizes_p8 = {40};
+  arma::vec temperatures_p8 = arma::linspace(T_min, T_max, 100);  // if we get results we need to upgrade this to more values
+  model.phase_transitions(lattice_sizes_p8, temperatures_p8, 2000, 5, seed, 1000);
 
   return 0;
 }

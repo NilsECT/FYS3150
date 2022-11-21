@@ -1,18 +1,21 @@
 # Project 4
+Welcome to our world of code. In this code we run Monte Carlo integration to study properties of the discrete 2D Ising model. We do this by running Monte Carlo cycles with random walks for our important sampling. We run various investigations for exploring the system. 
 
 For compiling:
 ```
-g++ main.cpp src/Grid.cpp -I include/  -o main -larmadillo -O2
+g++ main.cpp src/* -I include/  -o main.exe -larmadillo -O2 -fopenmp
 ```
-Ta med flagget du trenger for å få OMP
+(The keys are for a run in ubuntu. For mac users, use what you need to compile with armadillo and open mp.)
 
-'''
-For Sigurd:
-Comp:   g++ main.cpp src/Grid.cpp src/Ising.cpp -I include/  -o main.exe -larmadillo -O2 -fopenmp
-exe:    ./main.exe 10 10 4000000
-plot:   python3 plotting.py
-vis:    xdg-open Histogram_of_epsilon_for_T_1.pdf && xdg-open Histogram_of_epsilon_for_T_2.4.pdf
-'''
+For running:
+```
+time ./main.exe
+```
+("time" is optional)
+
+All results are written to txt files so that they could be used for plotting in python.
+
+For running 
 
 
 For running:
