@@ -66,10 +66,11 @@ void Ising::monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, 
     avg_m_sq = avg_m_sq + model.m_squared;
   }
 
-  avg_eps /= num_MC_cycles;
-  avg_eps_sq /= num_MC_cycles;
-  avg_m_abs /= num_MC_cycles;
-  avg_m_sq /= num_MC_cycles;
+  avg_eps /= (num_MC_cycles);
+  avg_m_abs /= (num_MC_cycles);
+
+  avg_eps_sq /= (num_MC_cycles);
+  avg_m_sq /= (num_MC_cycles);
 
 }
 
@@ -117,6 +118,13 @@ void Ising::analytical_comparison(std::vector<double> temperatures, int N_MC_cyc
         // Compute averages from model:
         monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed);
 
+        int temp_N = model.N;
+
+        avg_eps /= temp_N;
+        avg_eps_sq /= temp_N;
+        avg_m_abs /= (temp_N*temp_N);
+        avg_m_sq /= (temp_N*temp_N);
+
         // Analytical values:
         std::vector<double> avgs = analytical(2, temperature);
 
@@ -140,9 +148,9 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,i
   file << std::setprecision(print_prec) << "Burn in [cycles], "
        << std::setprecision(print_prec) << "Temperature [J/kb], "
        << std::setprecision(print_prec) << "Lattice, "
-       << std::setprecision(print_prec) << "Energy [J], "
+       << std::setprecision(print_prec) << "Average energy [J], "
        << std::setprecision(print_prec) << "Energy squared [J^2], "
-       << std::setprecision(print_prec) << "Magnetisation, "
+       << std::setprecision(print_prec) << "Average magnetisation, "
        << std::setprecision(print_prec) << "Magnetisation squared, "
        << std::setprecision(print_prec) << "Sample, "
        << std::setprecision(print_prec) << "Heat capacity, "
@@ -180,8 +188,13 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,i
 
         monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed, burn);
 
-        double chi = (avg_m_sq - (avg_m_abs*avg_m_abs)) / (temperature*L*L);
-        double cv = (avg_eps_sq - (avg_eps*avg_eps)) / (temperature*temperature*L*L);
+        int temp_N = model.N;
+
+        double chi = (avg_m_sq - (avg_m_abs*avg_m_abs)) / (temperature*temp_N);
+        double cv = (avg_eps_sq - (avg_eps*avg_eps)) / (temperature*temperature*temp_N);
+
+        avg_eps /= temp_N;
+        avg_m_abs /= temp_N;
 
         #pragma omp critical
         file << std::setprecision(print_prec) << burn << ", "
@@ -224,8 +237,8 @@ void Ising::epsilon_dist(arma::vec temperature, std::vector<int> lattice, int N_
 
   file << std::setprecision(print_prec) << "Temperature [J/kb], "
       << std::setprecision(print_prec) << "Lattice, "
-      << std::setprecision(print_prec) << "Energy [J], "
-      << std::setprecision(print_prec) << "Magnetisation, "
+      << std::setprecision(print_prec) << "Average energy [J], "
+      << std::setprecision(print_prec) << "Average magnetisation, "
       << std::setprecision(print_prec) << "Sample, "
       << std::setprecision(print_prec) << "Cycle"
       << std::endl;
@@ -253,6 +266,8 @@ void Ising::epsilon_dist(arma::vec temperature, std::vector<int> lattice, int N_
           model.random_walk(thread_seed);
         }
 
+        int temp_N = model.N;
+
         for (int i = 0; i < N_cycles; i++) {
             int seed = thread_seed + i;
 
@@ -261,8 +276,8 @@ void Ising::epsilon_dist(arma::vec temperature, std::vector<int> lattice, int N_
             #pragma omp critical
             file << std::setprecision(print_prec) << T << ", "
                 << std::setprecision(print_prec) << L << ", "
-                << std::setprecision(print_prec) << model.epsilon << ", "
-                << std::setprecision(print_prec) << model.m_abs << ", "
+                << std::setprecision(print_prec) << model.epsilon / temp_N << ", "
+                << std::setprecision(print_prec) << model.m_abs / temp_N << ", "
                 << std::setprecision(print_prec) << j << ", "
                 << std::setprecision(print_prec) << i
                 << std::endl;
@@ -295,8 +310,8 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
   file << std::setprecision(print_prec) << "Order, "
        << std::setprecision(print_prec) << "Temperature [J/kb], "
        << std::setprecision(print_prec) << "Cycle, "
-       << std::setprecision(print_prec) << "Energy [J], "
-       << std::setprecision(print_prec) << "Magnetisation, "
+       << std::setprecision(print_prec) << "Average energy [J], "
+       << std::setprecision(print_prec) << "Average magnetisation, "
        << std::setprecision(print_prec) << "Lattice, "
        << std::setprecision(print_prec) << "Sample"
        << std::endl;
@@ -331,6 +346,8 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
 
           std::string order = start ? ("Unordered") : ("Ordered");
 
+          int temp_N = model.N;
+
           for (int n=100; n < n_cycles; n+=100) {
             monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed);
 
@@ -338,8 +355,8 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
             file << std::setprecision(print_prec) << order << ", "
                     << std::setprecision(print_prec) << T << ", "
                     << std::setprecision(print_prec) << n << ", "
-                    << std::setprecision(print_prec) << avg_eps << ", "
-                    << std::setprecision(print_prec) << avg_m_abs << ", "
+                    << std::setprecision(print_prec) << avg_eps / temp_N << ", "
+                    << std::setprecision(print_prec) << avg_m_abs / temp_N << ", "
                     << std::setprecision(print_prec) << L << ", "
                     << std::setprecision(print_prec) << i
                     << std::endl;
