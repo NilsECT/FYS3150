@@ -127,11 +127,11 @@ chi = "Susceptibility"
 
 ###########  LOOKING AT BURN IN ORDERED VS UNORDERED #######
 
-var_N = get_data("varying_cycles_no_burn")
+# var_N = get_data("varying_cycles_no_burn")
 
-lattices = [20]    # [20, 40, 60, 100]
+# lattices = [20]    # [20, 40, 60, 100]
 
-for lat in lattices:
+# for lat in lattices:
 
     # # using fontsizes 16
 
@@ -150,10 +150,10 @@ for lat in lattices:
     # plt.show()
 
     # plt.figure(figsize=(12, 10))
-    sns.lineplot(data=var_N, x=cycles, y=energy, hue=temperature, style="Order")
-    plt.xscale("log")
-    plt.savefig("var_MC_%d.pdf" %lat)
-    plt.show()
+    # sns.lineplot(data=var_N, x=cycles, y=energy, hue=temperature, style="Order")
+    # plt.xscale("log")
+    # plt.savefig("var_MC_%d.pdf" %lat)
+    # plt.show()
 
 ###########################################################
 
@@ -179,12 +179,14 @@ for lat in lattices:
 
 ############# LOOKING AT PHASE TRANSITIONS ###############
 
-# phase = get_data("phase_transition_varL")
+phase = get_data("phase_transition_varL")
 
-# sns.lineplot(data=phase, x=temperature, y=cv)
-# plt.savefig("cv_20.pdf")
-# plt.show()
+plt.figure()
+sns.lineplot(data=phase, x=temperature, y=cv)
+plt.savefig("cv_40.pdf")
+plt.show()
 
-# sns.lineplot(data=phase, x=temperature, y=chi)
-# plt.savefig("chi_20.pdf")
+plt.figure()
+sns.lineplot(data=phase, x=temperature, y=chi)
+plt.savefig("chi_20.pdf")
 # plt.show()

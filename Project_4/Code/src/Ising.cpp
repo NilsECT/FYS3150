@@ -131,76 +131,7 @@ void Ising::analytical_comparison(std::vector<double> temperatures, int N_MC_cyc
   file.close();
 }
 
-/**
- * For a given lattice size L, iterate through temperatures and write the
- * average values to a file.
- *
- * @param L
- * @param temperatures
- * @param N_spinflips
- * @param N_MC_cycles
- * @param seed
- * @param filename
- */
-void Ising::phase_transitions(int lattice, arma::vec &temperatures, int N_MC_cycles, int seed, int burn, std::string filename){
-
-  std::mt19937 MC_seed_generator (seed);
-
-  std::ofstream file;
-  file.open(filename + "_" + std::to_string(lattice) + ".txt", std::ofstream::trunc);
-  static int print_prec = 10;
-
-  file << std::setprecision(print_prec) << "Burn in [cycles], "
-       << std::setprecision(print_prec) << "Temperature [J/kb], "
-       << std::setprecision(print_prec) << "Lattice, "
-       << std::setprecision(print_prec) << "Energy [J], "
-       << std::setprecision(print_prec) << "Energy squared [J^2], "
-       << std::setprecision(print_prec) << "Magnetisation, "
-       << std::setprecision(print_prec) << "Magnetisation squared, "
-       << std::setprecision(print_prec) << "Heat capacity, "
-       << std::setprecision(print_prec) << "Susceptibility"
-       << std::endl;
-
-  #pragma omp parallel
-  {
-    auto thread_seed = MC_seed_generator();
-
-    #pragma omp for
-    for (double &temperature : temperatures){
-
-      double avg_eps = 0.0;
-      double avg_eps_sq = 0.0;
-      double avg_m_abs = 0.0;
-      double avg_m_sq = 0.0;
-
-      // make grid
-      Grid model = Grid(lattice, temperature);
-      model.fill_grid(thread_seed);
-
-      monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed, burn);
-
-      double chi = (lattice*lattice) * (avg_m_sq - avg_m_abs*avg_m_abs) / temperature;
-      double cv = (lattice*lattice) * (avg_eps_sq - avg_eps*avg_eps) / (temperature*temperature);
-
-      file << std::setprecision(print_prec) << burn << ", "
-          << std::setprecision(print_prec) << temperature << ", "
-          << std::setprecision(print_prec) << lattice << ", "
-          << std::setprecision(print_prec) << avg_eps << ", "
-          << std::setprecision(print_prec) << avg_eps_sq << ", "
-          << std::setprecision(print_prec) << avg_m_abs << ", "
-          << std::setprecision(print_prec) << avg_m_sq << ", "
-
-            << std::setprecision(print_prec) << cv << ", "
-            << std::setprecision(print_prec) << chi
-          << std::endl;
-      }
-  }
-  file.close();
-}
-
 void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,int N_MC_cycles, int n_samples, int seed, int burn, std::string filename){
-
-  std::mt19937 MC_seed_generator (seed);
 
   std::ofstream file;
   file.open(filename + ".txt", std::ofstream::trunc);
@@ -217,14 +148,24 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,i
        << std::setprecision(print_prec) << "Heat capacity, "
        << std::setprecision(print_prec) << "Susceptibility"
        << std::endl;
-  auto thread_seed = MC_seed_generator();
-  omp_set_nested(1);
-  #pragma omp parallel for num_threads(5)
+  
+  
+  //omp_set_nested(1);
+  // #pragma omp parallel for
   for (int i = 0; i < n_samples; i++) {
+    int sample_seed = seed + i;
 
-    #pragma omp parallel for 
+    // #pragma omp parallel for 
     for (int &L : lattice) {
+      
+      #pragma omp parallel for
       for (double &temperature : temperatures){
+
+        const int threadID = omp_get_thread_num();
+
+        std::mt19937 MC_seed_generator;
+        auto thread_seed = sample_seed + threadID;
+        MC_seed_generator.seed(thread_seed);
 
         int new_seed = thread_seed + temperature + L + i;
 
@@ -235,9 +176,9 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,i
 
         // make grid
         Grid model = Grid(L, temperature);
-        model.fill_grid(new_seed);
+        model.fill_grid(thread_seed);
 
-        monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, new_seed, burn);
+        monte_carlo(N_MC_cycles, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed, burn);
 
         double chi = (avg_m_sq - (avg_m_abs*avg_m_abs)) / (temperature*L*L);
         double cv = (avg_eps_sq - (avg_eps*avg_eps)) / (temperature*temperature*L*L);
@@ -255,68 +196,10 @@ void Ising::phase_transitions(std::vector<int> lattice, arma::vec temperatures,i
               << std::setprecision(print_prec) << chi
               << std::endl;
       }
+      
     }
   }
-  file.close();
-}
-
-/**
- * @brief Samples all energies given by individual cycles and prints them to a file
- * 
- * @param temperature Armadillo vector containing the temperatures you want ot sample over
- * @param L int of lattice size for the model
- * @param N_cycles 
- * @param n_samples 
- * @param burn
- * @param filename 
- * @param seed 
- */
-void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int n_samples, int burn, std::string filename, int seed) {
-  std::mt19937 MC_seed_generator (seed);
-
-  // Open file to which we write the data:
-  std::ofstream file;
-  file.open(filename + ".txt", std::ofstream::trunc);
-  static int print_prec = 10;
-
-  file << std::setprecision(print_prec) << "Temperature [J/kb], "
-      << std::setprecision(print_prec) << "Lattice, "
-      << std::setprecision(print_prec) << "Energy [J], "
-      << std::setprecision(print_prec) << "Magnetisation, "
-      << std::setprecision(print_prec) << "Sample, "
-      << std::setprecision(print_prec) << "Cycle"
-      << std::endl;
-
-  int l_sq = L*L;
-
-  #pragma omp prallel for
-  for (double &T : temperature){
-    for (int j = 0; j < n_samples; j++) {
-      auto thread_seed = MC_seed_generator();
-
-      Grid model = Grid(L, T);
-      model.fill_grid(thread_seed);
-
-      for (int i=0; i < burn; i++) {
-        model.random_walk(thread_seed);
-      }
-
-      for (int i = 0; i < N_cycles; i++) {
-          int seed = thread_seed + i;
-
-          model.random_walk(seed);
-
-          #pragma omp critical
-          file << std::setprecision(print_prec) << T << ", "
-              << std::setprecision(print_prec) << L << ", "
-              << std::setprecision(print_prec) << model.epsilon << ", "
-              << std::setprecision(print_prec) << model.m_abs << ", "
-              << std::setprecision(print_prec) << j << ", "
-              << std::setprecision(print_prec) << i
-              << std::endl;
-      }
-    }
-  }
+  
   file.close();
 }
 
@@ -332,7 +215,7 @@ void Ising::epsilon_dist(arma::vec temperature, int L, int N_cycles, int n_sampl
  * @param seed 
  */
 void Ising::epsilon_dist(arma::vec temperature, std::vector<int> lattice, int N_cycles, int n_samples, int burn, std::string filename, int seed) {
-  std::mt19937 MC_seed_generator (seed);
+  // std::mt19937 MC_seed_generator (seed);
 
   // Open file to which we write the data:
   std::ofstream file;
@@ -347,14 +230,21 @@ void Ising::epsilon_dist(arma::vec temperature, std::vector<int> lattice, int N_
       << std::setprecision(print_prec) << "Cycle"
       << std::endl;
 
-  #pragma omp parallel for
-  for (int &L : lattice) {
-    int l_sq = L*L;
+  for (int j = 0; j < n_samples; j++) {
+    
+    int sample_seed = seed + j;
 
-    #pragma omp prallel for
-    for (double &T : temperature){
-      for (int j = 0; j < n_samples; j++) {
-        auto thread_seed = MC_seed_generator();
+    #pragma omp parallel for
+    for (int &L : lattice) {
+      for (double &T : temperature){
+      
+        int l_sq = L*L;
+
+        const int threadID = omp_get_thread_num();
+
+        std::mt19937 MC_seed_generator;
+        auto thread_seed = sample_seed + threadID;
+        MC_seed_generator.seed(thread_seed);
 
         Grid model = Grid(L, T);
         model.fill_grid(thread_seed);
@@ -389,83 +279,13 @@ void Ising::epsilon_dist(arma::vec temperature, std::vector<int> lattice, int N_
  * @param temperature Armadillo-vector containing different temperatures
  * @param n_cycles Total number of cycles which to check, has to be multiple of 25
  * @param n_samples Number of samples for each combination of temperature and cycles
- * @param L Lattice size.
- * @param filename
- * @param seed For generating thread seeds.
- */
-void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_samples, int lattice, int burn, std::string filename, int seed){
-
-  std::mt19937 MC_seed_generator (seed);
-
-  // Open file to which we write the data:
-  std::ofstream file;
-  file.open(filename + ".txt", std::ofstream::trunc);
-  static int print_prec = 10;
-
-  file << std::setprecision(print_prec) << "Order, "
-       << std::setprecision(print_prec) << "Temperature [J/kb], "
-       << std::setprecision(print_prec) << "Cycle, "
-       << std::setprecision(print_prec) << "Energy [J], "
-       << std::setprecision(print_prec) << "Magnetisation, "
-       << std::setprecision(print_prec) << "Lattice, "
-       << std::setprecision(print_prec) << "Sample"
-       << std::endl;
-
-  #pragma omp parallel for
-  for (double &T : temperature) {
-    for (int i = 0; i < n_samples; i++) {
-
-      auto thread_seed = MC_seed_generator();
-
-      std::vector<bool> container = std::vector<bool>{true, false};
-
-      #pragma omp parallel for
-      for (bool start : container) {
-
-        Grid model = Grid(lattice, T);
-        model.fill_grid(thread_seed, start);
-        this->burn_in(model, burn, thread_seed);
-
-        // Initialize averages:
-        double avg_eps = 0.0;
-        double avg_eps_sq = 0.0;
-        double avg_m_abs = 0.0;
-        double avg_m_sq = 0.0;
-
-        std::string order = start ? ("Ordered") : ("Unordered");
-
-        for (int n=25; n < n_cycles; n+=25) {
-          monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed);
-
-          #pragma omp critical
-          file << std::setprecision(print_prec) << order << ", "
-                  << std::setprecision(print_prec) << T << ", "
-                  << std::setprecision(print_prec) << n << ", "
-                  << std::setprecision(print_prec) << avg_eps << ", "
-                  << std::setprecision(print_prec) << avg_m_abs << ", "
-                  << std::setprecision(print_prec) << lattice << ", "
-                  << std::setprecision(print_prec) << i
-                  << std::endl;
-        }
-      }
-    }
-  }
-  file.close();
-}
-
-/**
- * Vary the number of MC cycles for grid with given size and temperature.
- *
- * @param temperature Armadillo-vector containing different temperatures
- * @param n_cycles Total number of cycles which to check, has to be multiple of 25
- * @param n_samples Number of samples for each combination of temperature and cycles
  * @param L Lattice sizes for wihch to loop over in a standard int vector
  * @param filename
  * @param seed For generating thread seeds.
  */
 void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_samples, std::vector<int> lattice, int burn, std::string filename, int seed){
 
-  std::mt19937 MC_seed_generator (seed);
+  // std::mt19937 MC_seed_generator (seed);
 
   // Open file to which we write the data:
   std::ofstream file;
@@ -481,16 +301,22 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
        << std::setprecision(print_prec) << "Sample"
        << std::endl;
 
-  #pragma omp parallel for
-  for (double &T : temperature) {
-    for (int i = 0; i < n_samples; i++) {
+  for (int i = 0; i < n_samples; i++) {
 
-      auto thread_seed = MC_seed_generator();
+    int sample_seed = seed + i;
 
-      std::vector<bool> container = std::vector<bool>{true, false};
-
-      #pragma omp parallel for
+    #pragma omp parallel for
+    for (double &T : temperature) {
       for (int &L : lattice) {
+
+        std::vector<bool> container = std::vector<bool>{true, false};
+        
+        const int threadID = omp_get_thread_num();
+
+        std::mt19937 MC_seed_generator;
+        auto thread_seed = sample_seed + threadID;
+        MC_seed_generator.seed(thread_seed);
+
         for (bool start : container) {
 
           Grid model = Grid(L, T);
@@ -503,9 +329,9 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
           double avg_m_abs = 0.0;
           double avg_m_sq = 0.0;
 
-          std::string order = start ? ("Ordered") : ("Unordered");
+          std::string order = start ? ("Unordered") : ("Ordered");
 
-          for (int n=25; n < n_cycles; n+=25) {
+          for (int n=100; n < n_cycles; n+=100) {
             monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed);
 
             #pragma omp critical
