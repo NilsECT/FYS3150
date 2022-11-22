@@ -180,14 +180,6 @@ void Grid::random_walk(int seed){
     index = dE / 4 + 2;
     dE = this->dEs.at(index);
 
-    // Add current energy and magnetization values to average sum:
-    // epsilon = epsilon + this->E;
-    // epsilon_squared = epsilon_squared + (this->E*this->E);
-    //
-    // current_magnetization = this->M;
-    // m_abs = m_abs + std::sqrt(current_magnetization * current_magnetization);
-    // m_squared = m_squared + current_magnetization * current_magnetization;
-
     // Generate random float between 0 and 1:
     r = spinflip(generator);
 
