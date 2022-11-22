@@ -320,7 +320,7 @@ void Ising::epsilon_dist(arma::vec temperature, std::vector<int> lattice, int N_
  * @param filename
  * @param seed For generating thread seeds.
  */
-void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_samples, std::vector<int> lattice, int burn, std::string filename, int seed){
+void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_samples, std::vector<int> lattice, int burn, std::string filename, int step, int seed){
 
   // std::mt19937 MC_seed_generator (seed);
 
@@ -341,13 +341,18 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
   for (int i = 0; i < n_samples; i++) {
 
     int sample_seed = seed + i;
+    std::vector<bool> container = std::vector<bool>{true, false};
 
     #pragma omp parallel for
     for (double &T : temperature) {
       for (int &L : lattice) {
+<<<<<<< HEAD
 
         std::vector<bool> container = std::vector<bool>{true, false};
 
+=======
+        
+>>>>>>> 997a9f7b61e74d3aecba403b3f69e1e14674249f
         const int threadID = omp_get_thread_num();
 
         std::mt19937 MC_seed_generator;
@@ -366,11 +371,11 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
           double avg_m_abs = 0.0;
           double avg_m_sq = 0.0;
 
-          std::string order = start ? ("Unordered") : ("Ordered");
+          std::string order = start ? ("Unordered") : ("Ordered");  // labels are wrong some weird reason we can't find
 
           int temp_N = model.N;
 
-          for (int n=100; n < n_cycles; n+=100) {
+          for (int n=step; n < n_cycles; n+=step) {
             monte_carlo(n, avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq, model, thread_seed);
 
             #pragma omp critical
