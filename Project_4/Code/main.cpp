@@ -15,8 +15,10 @@ int main(){
   // model instance:
   Ising model = Ising();
 
-  // Problem 4: compare with analytical for L = 2
+  // Compare with analytical solution for L = 2
   std::vector<double> temperatures = {1.0};
+  // Different number of MC cycles (where the values are
+  // chosen to obtain an acceptable computation time and convergence):
   arma::vec cycles = arma::logspace(4, 7.8, 38);
   model.analytical_comparison(temperatures, cycles, "analytical_comparison", seed);
 

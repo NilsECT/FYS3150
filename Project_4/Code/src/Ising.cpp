@@ -8,7 +8,7 @@
 // #include <fstream>
 
 /**
- * Analytical solution.
+ * Analytical solution for 2D Ising model of dimension 2x2.
  *
  * @param L Lattice size
  * @param T Temperature.
@@ -27,14 +27,16 @@ std::vector<double> Ising::analytical(int L, double T){
 
   Z = 2 * (6 + exp(8/T) + exp(-8/T));  // Partition function
 
+  // Mean energy per spin and magnetisation per spin:
   mean_E = (4/Z) * (exp(-8/T) - exp(8/T));
   m_abs = (4 + 2*exp(8/T)) / Z;
 
+  // Mean energy squared and magnetisation squared:
   mean_E_squared = N * N * (8/Z) * (exp(8/T) + exp(-8/T));
   mean_m_squared = (2/Z) * (1 + exp(8/T));
 
+  // Heat capacity and susceptibility per spin:
   Cv = (mean_E_squared - mean_E*mean_E*N*N) / (N * T * T);
-  //chi = N * (mean_m_squared - m_abs*m_abs) / (T);
   chi = (16 / (Z*Z*T)) * (3 + 3*exp(8/T) + exp(-8/T));
 
   std::vector<double> avgs = {mean_E, m_abs, Cv, chi};
@@ -42,16 +44,13 @@ std::vector<double> Ising::analytical(int L, double T){
 }
 
 /**
- * Perform one monte carlo cycle by creating an instance of Grid.
+ * Perform one monte carlo cycle on a given grid, and add to average values.
  *
- * @param N_spinflips
- * @param num_MC_cycles
- * @param avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq References to averages that we add to
- * @param T
- * @param seed Seed for?????????????????????
- * @param L
- * @param burn Burn in time in number of cycles
- * @param random_config Whether initial configuration is randomized
+ * @param num_MC_cycles Number of Monte Carlo cycles.
+ * @param avg_eps, avg_eps_sq, avg_m_abs, avg_m_sq References to averages that we add to.
+ * @param model An instance of Grid.
+ * @param seed
+ * @param burn Burn in time in number of Monte Carlo cycles.
  */
 void Ising::monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, double &avg_m_abs, double &avg_m_sq, Grid &model, int seed,int burn) {
   int flips = model.N;
@@ -62,8 +61,10 @@ void Ising::monte_carlo(int num_MC_cycles, double &avg_eps, double &avg_eps_sq, 
 
     int new_seed = seed + i;
 
+    // Perform one Markov Chain walk:
     model.random_walk(new_seed);
 
+    // Add current values to averages:
     avg_eps = avg_eps + model.epsilon;
     avg_eps_sq = avg_eps_sq + model.epsilon_squared;
 
@@ -155,8 +156,6 @@ void Ising::analytical_comparison(std::vector<double> temperatures, arma::vec cy
                << std::setprecision(print_prec) << avgs.at(3) << std::endl;
       }
     }
-
-
 
   file.close();
 }
@@ -346,13 +345,9 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
     #pragma omp parallel for
     for (double &T : temperature) {
       for (int &L : lattice) {
-<<<<<<< HEAD
 
         std::vector<bool> container = std::vector<bool>{true, false};
 
-=======
-        
->>>>>>> 997a9f7b61e74d3aecba403b3f69e1e14674249f
         const int threadID = omp_get_thread_num();
 
         std::mt19937 MC_seed_generator;
