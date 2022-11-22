@@ -150,114 +150,55 @@ for i, axis_label, anal_axis_label in zip(range(4), labels, analytical_labels):
 
 var_N = get_data("varying_cycles_no_burn_lattices_true")
 
-lattices = [40]# np.array([20, 40, 60, 80, 100])
-# var_N = var_N.loc[var_N[cycles] > 3000]
+lattice = 20
 
-for lat in lattices:
 
-    # using fontsizes 16
+plt.figure(figsize=(12, 10))
+sns.lineplot(data=var_N, x=cycles, y=average_energy, hue=temperature, style="Order")
+plt.xscale("log")
+plt.savefig("var_MC_e_%d_true.pdf" %lattice)
 
-    # plt.figure(figsize=(12, 10))
-    # ordered = var_N.loc[var_N["Order"] == "Ordered"]
-    # sns.lineplot(data=ordered.loc[ordered[lattice] == lat], x=cycles, y=average_energy, hue=temperature)
-    # plt.xscale("log")
-    # plt.savefig("ordered_var_MC_%d.pdf" %lat)
-    # # plt.show()
-
-    # plt.figure(figsize=(12, 10))
-    # unordered = var_N.loc[var_N["Order"] == "Unordered"]
-    # sns.lineplot(data=unordered.loc[unordered[lattice] == lat], x=cycles, y=average_energy, hue=temperature)
-    # plt.xscale("log")
-    # plt.savefig("unordered_var_MC_%d.pdf" %lat)
-    # plt.show()
-
-    plt.figure(figsize=(12, 10))
-    sns.lineplot(data=var_N, x=cycles, y=average_energy, hue=temperature, style="Order")
-    plt.xscale("log")
-    plt.savefig("var_MC_e_%d_true.pdf" %lat)
-    # plt.show()
+plt.figure(figsize=(12, 10))
+sns.lineplot(data=var_N, x=cycles, y=magnet, hue=temperature, style="Order")
+plt.xscale("log")
+plt.savefig("var_MC_m_%d_true.pdf" %lattice)
 
 ###########################################################
 
-################### LOOKING AT ENERGY DISTRINUTION #######
+################### LOOKING AT ENERGY DISTRIBUTION #######
 
 eps_dist = get_data("epsilon_distribution")
-
-#using fontsizes 12
 
 temp = [1., 1.5, 2., 2.4]
 
 for i in temp:
     data = eps_dist.loc[eps_dist[temperature] == i]
-    for lat in lattices:
+    
 
-        plt.figure(figsize=(15, 13))
-        sns.displot(data=data.loc[data[lattice] == lat], x="Energy [J]", stat="probability", bins=75, kde=True)
-        # title_temp_lattice_#MC_#samples
-        plt.savefig("energy_dist_%.d_%d.pdf" %(i*10, lat))
-        plt.show()
+    plt.figure(figsize=(15, 13))
+    sns.displot(data=data, x="Energy [J]", stat="probability", bins=75, kde=True)
+    plt.savefig("energy_dist_%.d_%d.pdf" %(i*10, lattice))
+
 
 #######################################################
 
 ############# LOOKING AT PHASE TRANSITIONS ###############
 
-phase = get_data("phase_transition_varL_100")
-phase_2 = get_data("phase_transition_varL_alt_frem_til_100_feil_størrelseorden")
-phase_2[cv] = phase_2[cv]*phase_2[lattice]**4
-phase_2[chi] = phase_2[chi]*phase_2[lattice]**4
-
-# Specific heat capacity
-plt.figure()
-sns.lineplot(data=phase, x=temperature, y=cv)
-sns.lineplot(data=phase_2, x=temperature, y=cv, hue=lattice)
-plt.savefig("cv.pdf")
-
-# Susceptibility 
-plt.figure()
-sns.lineplot(data=phase, x=temperature, y=chi)
-sns.lineplot(data=phase_2, x=temperature, y=chi, hue=lattice)
-plt.savefig("chi.pdf")
+lattices = [20,40,60,80,100]
+steps = [23,24,25,100]
+T_c_max = np.zeros((len(steps),len(lattices)))
+datas = []
+for i,step in enumerate(steps):
+    data = get_data(f"phase_transition_varL_step_{step}")
+    datas.append(data)
+    for j,lat in enumerate(lattices):
+        idxmax = data.loc[data[lattice] == lat][chi].idxmax()
+        T_c_max[i,j] = data[temperature].to_numpy()[idxmax]
 
 
-
-# Problem 9:
-data_9 = get_data("21_26_1sample_phase_transition_varL")
-
-T_c1 = []
-for lat in lattices:
-    i = data_9.loc[data_9[lattice] == lat][chi].idxmax()
-    T_c1.append(data_9[temperature].to_numpy()[i])
-
-
-# print(T_c1)
-
-data_10 = get_data("phase_transition_varL_FRIDAS_2_kveld (1)")
-T_c2 = []
-for lat in lattices:
-    i = data_10.loc[data_10[lattice] == lat][chi].idxmax()
-    T_c2.append(data_9[temperature].to_numpy()[i])
-
-# print(T_c2)
-
-lattices_2468 = np.array([20, 40, 60, 80])
-T_c3 = []
-for lat in lattices_2468:
-    i = phase_2.loc[phase_2[lattice] == lat][chi].idxmax()
-    T_c3.append(phase_2[temperature].to_numpy()[i])
-i = phase[chi].idxmax()
-T_c3.append(phase[temperature].to_numpy()[i])
-# print(T_c3)
-
-data_nils = get_data("phase_transition_varL_nils")
-T_c4 = []
-for lat in lattices:
-    i = data_nils.loc[data_nils[lattice] == lat][chi].idxmax()
-    T_c4.append(data_nils[temperature].to_numpy()[i])
-
-T_c_mean = np.zeros(len(T_c1))
-for i in range(len(T_c1)):
-    T_ci = np.array([T_c1[i], T_c2[i], T_c3[i], T_c4[i]])
-    T_c_mean[i] = np.mean(T_ci)
+T_c_mean = np.zeros(len(T_c_max[0]))
+for i in range(len(T_c_mean)):
+    T_c_mean[i] = np.mean(T_c_max[:,i])
 
 L_frac = 1/lattices
 
@@ -310,8 +251,8 @@ plt.savefig("linear_fit_T_c_2.pdf")
 
 # Plotting av C_V og chi og sånt
 
-phase_all_list = [phase, phase_2, data_9, data_10, data_nils]
-phase_all = pd.concat(phase_all_list, ignore_index=True)
+
+phase_all = pd.concat(datas, ignore_index=True)
 
 plt.figure()
 sns.lineplot(data=phase_all, x=temperature, y=cv, hue=lattice)
@@ -328,5 +269,3 @@ plt.savefig("epsilon.pdf")
 plt.figure()
 sns.lineplot(data=phase_all, x=temperature, y=magnet, hue=lattice)
 plt.savefig("magnetization.pdf")
-
-# sns.lineplot(data=var_N, x=cycles, y=energy, hue=temperature, style="Order")
