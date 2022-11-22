@@ -76,14 +76,14 @@ def get_data(filename, delimiter=", ", col_names_ind=0):
     name = filename + ".txt"
 
     data = pd.read_csv(name, sep=delimiter, header=col_names_ind, index_col=False, engine='python')
-    
+
     return data
 
 def load_multiple(filenames):
     temp = []
     for i in filenames:
         temp.append(get_data(i))
-    
+
     return pd.concat(temp, ignore_index=True)
 
 
@@ -111,19 +111,36 @@ def sortdata(data, col_name):
         7   pray   92      7
 
     '''
-    
+
     return data.sort_values(by=col_name, ignore_index=True)
 
 cycles = "Cycle"
 temperature = "Temperature [J/kb]"
 lattice = "Lattice"
-energy = "Energy [J]"
+energy = "Average energy [J]"
 sample = "Sample"
-magnet = "Magnetisation"
+magnet = "Average magnetisation"
 burn = "Burn in [cycles]"
 cv = "Heat capacity"
 chi = "Susceptibility"
 
+###########  COMPARISON WITH ANALYTICAL RESULTS #######
+
+data = get_data('analytical_comparison')
+
+analytical_labels = ['Analytical energy per spin [J]', 'Analytical absolute magnetisation per spin', 'Analytical heat capacity', 'Analytical susceptibility']
+labels = ['Energy per spin [J]', 'Absolute magnetisation per spin', cv, chi]
+
+for i, axis_label, anal_axis_label in zip(range(4), labels, analytical_labels):
+    plt.figure(figsize=(12, 7))
+
+    graph = sns.lineplot(data=data, x="MC cycles",  y=axis_label, color='red', label='Computed')#, color=palette[0])
+    graph.axhline(data[anal_axis_label][0], linestyle='--', label='Analytical', color='orange')
+
+    plt.legend()
+    plt.xscale("log")
+    plt.savefig(f"analytical_{axis_label.split(' ')[0]}.pdf")
+    plt.show()
 
 ###########  LOOKING AT BURN IN ORDERED VS UNORDERED #######
 
@@ -182,11 +199,19 @@ chi = "Susceptibility"
 phase = get_data("phase_transition_varL")
 
 plt.figure()
-sns.lineplot(data=phase, x=temperature, y=cv)
-plt.savefig("cv_40.pdf")
+sns.lineplot(data=phase, x=temperature, y=cv, hue=lattice)
+# plt.savefig("cv_40.pdf")
+plt.show()
+
+sns.lineplot(data=phase, x=temperature, y=energy, hue=lattice)
+# plt.savefig("cv_40.pdf")
+plt.show()
+
+sns.lineplot(data=phase, x=temperature, y=magnet, hue=lattice)
+# plt.savefig("cv_40.pdf")
 plt.show()
 
 plt.figure()
-sns.lineplot(data=phase, x=temperature, y=chi)
-plt.savefig("chi_20.pdf")
-# plt.show()
+sns.lineplot(data=phase, x=temperature, y=chi, hue=lattice)
+# plt.savefig("chi_20.pdf")
+plt.show()
