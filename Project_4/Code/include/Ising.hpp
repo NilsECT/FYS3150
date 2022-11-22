@@ -13,7 +13,7 @@ class Ising{
 
     std::vector<double> analytical(int L, double T);
 
-    void analytical_comparison(std::vector<double> temperatures, int N_MC_cycles, std::string filename = "analytical_comparison", const int seed = 137);
+    void analytical_comparison(std::vector<double> temperatures, arma::vec cycles, std::string filename = "analytical_comparison", const int seed = 137);
 
     void varying_n_mc_cycles(double temperature, arma::vec n_cycles, std::string filename = "varying_cycles", int seed = 137, bool random_config = true, int L = 20, int N_spinflips = 100);
 

@@ -12,17 +12,15 @@ int main(){
 
   const int seed = 137;
 
-  // Problem 4: compare with analytical for L = 2
-  //std::vector<double> temperatures = {1.0, 2.0};
-
-  // int N_MC_cycles = 500000;
-
   // model instance:
   Ising model = Ising();
 
-  // Working code for comparing with analytical solution (currently missing magnetization, will fix soon):
-  // std::vector<double> temps = {1.0, 2.4};
-  // model.analytical_comparison(temps, 10000000, "analytical_comparison", seed);
+  // Compare with analytical solution for L = 2
+  std::vector<double> temperatures = {1.0};
+  // Different number of MC cycles (where the values are
+  // chosen to obtain an acceptable computation time and convergence):
+  arma::vec cycles = arma::logspace(4, 7.8, 38);
+  model.analytical_comparison(temperatures, cycles, "analytical_comparison", seed);
 
   // // sigurd:
   double T_max = 2.6;
