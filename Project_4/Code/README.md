@@ -3,7 +3,7 @@ Welcome to our world of code. In this code we run Monte Carlo integration to stu
 
 For compiling:
 ```
-g++ main.cpp src/* -I include/  -o main.exe -larmadillo -O2 -fopenmp
+g++ main.cpp src/* -I include/  -o main.exe -larmadillo -O3 -fopenmp
 ```
 (The keys are for a run in ubuntu. For mac users, use what you need to compile with armadillo and open mp.)
 

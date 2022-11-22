@@ -316,22 +316,25 @@ void Ising::varying_n_mc_cycles(arma::vec temperature, int n_cycles, int n_sampl
        << std::setprecision(print_prec) << "Sample"
        << std::endl;
 
+  #pragma omp parallel for
   for (int i = 0; i < n_samples; i++) {
 
     int sample_seed = seed + i;
     std::vector<bool> container = std::vector<bool>{true, false};
 
-    #pragma omp parallel for
     for (double &T : temperature) {
       for (int &L : lattice) {
-        
-        const int threadID = omp_get_thread_num();
-
-        std::mt19937 MC_seed_generator;
-        auto thread_seed = sample_seed + threadID;
-        MC_seed_generator.seed(thread_seed);
-
         for (bool start : container) {
+
+          int extra = start ? 1000 : 3000;
+
+          sample_seed += extra + L + T*10;
+          const int threadID = omp_get_thread_num();
+
+          std::mt19937 MC_seed_generator;
+          auto thread_seed = sample_seed + threadID;
+          MC_seed_generator.seed(thread_seed);
+
 
           Grid model = Grid(L, T);
           model.fill_grid(thread_seed, start);
