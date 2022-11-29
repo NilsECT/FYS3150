@@ -73,7 +73,3 @@ std::vector<arma::mat*> ALUD(arma::vec &a, const int r, const int len) {
 
     return std::vector<arma::mat*>{A, L, U, D};
 }
-
-int main() {
-    
-}
