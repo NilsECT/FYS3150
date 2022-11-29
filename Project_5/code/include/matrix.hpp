@@ -14,8 +14,8 @@ std::tuple<int, int> single_to_pair(const int k, const int len) {
     return std::tuple<int, int>{i, j};
 }
 
-arma::mat create_tri(arma::vec &a, const int r, const int len, const int i) {
-    arma::mat temp = arma::mat(len, len);
+arma::cx_dmat create_tri(arma::vec &a, const int r, const int len, const int i) {
+    arma::cx_dmat temp = arma::cx_dmat(len, len);
 
     for (int ii = 0; ii<len; ii++) {
         temp.at(ii, ii) = a(pair_to_single(ii, i, len));
@@ -26,20 +26,20 @@ arma::mat create_tri(arma::vec &a, const int r, const int len, const int i) {
     return temp;
 }
 
-arma::mat create_rdiag(const int r, const int len) {
-    arma::mat temp = arma::mat(len, len);
+arma::cx_dmat create_rdiag(const int r, const int len) {
+    arma::cx_dmat temp = arma::cx_dmat(len, len);
 
     temp.diag().fill(r);
 
     return temp;
 }
 
-std::vector<arma::mat*> ALUD(arma::vec &a, const int r, const int len) {
+std::vector<arma::cx_dmat*> ALUD(arma::vec &a, const int r, const int len) {
     int lenlen = len*len;
-    arma::mat *A = new arma::mat(lenlen, lenlen); // L+U+D, will be named mother matrix
-    arma::mat *L = new arma::mat(lenlen, lenlen); // lower triag
-    arma::mat *U = new arma::mat(lenlen, lenlen); // upper triag
-    arma::mat *D = new arma::mat(lenlen, lenlen); // diagonal
+    arma::cx_dmat *A = new arma::cx_dmat(lenlen, lenlen); // L+U+D, will be named mother matrix
+    arma::cx_dmat *L = new arma::cx_dmat(lenlen, lenlen); // lower triag
+    arma::cx_dmat *U = new arma::cx_dmat(lenlen, lenlen); // upper triag
+    arma::cx_dmat *D = new arma::cx_dmat(lenlen, lenlen); // diagonal
 
     // filling and placing main diagonal matrices in mother
     for (int i = 0; i < len; i++) {
@@ -56,9 +56,9 @@ std::vector<arma::mat*> ALUD(arma::vec &a, const int r, const int len) {
         A->submat(start, start-len, end, end-len) = create_rdiag(r, len);
     }
 
-    arma::mat lower = arma::trimatl(*A, -1); // lower triag
-    arma::mat upper = arma::trimatu(*A, -1); // upper triag
-    arma::mat diag = A->diag(); // diag of A
+    arma::cx_dmat lower = arma::trimatl(*A, -1); // lower triag
+    arma::cx_dmat upper = arma::trimatu(*A, -1); // upper triag
+    arma::cx_dmat diag = A->diag(); // diag of A
 
     // fill lower traingular matrix
     L->diag(-1) = A->diag(-1);
@@ -71,5 +71,9 @@ std::vector<arma::mat*> ALUD(arma::vec &a, const int r, const int len) {
     // fill diagonal matrix
     D->diag() = A->diag();
 
-    return std::vector<arma::mat*>{A, L, U, D};
+    return std::vector<arma::cx_dmat*>{A, L, U, D};
+}
+
+std::vector<std::vector<arma::cx_dmat*>> create_AB(arma::mat &V, const float h, const float dt, const int M) {
+    
 }
