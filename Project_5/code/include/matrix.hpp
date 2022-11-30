@@ -95,3 +95,41 @@ std::vector<std::vector<arma::cx_dmat*>> create_AB(arma::mat &V, const double h,
 
     return std::vector{ALUD(a, -r, len), ALUD(b, r, len)};
 }
+
+arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
+    // trying to avoid multiplying many times by zero
+    // only take the diagonals from B that matter which are 0, 1, 3, -1, and -3
+    // perform Hadamard product of the diagonals with their respective parts of the u vector
+
+    int len = u.size();
+
+    arma::cx_dvec b = arma::cx_dvec(len);
+
+    // I have checked that these loops should work, by hand
+    // double check that it does indeed work through an example
+
+    // mutliplying the main diagonal of B with u
+    for (int i = 0; i < len; i++) {
+        b.at(i) = B.diag().at(i) * u.at(i);
+    }
+
+    // muliplying the lower and upper diagonals 1 and -1
+    for (int i = 1; i < len; i++) {
+        // diag 1
+        b.at(i-1) += B.diag(1).at(i-1) * u.at(i);
+
+        // diag -1
+        b.at(i) += B.diag(-1).at(i-1) * u.at(i-1);
+    }
+
+    // muliplying the lower and upper diagonals 3 and -3
+    for (int i = 3; i < len; i++) {
+        // diag 1
+        b.at(i-3) += B.diag(3).at(i-3) * u.at(i);
+
+        // diag -1
+        b.at(i) += B.diag(-3).at(i-3) * u.at(i-3);
+    }
+
+    return b;
+}
