@@ -116,6 +116,26 @@ arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
     return b;
 }
 
-arma::cx_dvec* gauss_seidel(std::vector<arma::cx_dmat*> &alud, arma::cx_dvec &b) {
+arma::cx_dvec* gauss_seidel(arma::cx_dmat &mat, arma::cx_dvec &b, arma::cx_dvec &u_old) {
+    // see page 191 in Morten's lecture notes
+    int lenlen = u_old.size();
+    int len = std::sqrt(lenlen);
 
+    arma::cx_dvec* u_new = new arma::cx_dvec(lenlen);
+
+    for (int i = 0; i < lenlen; i++) {
+        std::complex<double> temp = b.at(i);
+
+        for (int ii = 0; ii < i; ii++) {
+            temp -= mat.at(i, ii) * u_new->at(ii);
+        }
+
+        for (int ii = i+1; ii < lenlen; ii++) {
+            temp -= mat.at(i, ii) * u_old.at(ii);
+        }
+
+        temp /= (mat.at(i, i));
+
+        u_new->at(i) = temp;
+    }
 }
