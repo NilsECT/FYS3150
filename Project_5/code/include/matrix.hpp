@@ -116,26 +116,34 @@ arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
     return b;
 }
 
-arma::cx_dvec* gauss_seidel(arma::cx_dmat &mat, arma::cx_dvec &b, arma::cx_dvec &u_old) {
+arma::cx_dvec gauss_seidel(arma::cx_dmat &mat, arma::cx_dvec &b, arma::cx_dvec &u_old, double criteria) {
     // see page 191 in Morten's lecture notes
     int lenlen = u_old.size();
     int len = std::sqrt(lenlen);
 
-    arma::cx_dvec* u_new = new arma::cx_dvec(lenlen);
+    arma::cx_dvec temp_u = b;
 
-    for (int i = 0; i < lenlen; i++) {
-        std::complex<double> temp = b.at(i);
-
-        for (int ii = 0; ii < i; ii++) {
-            temp -= mat.at(i, ii) * u_new->at(ii);
-        }
-
-        for (int ii = i+1; ii < lenlen; ii++) {
-            temp -= mat.at(i, ii) * u_old.at(ii);
-        }
-
-        temp /= (mat.at(i, i));
-
-        u_new->at(i) = temp;
+    // diag 1 and -1
+    for (int i = 1; i < lenlen; i++) {
+        temp_u.at(i-1) -= (mat.diag(1).at(i-1)*u_old.at(i));
+        temp_u.at(i) -= (mat.diag(-1).at(i-1)*temp_u.at(i-1));
     }
+
+    // diag 3 and -3
+    for (int i = 3; i < lenlen; i++) {
+        temp_u.at(i-3) -= (mat.diag(3).at(i-3)*u_old.at(i));
+        temp_u.at(i) -= (mat.diag(-3).at(i-3)*temp_u.at(i-3));
+    }
+
+    // main diag
+    for (int i = 0; i < lenlen; i++) {
+        temp_u.at(i) /= mat.diag().at(i);
+    }
+
+    // calc residual
+    // Ax - b must be less than a tolerance
+    // risky play but let's try it
+    // if convergence criteria is met, then return the result
+    // if not do it again, recursive style
+    return (arma::approx_equal(arma::sum(mat.each_row()%temp_u.as_row(), 1), b, "reldiff", criteria)) ? temp_u : gauss_seidel(mat, b, temp_u, criteria); // golfing
 }
