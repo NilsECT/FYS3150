@@ -91,9 +91,8 @@ arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
     // double check that it does indeed work through an example
 
     // mutliplying the main diagonal of B with u
-    for (int i = 0; i < len; i++) {
-        b.at(i) = B.diag().at(i) * u.at(i);
-    }
+    // operator % should be multiplying elementwise
+    b = B.diag() % u;
 
     // muliplying the lower and upper diagonals 1 and -1
     for (int i = 1; i < len; i++) {
@@ -116,6 +115,7 @@ arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
     return b;
 }
 
+// NOT TESTED YET
 arma::cx_dvec gauss_seidel(arma::cx_dmat &mat, arma::cx_dvec &b, arma::cx_dvec &u_old, double criteria) {
     // see page 191 in Morten's lecture notes
     int lenlen = u_old.size();
@@ -136,9 +136,8 @@ arma::cx_dvec gauss_seidel(arma::cx_dmat &mat, arma::cx_dvec &b, arma::cx_dvec &
     }
 
     // main diag
-    for (int i = 0; i < lenlen; i++) {
-        temp_u.at(i) /= mat.diag().at(i);
-    }
+    // operator / should be doing the operations elementwise
+    temp_u /= mat.diag();
 
     // calc residual
     // Ax - b must be less than a tolerance
