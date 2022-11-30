@@ -34,12 +34,9 @@ arma::cx_dmat create_rdiag(const double r, const int len) {
     return temp;
 }
 
-std::vector<arma::cx_dmat*> ALUD(arma::cx_dvec &a, const double r, const int len) {
+arma::cx_dmat* create_mat(arma::cx_dvec &a, const double r, const int len) {
     int lenlen = len*len;
     arma::cx_dmat *A = new arma::cx_dmat(lenlen, lenlen); // L+U+D, will be named mother matrix
-    arma::cx_dmat *L = new arma::cx_dmat(lenlen, lenlen); // lower triag
-    arma::cx_dmat *U = new arma::cx_dmat(lenlen, lenlen); // upper triag
-    arma::cx_dmat *D = new arma::cx_dmat(lenlen, lenlen); // diagonal
 
     // filling and placing main diagonal matrices in mother
     for (int i = 0; i < len; i++) {
@@ -56,25 +53,10 @@ std::vector<arma::cx_dmat*> ALUD(arma::cx_dvec &a, const double r, const int len
         A->submat(start, start-len, end, end-len) = create_rdiag(r, len);
     }
 
-    arma::cx_dmat lower = arma::trimatl(*A, -1); // lower triag
-    arma::cx_dmat upper = arma::trimatu(*A, -1); // upper triag
-    arma::cx_dmat diag = A->diag(); // diag of A
-
-    // fill lower traingular matrix
-    L->diag(-1) = A->diag(-1);
-    L->diag(-3) = A->diag(-3);
-
-    // fill upper traingular matrix
-    U->diag(1) = A->diag(1);
-    U->diag(3) = A->diag(3);
-
-    // fill diagonal matrix
-    D->diag() = A->diag();
-
-    return std::vector<arma::cx_dmat*>{A, L, U, D};
+    return A;
 }
 
-std::vector<std::vector<arma::cx_dmat*>> create_AB(arma::mat &V, const double h, const double dt, const int M) {
+std::vector<arma::cx_dmat*> create_AB(arma::mat &V, const double h, const double dt, const int M) {
     int len = M-2;
     double r = dt/(h*h);
     std::complex<double> im(0, 1);
@@ -93,7 +75,7 @@ std::vector<std::vector<arma::cx_dmat*>> create_AB(arma::mat &V, const double h,
         }
     }
 
-    return std::vector{ALUD(a, -r, len), ALUD(b, r, len)};
+    return std::vector{create_mat(a, -r, len), create_mat(b, r, len)};
 }
 
 arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
@@ -132,4 +114,8 @@ arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
     }
 
     return b;
+}
+
+arma::cx_dvec* gauss_seidel(std::vector<arma::cx_dmat*> &alud, arma::cx_dvec &b) {
+
 }
