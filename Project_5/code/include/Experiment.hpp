@@ -25,11 +25,10 @@ protected:
 
     arma::cx_dvec wave_init(double centerx, double centery, double widthx, double widthy, double px, double py, int M);
 
-    void print(std::string filename);
-
 public:
     Experiment(double h, double dt, double T, double xc, double yc, double px, double py, double widthx, double widthy, double potential, int n_slit=2, double thickx=0.02, double centerx=0.5, double slit_sep=0.05, double aperture=0.05);
     void run();
+    void print(std::string filename);
 };
 
 #endif
