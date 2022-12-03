@@ -1,5 +1,4 @@
 #include <armadillo>
-#include <assert.h>
 #include <iostream>
 
 int pair_to_single(const int i, const int j, const int len=0) {
@@ -59,7 +58,7 @@ arma::cx_dmat* create_mat(arma::cx_dvec &a, const double r, const int len) {
 std::vector<arma::cx_dmat*> create_AB(arma::mat &V, const double h, const double dt, const int M) {
     int len = M-2;
     double r = dt/(h*h);
-    std::complex<double> im(0, 1);
+    std::complex<double> im(0., 1.);
     arma::cx_dvec a = arma::cx_dvec(len*len);
     arma::cx_dvec b = arma::cx_dvec(len*len);
 
@@ -67,10 +66,10 @@ std::vector<arma::cx_dmat*> create_AB(arma::mat &V, const double h, const double
         arma::vec temp_col = V.col(ii);
 
         for (int i=0; i < (len); i++) {
-            std::complex<double> temp_im = im * ((dt*temp_col(i)) / 2);
+            std::complex<double> temp_im = im * ((dt*temp_col(i)) / 2.);
 
-            a.at(pair_to_single(i, ii, len)) = 1 + 4*r + temp_im;
-            b.at(pair_to_single(i, ii, len)) = 1 - 4*r - temp_im;
+            a.at(pair_to_single(i, ii, len)) = 1. + 4.*r + temp_im;
+            b.at(pair_to_single(i, ii, len)) = 1. - 4.*r - temp_im;
             std::cout << i << std::endl;
         }
     }
@@ -118,8 +117,9 @@ arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
 // NOT TESTED YET
 arma::cx_dvec gauss_seidel(arma::cx_dmat &mat, arma::cx_dvec &b, arma::cx_dvec &u_old, double criteria) {
     // see page 191 in Morten's lecture notes
+
+    // proposal: change u_old to be a reference to the variable you want to update
     int lenlen = u_old.size();
-    int len = std::sqrt(lenlen);
 
     arma::cx_dvec temp_u = b;
 
