@@ -70,7 +70,6 @@ std::vector<arma::cx_dmat*> create_AB(arma::mat &V, const double h, const double
 
             a.at(pair_to_single(i, ii, len)) = 1. + 4.*r + temp_im;
             b.at(pair_to_single(i, ii, len)) = 1. - 4.*r - temp_im;
-            std::cout << i << std::endl;
         }
     }
 
