@@ -1,7 +1,7 @@
 #include <armadillo>
 #include <iostream>
 
-arma::mat potential(double potential, int M, int n_slit, double thickx, double centerx, double slit_sep, double aperture) {
+arma::mat potential(double potential, int M, int n_slit=2, double thickx=0.02, double centerx=0.5, double slit_sep=0.05, double aperture=0.05) {
     int len = M-2;
     double h = 1./len;
     arma::mat V = arma::mat(len, len).zeros();
