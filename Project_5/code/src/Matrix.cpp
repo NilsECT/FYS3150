@@ -1,19 +1,21 @@
+#include "Matrix.hpp"
 #include <armadillo>
 #include <iostream>
 
-int pair_to_single(const int i, const int j, const int len=0) {
+
+int Matrix::pair_to_single(const int i, const int j, const int len) {
     // len = M - 2
     return (j) * len + (i);
 }
 
-std::tuple<int, int> single_to_pair(const int k, const int len) {
+std::tuple<int, int> Matrix::single_to_pair(const int k, const int len) {
     int i = k % len;
     int j = k / len;
     
     return std::tuple<int, int>{i, j};
 }
 
-arma::cx_dmat create_tri(arma::cx_dvec &a, const double r, const int len, const int i) {
+arma::cx_dmat Matrix::create_tri(arma::cx_dvec &a, const double r, const int len, const int i) {
     arma::cx_dmat temp = arma::cx_dmat(len, len);
 
     for (int ii = 0; ii<len; ii++) {
@@ -25,7 +27,7 @@ arma::cx_dmat create_tri(arma::cx_dvec &a, const double r, const int len, const 
     return temp;
 }
 
-arma::cx_dmat create_rdiag(const double r, const int len) {
+arma::cx_dmat Matrix::create_rdiag(const double r, const int len) {
     arma::cx_dmat temp = arma::cx_dmat(len, len);
 
     temp.diag().fill(r);
@@ -33,7 +35,7 @@ arma::cx_dmat create_rdiag(const double r, const int len) {
     return temp;
 }
 
-arma::cx_dmat* create_mat(arma::cx_dvec &a, const double r, const int len) {
+arma::cx_dmat* Matrix::create_mat(arma::cx_dvec &a, const double r, const int len) {
     int lenlen = len*len;
     arma::cx_dmat *A = new arma::cx_dmat(lenlen, lenlen); // L+U+D, will be named mother matrix
 
@@ -55,7 +57,7 @@ arma::cx_dmat* create_mat(arma::cx_dvec &a, const double r, const int len) {
     return A;
 }
 
-std::vector<arma::cx_dmat*> create_AB(arma::mat &V, const double h, const double dt, const int M) {
+std::vector<arma::cx_dmat*> Matrix::create_AB(arma::mat &V, const double h, const double dt, const int M) {
     int len = M-2;
     double r = dt/(h*h);
     std::complex<double> im(0., 1.);
@@ -76,7 +78,7 @@ std::vector<arma::cx_dmat*> create_AB(arma::mat &V, const double h, const double
     return std::vector{create_mat(a, -r, len), create_mat(b, r, len)};
 }
 
-arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
+arma::cx_dvec Matrix::mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
     // trying to avoid multiplying many times by zero
     // only take the diagonals from B that matter which are 0, 1, 3, -1, and -3
     // perform Hadamard product of the diagonals with their respective parts of the u vector
@@ -114,34 +116,48 @@ arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::cx_dmat &B) {
 }
 
 // NOT TESTED YET
-arma::cx_dvec gauss_seidel(arma::cx_dmat &mat, arma::cx_dvec &b, arma::cx_dvec &u_old, double criteria) {
+int Matrix::gauss_seidel(arma::cx_dmat* mat, arma::cx_dvec* b, arma::cx_dvec* u_old, arma::cx_dvec* u_new, double criteria) {
     // see page 191 in Morten's lecture notes
 
     // proposal: change u_old to be a reference to the variable you want to update
-    int lenlen = u_old.size();
+    int lenlen = u_old->size();
 
-    arma::cx_dvec temp_u = b;
+    *u_new = *b;
 
     // diag 1 and -1
     for (int i = 1; i < lenlen; i++) {
-        temp_u.at(i-1) -= (mat.diag(1).at(i-1)*u_old.at(i));
-        temp_u.at(i) -= (mat.diag(-1).at(i-1)*temp_u.at(i-1));
+        u_new->at(i-1) -= (mat->diag(1).at(i-1)*u_old->at(i));
+        u_new->at(i) -= (mat->diag(-1).at(i-1)*u_new->at(i-1));
     }
 
     // diag 3 and -3
     for (int i = 3; i < lenlen; i++) {
-        temp_u.at(i-3) -= (mat.diag(3).at(i-3)*u_old.at(i));
-        temp_u.at(i) -= (mat.diag(-3).at(i-3)*temp_u.at(i-3));
+        u_new->at(i-3) -= (mat->diag(3).at(i-3)*u_old->at(i));
+        u_new->at(i) -= (mat->diag(-3).at(i-3)*u_new->at(i-3));
     }
 
     // main diag
     // operator / should be doing the operations elementwise
-    temp_u /= mat.diag();
+    *u_new /= mat->diag();
 
     // calc residual
     // Ax - b must be less than a tolerance
     // risky play but let's try it
     // if convergence criteria is met, then return the result
     // if not do it again, recursive style
-    return (arma::approx_equal(arma::sum(mat.each_row()%temp_u.as_row(), 1), b, "reldiff", criteria)) ? temp_u : gauss_seidel(mat, b, temp_u, criteria); // golfing
+    *u_old = *u_new;
+
+    return (arma::approx_equal(arma::sum(mat->each_row()%u_new->as_row(), 1), *b, "reldiff", criteria)) ? 0 : gauss_seidel(mat, b, u_old, u_new, criteria); // golfing
+}
+
+arma::cx_dmat reshape(arma::cx_dvec &u, int M) {
+    arma::cx_dmat u_mat = arma::cx_dmat(M-2, M-2);
+
+    for (int j=0; j < M-2; j++) {
+        for (int i=0; i < M-2; i++) {
+            u_mat.at(i, j) = u.at(Matrix::pair_to_single(i, j, M-2));
+        }
+    }
+
+    return u_mat;
 }
