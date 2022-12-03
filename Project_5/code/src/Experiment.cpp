@@ -7,17 +7,17 @@ Experiment::Experiment(double h, double dt, double T, double xc, double yc, doub
     // calculate M
     M = std::round(1./h);
     len = (M-2);
-
+    std::cout << "Experiment 10" << std::endl;
     // Generate potential
     V = this->potential(potential, M, n_slit, thickx, centerx, slit_sep, aperture);
-
+    std::cout << "Experiment 13" << std::endl;
     // Initialise wave and give it to a pointer
-    *u_now = this->wave_init(xc, yc, widthx, widthy, px, py, M);
-
+    u_now = wave_init(xc, yc, widthx, widthy, px, py, M);
+    std::cout << "Experiment 16" << std::endl;
     // Generate A and B
     Matrix matrix = Matrix();
     AB = matrix.create_AB(V, h, dt, M);
-
+    std::cout << "Experiment 17" << std::endl;
     // generate storage
     n_timesteps = std::round(T/dt);
     storage = arma::cx_dcube(len, len, n_timesteps);
@@ -29,18 +29,18 @@ Experiment::Experiment(double h, double dt, double T, double xc, double yc, doub
 
 void Experiment::run() {
     Matrix matrix = Matrix();
-
+    std::cout << "Experiment 32" << std::endl;
     // store initial state
     storage.slice(0) = matrix.reshape(*u_now, M);
 
     // simulate
     for (int i=1; i < n_timesteps ; i++) {
-
+        std::cout << "Experiment 38" << std::endl;
         // calc b
-        *b = matrix.mult_Bu(*u_now, *AB.at(1));
-
+        b = matrix.mult_Bu(*u_now, AB.at(1));
+        std::cout << "Experiment 41" << std::endl;
         // cross fingers for pointer galore
-        matrix.gauss_seidel(AB.at(0), b, u_now, u_next, 1e-5);
+        *u_now = arma::spsolve(AB.at(0), b);
         storage.slice(i) = matrix.reshape(*u_now, M);
     }
 }
@@ -50,29 +50,29 @@ void Experiment::print(std::string filename) {
 }
 
 
-arma::cx_dvec Experiment::wave_init(double centerx, double centery, double widthx, double widthy, double px, double py, int M) {
+arma::cx_dvec* Experiment::wave_init(double centerx, double centery, double widthx, double widthy, double px, double py, int M) {
     int len = M-2;
-    arma::cx_dvec u =  arma::cx_dvec(len*len);
+    arma::cx_dvec* u = new arma::cx_dvec(len*len);
     double h = 1./len;
     std::complex<double> im(0., 1.);
     std::complex<double> norm = 0.;
     
     // i is y and j is x
-
+    std::cout << "Experiment 61" << std::endl;
     for (int i=0; i<(len); i++) {
         for (int j=0; j<(len); j++) {
             double temp_x = ((h*(j+1)) - centerx);
             double temp_y = ((h*(i+1)) - centery);
-
+            std::cout << "Experiment 66" << std::endl;
             std::complex<double> arg = std::exp(-(temp_x*temp_x/(2*widthx*widthx)) - (temp_y*temp_y/(2*widthy*widthy)) + im*(px*temp_x) + im*(py*temp_y));
-
+            std::cout << "Experiment 68" << std::endl;
             norm += std::conj(arg) * arg;
-
-            u.at(Matrix::pair_to_single(i, j, len)) = arg;
+            std::cout << "Experiment 70" << std::endl;
+            u->at(Matrix::pair_to_single(i, j, len)) = arg;
         }
     }
-
-    u /= norm;
+    std::cout << "Experiment 74" << std::endl;
+    *u /= norm;
 
     return u;
 }
