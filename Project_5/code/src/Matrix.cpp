@@ -42,7 +42,7 @@ arma::sp_cx_dmat Matrix::create_tri(arma::cx_dvec &a, const double r, const int 
     arma::sp_cx_dmat temp = arma::sp_cx_dmat(len, len);
 
     for (int ii = 0; ii<len; ii++) {
-        temp.at(ii, ii) = a(pair_to_single(ii, i, len));
+        temp(ii, ii) = a(pair_to_single(ii, i, len));
         temp.diag(1).fill(r);
         temp.diag(-1).fill(r);
     }
@@ -117,8 +117,8 @@ std::vector<arma::sp_cx_dmat> Matrix::create_AB(arma::mat &V, const double h, co
         for (int i=0; i < (len); i++) {
             std::complex<double> temp_im = im * ((dt*temp_col(i)) / 2.);
 
-            a.at(pair_to_single(i, ii, len)) = 1. + 4.*r + temp_im;
-            b.at(pair_to_single(i, ii, len)) = 1. - 4.*r - temp_im;
+            a(pair_to_single(i, ii, len)) = 1. + 4.*r + temp_im;
+            b(pair_to_single(i, ii, len)) = 1. - 4.*r - temp_im;
         }
     }
 
@@ -145,7 +145,6 @@ arma::cx_dvec Matrix::mult_Bu(arma::cx_dvec &u, arma::sp_cx_dmat &B) {
 
     // I have checked that these loops should work, by hand
     // double check that it does indeed work through an example
-    std::cout << "Matrix 94" << std::endl;
     // mutliplying the main diagonal of B with u
     // operator % should be multiplying elementwise
     b = B.diag() % u;
@@ -153,35 +152,31 @@ arma::cx_dvec Matrix::mult_Bu(arma::cx_dvec &u, arma::sp_cx_dmat &B) {
     // muliplying the lower and upper diagonals 1 and -1
     for (int i = 1; i < len; i++) {
         // diag 1
-        std::cout << "Matrix 102" << std::endl;
-        temp_u = u.at(i);
-        std::cout << "Matrix 104" << std::endl;
-        temp_mat = B.diag(1).at(i-1);
-        b.at(i-1) += temp_mat * temp_u;
+        temp_u = u(i);
+        
+        temp_mat = B.diag(1)(i-1);
+        b(i-1) += temp_mat * temp_u;
 
         // diag -1
-        std::cout << "Matrix 109" << std::endl;
-        temp_u = u.at(i-1);
-        std::cout << "Matrix 111" << std::endl;
-        temp_mat = B.diag(-1).at(i-1);
-        b.at(i) += temp_mat * temp_u;
+        temp_u = u(i-1);
+        
+        temp_mat = B.diag(-1)(i-1);
+        b(i) += temp_mat * temp_u;
     }
 
     // muliplying the lower and upper diagonals 3 and -3
     for (int i = 3; i < len; i++) {
-        // diag 1
-        std::cout << "Matrix 119" << std::endl;
-        temp_u = u.at(i);
-        std::cout << "Matrix 121" << std::endl;
-        temp_mat = B.diag(3).at(i-3);
-        b.at(i-3) += temp_mat * temp_u;
+        // diag 3
+        temp_u = u(i);
+        
+        temp_mat = B.diag(3)(i-3);
+        b(i-3) += temp_mat * temp_u;
 
-        // diag -1
-        std::cout << "Matrix 126" << std::endl;
-        temp_u = u.at(i-3);
-        std::cout << "Matrix 128" << std::endl;
-        temp_mat = B.diag(-3).at(i-3);
-        b.at(i) += temp_mat * temp_u;
+        // diag -3
+        temp_u = u(i-3);
+        
+        temp_mat = B.diag(-3)(i-3);
+        b(i) += temp_mat * temp_u;
     }
 
     return b;
@@ -201,22 +196,22 @@ int Matrix::gauss_seidel(arma::sp_cx_dmat* mat, arma::cx_dvec* b, arma::cx_dvec*
     // diag 1 and -1
     for (int i = 1; i < lenlen; i++) {
         std::complex<double> temp_u = (u_old->at(i));
-        std::complex<double> temp_mat = mat->diag(1).at(i-1);
+        std::complex<double> temp_mat = mat->diag(1)(i-1);
         u_new->at(i-1) -= (temp_mat * temp_u);
 
         temp_u = u_new->at(i-1);
-        temp_mat = mat->diag(-1).at(i-1);
+        temp_mat = mat->diag(-1)(i-1);
         u_new->at(i) -= (temp_mat * temp_u);
     }
 
     // diag 3 and -3
     for (int i = 3; i < lenlen; i++) {
         std::complex<double> temp_u = (u_old->at(i));
-        std::complex<double> temp_mat = mat->diag(3).at(i-3);
+        std::complex<double> temp_mat = mat->diag(3)(i-3);
         u_new->at(i-3) -= (temp_mat * temp_u);
 
         temp_u = u_new->at(i-3);
-        temp_mat = mat->diag(-3).at(i-3);
+        temp_mat = mat->diag(-3)(i-3);
         u_new->at(i) -= (temp_mat * temp_u);
     }
 
@@ -239,7 +234,7 @@ arma::cx_dmat Matrix::reshape(arma::cx_dvec &u, int M) {
 
     for (int j=0; j < M-2; j++) {
         for (int i=0; i < M-2; i++) {
-            u_mat.at(i, j) = u.at(Matrix::pair_to_single(i, j, M-2));
+            u_mat(i, j) = u(Matrix::pair_to_single(i, j, M-2));
         }
     }
 
