@@ -59,20 +59,16 @@ void Experiment::run() {
     
     // store initial state
     storage.slice(0) = this->probability(this->u);
-    std::cout << arma::accu(storage.slice(0)) << std::endl;
 
     // simulate
     for (int i=1; i < n_timesteps ; i++) {
         // calc b
-        b = matrix.mult_Bu(this->u, AB.at(1));
-        
+        // b = matrix.mult_Bu(this->u, AB.at(1));
+        b = AB.at(1) * this->u;
+
         // find next timestep
         this->u = arma::spsolve(AB.at(0), b);
-        // std::cout << this->u.at(0) << std::endl;
         storage.slice(i) = this->probability(this->u);
-        
-        std::cout << arma::accu(storage.slice(i)) << std::endl;
-        // std::cout << std::endl;
     }
 }
 
@@ -84,6 +80,15 @@ void Experiment::run() {
 void Experiment::print(std::string filename) {
     // storage.save(filename + ".csv", arma::file_type::arma_ascii);
     storage.save(filename + ".bin");
+}
+
+/**
+ * @brief Prints the matrix containing the potential to a file.
+ * 
+ * @param filename 
+ */
+void Experiment::print_potential(std::string filename) {
+    V.save(filename + ".bin");
 }
 
 /**
@@ -104,9 +109,6 @@ arma::mat Experiment::probability(arma::cx_dvec &u) {
             prob(i, j) = std::real(std::conj(this->u(Matrix::pair_to_single(i, j, len))) * this->u(Matrix::pair_to_single(i, j, len)));
         }
     }
-
-    // double prob_tot = arma::accu(prob);
-    // prob = prob/prob_tot;
 
     return prob;
 }

@@ -38,7 +38,7 @@ std::tuple<int, int> Matrix::single_to_pair(const int k, const int len) {
  * @param i Current column for which we are creating the subatrix.
  * @return arma::sp_cx_dmat Sparse submatrix to be used.
  */
-arma::sp_cx_dmat Matrix::create_tri(arma::cx_dvec &a, const double r, const int len, const int i) {
+arma::sp_cx_dmat Matrix::create_tri(arma::cx_dvec &a, const std::complex<double> r, const int len, const int i) {
     arma::sp_cx_dmat temp = arma::sp_cx_dmat(len, len);
 
     for (int ii = 0; ii<len; ii++) {

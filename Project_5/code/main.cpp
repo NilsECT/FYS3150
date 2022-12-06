@@ -14,7 +14,7 @@ int main() {
     double py = 0; // Momentum of the wave in y-direction.
     double width_x = 0.05; // Deviation in x-direction of the gauss-shaped wave.
     double width_y = 0.05; // Deviation in y-direction of the gauss-shaped wave.
-    double potential = 0; // Potential of the wall
+    double potential = 1e10; // Potential of the wall
     // int n_slit = 0; // Number of slit. 
 
     //---------------------------
@@ -31,6 +31,11 @@ int main() {
     // Saving data as armadillo cube:
     //---------------------------
     exp.print("test");
+
+    //---------------------------
+    // Saving potential as armadillo matrix:
+    //---------------------------
+    exp.print_potential("pot");
 
     return 0;
 }

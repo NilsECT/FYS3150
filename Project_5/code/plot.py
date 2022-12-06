@@ -9,6 +9,9 @@ A.load("test.bin", arma_binary)
 print(size(A))
 # A.reshape(198,320,198)
 
+B = mat()
+B.load("pot.bin", arma_binary)
+
 # # print(A[:,:,0])
 # P = np.zeros((198,198,320))
 # for t in range(320):
@@ -17,7 +20,9 @@ print(size(A))
 #             P[i,ii,t] = A[i,ii,t]
 
 P = np.array(A)
+V = np.array(B)
 print(P.shape)
+print(V.shape)
 
 # for i in range(len(P[:,0,0])):
 #     plt.figure()
@@ -49,7 +54,7 @@ t_points = np.arange(0, 1+dt, dt)
 
 z_data_list = []
 for t in range(320):
-    z_data = P[t,:,:]
+    z_data = P[t,:,:] + V/1e13
     z_data_list.append(z_data)
 
 #
