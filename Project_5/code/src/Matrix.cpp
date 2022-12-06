@@ -122,7 +122,7 @@ std::vector<arma::sp_cx_dmat> Matrix::create_AB(arma::mat &V, const double h, co
         }
     }
 
-    return std::vector{create_mat(a, -r, len), create_mat(b, r, len)};
+    return std::vector<arma::sp_cx_dmat>{create_mat(a, -r, len), create_mat(b, r, len)};
 }
 
 /**
