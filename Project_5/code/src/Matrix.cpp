@@ -57,7 +57,7 @@ arma::sp_cx_dmat Matrix::create_tri(arma::cx_dvec &a, const double r, const int 
  * @param len Number of rows/columns in the matrix (square).
  * @return arma::sp_cx_dmat Sparse submatrix to be used.
  */
-arma::sp_cx_dmat Matrix::create_rdiag(const double r, const int len) {
+arma::sp_cx_dmat Matrix::create_rdiag(const std::complex<double> r, const int len) {
     arma::sp_cx_dmat temp = arma::sp_cx_dmat(len, len);
 
     temp.diag().fill(r);
@@ -73,7 +73,7 @@ arma::sp_cx_dmat Matrix::create_rdiag(const double r, const int len) {
  * @param len Number of rows/columns in the wave packet matrix (square).
  * @return arma::sp_cx_dmat 
  */
-arma::sp_cx_dmat Matrix::create_mat(arma::cx_dvec &a, const double r, const int len) {
+arma::sp_cx_dmat Matrix::create_mat(arma::cx_dvec &a, const std::complex<double> r, const int len) {
     int lenlen = len*len;
     arma::sp_cx_dmat A = arma::sp_cx_dmat(lenlen, lenlen); // L+U+D, will be named mother matrix
 
@@ -106,8 +106,8 @@ arma::sp_cx_dmat Matrix::create_mat(arma::cx_dvec &a, const double r, const int 
  */
 std::vector<arma::sp_cx_dmat> Matrix::create_AB(arma::mat &V, const double h, const double dt, const int M) {
     int len = M-2;
-    double r = dt/(h*h);
     std::complex<double> im(0., 1.);
+    std::complex<double> r = im*dt/(2*h*h);
     arma::cx_dvec a = arma::cx_dvec(len*len);
     arma::cx_dvec b = arma::cx_dvec(len*len);
 

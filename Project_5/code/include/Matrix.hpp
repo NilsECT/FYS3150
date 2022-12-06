@@ -7,9 +7,9 @@ class Matrix {
 
 protected:
 
-    arma::sp_cx_dmat create_tri(arma::cx_dvec &a, const double r, const int len, const int i);
+    arma::sp_cx_dmat create_tri(arma::cx_dvec &a, const std::complex<double> r, const int len, const int i);
 
-    arma::sp_cx_dmat create_rdiag(const double r, const int len);
+    arma::sp_cx_dmat create_rdiag(const std::complex<double> r, const int len);
 
 public:
 
@@ -21,7 +21,7 @@ public:
 
     std::tuple<int, int> single_to_pair(const int k, const int len);
 
-    arma::sp_cx_dmat create_mat(arma::cx_dvec &a, const double r, const int len);
+    arma::sp_cx_dmat create_mat(arma::cx_dvec &a, const std::complex<double> r, const int len);
 
     arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::sp_cx_dmat &B);
 
