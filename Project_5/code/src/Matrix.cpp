@@ -2,12 +2,26 @@
 #include <armadillo>
 #include <iostream>
 
-
+/**
+ * @brief Converts matrix coordinates to respective vector coordinates.
+ * 
+ * @param i Row coordinate.
+ * @param j Column coordianate.
+ * @param len Number of rows/columns in the matrix (square).
+ * @return int Vector coordinate.
+ */
 int Matrix::pair_to_single(const int i, const int j, const int len) {
     // len = M - 2
     return (j) * len + (i);
 }
 
+/**
+ * @brief Converts vector coordinates to respective matrix coordinates.
+ * 
+ * @param k vector coordinate.
+ * @param len Number of rows/columns in the matrix (square).
+ * @return std::tuple<int, int> Tuple containing the (row, column) coordinates.
+ */
 std::tuple<int, int> Matrix::single_to_pair(const int k, const int len) {
     int i = k % len;
     int j = k / len;
@@ -15,6 +29,15 @@ std::tuple<int, int> Matrix::single_to_pair(const int k, const int len) {
     return std::tuple<int, int>{i, j};
 }
 
+/**
+ * @brief Creates a tridaiagonal submatrix to implement in the mother matrix.
+ * 
+ * @param a Vector containing the values to be set in the main diagonal.
+ * @param r Value to be set in the lower and upper diagonals.
+ * @param len Number of rows/columns in the matrix (square).
+ * @param i Current column for which we are creating the subatrix.
+ * @return arma::sp_cx_dmat Sparse submatrix to be used.
+ */
 arma::sp_cx_dmat Matrix::create_tri(arma::cx_dvec &a, const double r, const int len, const int i) {
     arma::sp_cx_dmat temp = arma::sp_cx_dmat(len, len);
 
@@ -27,6 +50,13 @@ arma::sp_cx_dmat Matrix::create_tri(arma::cx_dvec &a, const double r, const int 
     return temp;
 }
 
+/**
+ * @brief Creates a diagonal matrix where the diagonal contains the value r.
+ * 
+ * @param r Value to be set in the diagonals.
+ * @param len Number of rows/columns in the matrix (square).
+ * @return arma::sp_cx_dmat Sparse submatrix to be used.
+ */
 arma::sp_cx_dmat Matrix::create_rdiag(const double r, const int len) {
     arma::sp_cx_dmat temp = arma::sp_cx_dmat(len, len);
 
@@ -35,6 +65,14 @@ arma::sp_cx_dmat Matrix::create_rdiag(const double r, const int len) {
     return temp;
 }
 
+/**
+ * @brief Creates and returns a sparse matrix as intended for the Crank-Nicolson approach.
+ * 
+ * @param a Vector containing the values to be inserted in the main diagonal.
+ * @param r Value to be set in the lower and upper diagonals.
+ * @param len Number of rows/columns in the wave packet matrix (square).
+ * @return arma::sp_cx_dmat 
+ */
 arma::sp_cx_dmat Matrix::create_mat(arma::cx_dvec &a, const double r, const int len) {
     int lenlen = len*len;
     arma::sp_cx_dmat A = arma::sp_cx_dmat(lenlen, lenlen); // L+U+D, will be named mother matrix
@@ -57,6 +95,15 @@ arma::sp_cx_dmat Matrix::create_mat(arma::cx_dvec &a, const double r, const int 
     return A;
 }
 
+/**
+ * @brief Creates and returns the need matrices A and B for the Crank-Nicolson approach.
+ * 
+ * @param V Matrix containing the potential of the system.
+ * @param h Stepsize in the spacial dimensions x and y.
+ * @param dt Stepsize in the time dimension.
+ * @param M Size of the complete matrix for the system, including the boundaries.
+ * @return std::vector<arma::sp_cx_dmat> 
+ */
 std::vector<arma::sp_cx_dmat> Matrix::create_AB(arma::mat &V, const double h, const double dt, const int M) {
     int len = M-2;
     double r = dt/(h*h);
@@ -78,6 +125,13 @@ std::vector<arma::sp_cx_dmat> Matrix::create_AB(arma::mat &V, const double h, co
     return std::vector{create_mat(a, -r, len), create_mat(b, r, len)};
 }
 
+/**
+ * @brief Multiplies matrices with values along diagonals -3, -1, 0, 1, 3 with a vector.
+ * 
+ * @param u Vector.
+ * @param B Matrix.
+ * @return arma::cx_dvec Result of the multiplication.
+ */
 arma::cx_dvec Matrix::mult_Bu(arma::cx_dvec &u, arma::sp_cx_dmat &B) {
     // trying to avoid multiplying many times by zero
     // only take the diagonals from B that matter which are 0, 1, 3, -1, and -3
@@ -135,58 +189,50 @@ arma::cx_dvec Matrix::mult_Bu(arma::cx_dvec &u, arma::sp_cx_dmat &B) {
 
 // NOT TESTED YET
 // need to figure out how to fix convergence
-// int Matrix::gauss_seidel(arma::sp_cx_dmat* mat, arma::cx_dvec* b, arma::cx_dvec* u_old, arma::cx_dvec* u_new, double criteria) {
-//     // see page 191 in Morten's lecture notes
+int Matrix::gauss_seidel(arma::sp_cx_dmat* mat, arma::cx_dvec* b, arma::cx_dvec* u_old, arma::cx_dvec* u_new, double criteria) {
+    // see page 191 in Morten's lecture notes
 
 
-//     // proposal: change u_old to be a reference to the variable you want to update
-//     int lenlen = u_old->size();
+    // proposal: change u_old to be a reference to the variable you want to update
+    int lenlen = u_old->size();
 
-//     *u_new = *b;
+    *u_new = *b;
 
-//     // diag 1 and -1
-//     for (int i = 1; i < lenlen; i++) {
-//         std::complex<double> temp_u = (u_old->at(i));
-//         std::complex<double> temp_mat = mat->diag(1).at(i-1);
-//         u_new->at(i-1) -= (temp_mat * temp_u);
+    // diag 1 and -1
+    for (int i = 1; i < lenlen; i++) {
+        std::complex<double> temp_u = (u_old->at(i));
+        std::complex<double> temp_mat = mat->diag(1).at(i-1);
+        u_new->at(i-1) -= (temp_mat * temp_u);
 
-//         temp_u = u_new->at(i-1);
-//         temp_mat = mat->diag(-1).at(i-1);
-//         u_new->at(i) -= (temp_mat * temp_u);
-//     }
+        temp_u = u_new->at(i-1);
+        temp_mat = mat->diag(-1).at(i-1);
+        u_new->at(i) -= (temp_mat * temp_u);
+    }
 
-//     // diag 3 and -3
-//     for (int i = 3; i < lenlen; i++) {
-//         std::complex<double> temp_u = (u_old->at(i));
-//         std::complex<double> temp_mat = mat->diag(3).at(i-3);
-//         u_new->at(i-3) -= (temp_mat * temp_u);
+    // diag 3 and -3
+    for (int i = 3; i < lenlen; i++) {
+        std::complex<double> temp_u = (u_old->at(i));
+        std::complex<double> temp_mat = mat->diag(3).at(i-3);
+        u_new->at(i-3) -= (temp_mat * temp_u);
 
-//         temp_u = u_new->at(i-3);
-//         temp_mat = mat->diag(-3).at(i-3);
-//         u_new->at(i) -= (temp_mat * temp_u);
-//     }
+        temp_u = u_new->at(i-3);
+        temp_mat = mat->diag(-3).at(i-3);
+        u_new->at(i) -= (temp_mat * temp_u);
+    }
 
-//     // main diag
-//     // operator / should be doing the operations elementwise
-//     *u_new /= mat->diag();
+    // main diag
+    // operator / should be doing the operations elementwise
+    *u_new /= mat->diag();
 
-//     // calc residual
-//     // Ax - b must be less than a tolerance
-//     // risky play but let's try it
-//     // if convergence criteria is met, then return the result
-//     // if not do it again, recursive style
-//     *u_old = *u_new;
+    // calc residual
+    // Ax - b must be less than a tolerance
+    // risky play but let's try it
+    // if convergence criteria is met, then return the result
+    // if not do it again, recursive style
+    *u_old = *u_new;
 
-//     arma::cx_dmat temp = arma::cx_dmat(lenlen, 5);
-
-//     for (int i=0; i < lenlen, i++) {
-//         temp.at(0) = mat->col(i) * u_new->at(i);
-//     }
-
-//     for
-
-//     return (arma::approx_equal(arma::sum(mat->each_row()%u_new->as_row(), 1), *b, "reldiff", criteria)) ? 0 : gauss_seidel(mat, b, u_old, u_new, criteria); // golfing
-// }
+    return (arma::approx_equal(this->mult_Bu(*u_new, *mat), *b, "reldiff", criteria)) ? 0 : gauss_seidel(mat, b, u_old, u_new, criteria); // golfing
+}
 
 arma::cx_dmat Matrix::reshape(arma::cx_dvec &u, int M) {
     arma::cx_dmat u_mat = arma::cx_dmat(M-2, M-2);

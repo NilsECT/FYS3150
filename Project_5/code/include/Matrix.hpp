@@ -25,7 +25,7 @@ public:
 
     arma::cx_dvec mult_Bu(arma::cx_dvec &u, arma::sp_cx_dmat &B);
 
-    // int gauss_seidel(arma::sp_cx_dmat* mat, arma::cx_dvec* b, arma::cx_dvec* u_old, arma::cx_dvec* u_new, double criteria);
+    int gauss_seidel(arma::sp_cx_dmat* mat, arma::cx_dvec* b, arma::cx_dvec* u_old, arma::cx_dvec* u_new, double criteria);
 
     arma::cx_dmat reshape(arma::cx_dvec &u, int M);
 };

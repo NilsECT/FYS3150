@@ -3,6 +3,25 @@
 #include <iostream>
 #include "Matrix.hpp"
 
+/**
+ * @brief Construct a new Experiment:: Experiment object Sets up the values for the experiments. Create the object, run the experiment then print to file.
+ * 
+ * @param h Stepsize in the spatial dimensions (x and y).
+ * @param dt Stepsize in the time dimension.
+ * @param T Total time over which to run the simulation.
+ * @param xc The center of the wave packet in the x direction.
+ * @param yc The center of the wave packet in the y direction.
+ * @param px The momentum of the wave packet in the x direction.
+ * @param py The momentum of the wave packet in the y direction.
+ * @param widthx The standard deviation squared (sigma^2) of the wave packet in the x direction.
+ * @param widthy The standard deviation squared (sigma^2) of the wave packet in the y direction.
+ * @param potential Numerical value of the desired potential.
+ * @param n_slit Number of slits.
+ * @param thickx Thickness of the walls in the x direction.
+ * @param centerx The center of the wall placement in the x direction.
+ * @param slit_sep The separation distance between the slits (the small walls in between).
+ * @param aperture The opening of the slits.
+ */
 Experiment::Experiment(double h, double dt, double T, double xc, double yc, double px, double py, double widthx, double widthy, double potential, int n_slit, double thickx, double centerx, double slit_sep, double aperture) {
     // calculate M
     M = std::round(1./h);
@@ -27,6 +46,10 @@ Experiment::Experiment(double h, double dt, double T, double xc, double yc, doub
     this->dt = dt;
 }
 
+/**
+ * @brief Runs the experiment with the values and places the values into a cube. This cube can be printed once the simulation is complete.
+ * 
+ */
 void Experiment::run() {
     Matrix matrix = Matrix();
     std::cout << "Experiment 32" << std::endl;
@@ -45,11 +68,28 @@ void Experiment::run() {
     }
 }
 
+/**
+ * @brief Prints the cube containing the simulation to a file.
+ * 
+ * @param filename 
+ */
 void Experiment::print(std::string filename) {
-    storage.save(filename + ".bin");
+    // storage.save(filename + ".csv", arma::file_type::arma_ascii);
+
 }
 
-
+/**
+ * @brief Initialiszes the wave packet and normalises it, returns the pointer to the initialised vector. All values are normalised to be in [0, 1]
+ * 
+ * @param centerx The center of the wave packet in the x direction.
+ * @param centery The center of the wave packet in the y direction.
+ * @param widthx The standard deviation squared (sigma^2) of the wave packet in the x direction.
+ * @param widthy The standard deviation squared (sigma^2) of the wave packet in the y direction.
+ * @param px The momentum of the wave packet in the x direction.
+ * @param py The momentum of the wave packet in the y direction.
+ * @param M The size of the full grid, including the boundaries.
+ * @return arma::cx_dvec*  Pointer to the initialised wave packet.
+ */
 arma::cx_dvec* Experiment::wave_init(double centerx, double centery, double widthx, double widthy, double px, double py, int M) {
     int len = M-2;
     arma::cx_dvec* u = new arma::cx_dvec(len*len);
@@ -72,11 +112,23 @@ arma::cx_dvec* Experiment::wave_init(double centerx, double centery, double widt
         }
     }
     std::cout << "Experiment 74" << std::endl;
-    *u /= norm;
+    *u /= std::sqrt(norm);
 
     return u;
 }
 
+/**
+ * @brief Creates the potential with a chosen number of slits.
+ * 
+ * @param potential The numerical value of the potential.
+ * @param M The size of the full grid, including the boundaries.
+ * @param n_slit Number of slits.
+ * @param thickx Thickness of the walls in the x direction.
+ * @param centerx The center of the wall placement in the x direction.
+ * @param slit_sep The separation distance between the slits (the small walls in between).
+ * @param aperture The opening of the slits.
+ * @return arma::mat Matrix containing the potential.
+ */
 arma::mat Experiment::potential(double potential, int M, int n_slit, double thickx, double centerx, double slit_sep, double aperture) {
     int len = M-2;
     double h = 1./len;
