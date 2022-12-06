@@ -58,7 +58,7 @@ void Experiment::run() {
     Matrix matrix = Matrix();
     
     // store initial state
-    storage.col(0) = this->probability(this->u);
+    storage.slice(0) = this->probability(this->u);
 
     // simulate
     for (int i=1; i < n_timesteps ; i++) {
@@ -79,7 +79,7 @@ void Experiment::run() {
  */
 void Experiment::print(std::string filename) {
     // storage.save(filename + ".csv", arma::file_type::arma_ascii);
-    storage.slice(0).print();
+    storage.save(filename + ".bin");
 }
 
 /**
