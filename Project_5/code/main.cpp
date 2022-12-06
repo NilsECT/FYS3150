@@ -14,12 +14,13 @@ int main() {
     double py = 0; // Momentum of the wave in y-direction.
     double width_x = 0.05; // Deviation in x-direction of the gauss-shaped wave.
     double width_y = 0.05; // Deviation in y-direction of the gauss-shaped wave.
-    int n_slit = 0; // Number of slit. 
+    double potential = 0; // Potential of the wall
+    // int n_slit = 0; // Number of slit. 
 
     //---------------------------
     // Initializing experiment:
     //---------------------------
-    Experiment exp = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, n_slit);
+    Experiment exp = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential);
 
     //---------------------------
     // Running experiment:

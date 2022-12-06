@@ -3,6 +3,25 @@
 #include <iostream>
 #include "Matrix.hpp"
 
+/**
+ * @brief Construct a new Experiment:: Experiment object
+ * 
+ * @param h Step size in the matrix where x,y \in [0,1]. Number of grid points is then 1/h^2.
+ * @param dt Time step in each time evolution.
+ * @param T Total time for simulation. 
+ * @param xc x-coordinate for the center of where the wave starts.
+ * @param yc y-coordinate for the center of where the wave starts.
+ * @param px Momentum of the wave in x-direction.
+ * @param py Momentum of the wave in y-direction.
+ * @param widthx Deviation in x-direction of the gauss-shaped wave.
+ * @param widthy Deviation in y-direction of the gauss-shaped wave.
+ * @param potential The potential value of the wall.
+ * @param n_slit Number of slits. 
+ * @param thickx Thickness of the wall.
+ * @param centerx Center of the wall
+ * @param slit_sep Width between slits
+ * @param aperture Width of each slit
+ */
 Experiment::Experiment(double h, double dt, double T, double xc, double yc, double px, double py, double widthx, double widthy, double potential, int n_slit, double thickx, double centerx, double slit_sep, double aperture) {
     // calculate M
     M = std::round(1./h);
