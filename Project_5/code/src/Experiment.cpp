@@ -59,16 +59,20 @@ void Experiment::run() {
     
     // store initial state
     storage.slice(0) = this->probability(this->u);
+    std::cout << arma::accu(storage.slice(0)) << std::endl;
 
     // simulate
     for (int i=1; i < n_timesteps ; i++) {
-        
         // calc b
         b = matrix.mult_Bu(this->u, AB.at(1));
         
         // find next timestep
         this->u = arma::spsolve(AB.at(0), b);
+        // std::cout << this->u.at(0) << std::endl;
         storage.slice(i) = this->probability(this->u);
+        
+        std::cout << arma::accu(storage.slice(i)) << std::endl;
+        // std::cout << std::endl;
     }
 }
 
@@ -90,13 +94,19 @@ void Experiment::print(std::string filename) {
  * @return arma::mat MAtrix containing the probabilities.
  */
 arma::mat Experiment::probability(arma::cx_dvec &u) {
+    //
+    // Why do we send in u, when we just use this->u?
+    //
     arma::mat prob = arma::mat(len, len);
-
     for (int j=0; j < len; j++) {
         for (int i=0; i < len; i++) {
+            
             prob(i, j) = std::real(std::conj(this->u(Matrix::pair_to_single(i, j, len))) * this->u(Matrix::pair_to_single(i, j, len)));
         }
     }
+
+    // double prob_tot = arma::accu(prob);
+    // prob = prob/prob_tot;
 
     return prob;
 }

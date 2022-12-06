@@ -1,28 +1,7 @@
-from pyarma import *
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-
-A = cube()
-A.load("test.bin", arma_binary)
-print(size(A))
-# A.reshape(198,320,198)
-
-# # print(A[:,:,0])
-# P = np.zeros((198,198,320))
-# for t in range(320):
-#     for i in range(198):
-#         for ii in range(198):
-#             P[i,ii,t] = A[i,ii,t]
-
-P = np.array(A)
-print(P.shape)
-
-# for i in range(len(P[:,0,0])):
-#     plt.figure()
-#     plt.contourf(P[i])
-#     plt.show()
 
 
 #
@@ -30,27 +9,29 @@ print(P.shape)
 #
 
 # Set up a 2D xy grid
-
 h = 0.005
 x_points = np.arange(0, 1+h, h)
 y_points = np.arange(0, 1+h, h)
 x, y = np.meshgrid(x_points, y_points, sparse=True)
 
-# plt.contourf(P[0])
-# plt.colorbar()
-# plt.legend()
-# plt.show()
-
 # Array of time points
 dt = 0.005
 t_points = np.arange(0, 1+dt, dt)
 
+# A function for a Gaussian that is travelling 
+# in the x direction and broadening as time passes
+def z(x,y,t):
+    v = 0.5
+    x_c = 0.2
+    sigma_x = 0.025 + 0.15 * t
+    return 1. / (2 * np.pi * np.sqrt(sigma_x)) * np.exp(-0.5 * (x - x_c - v * t)**2 / sigma_x**2)
 
-
+# Fill z_data_list with f(x,y,t)
 z_data_list = []
-for t in range(320):
-    z_data = P[t,:,:]
+for t in t_points:
+    z_data = z(x, y, t)
     z_data_list.append(z_data)
+
 
 #
 # Now the list z_data_list contains a series of "frames" of z(x,y,t), 
@@ -66,11 +47,10 @@ y_min, y_max = y_points[0], y_points[-1]
 
 # Create figure
 fig = plt.figure()
-
 ax = plt.gca()
 
 # Create a colour scale normalization according to the max z value in the first frame
-norm = mpl.cm.colors.Normalize(vmin=0.0, vmax=np.max(z_data_list[0]))
+norm = matplotlib.cm.colors.Normalize(vmin=0.0, vmax=np.max(z_data_list[0]))
 
 # Plot the first frame
 img = ax.imshow(z_data_list[0], extent=[x_min,x_max,y_min,y_max], cmap=plt.get_cmap("viridis"), norm=norm)
@@ -93,7 +73,7 @@ time_txt = plt.text(0.95, 0.95, "t = {:.3e}".format(t_min), color="white",
 # Function that takes care of updating the z data and other things for each frame
 def animation(i):
     # Normalize the colour scale to the current frame?
-    norm = mpl.cm.colors.Normalize(vmin=0.0, vmax=np.max(z_data_list[0]))
+    norm = matplotlib.cm.colors.Normalize(vmin=0.0, vmax=np.max(z_data_list[i]))
     img.set_norm(norm)
 
     # Update z data
@@ -106,10 +86,10 @@ def animation(i):
     return img
 
 # Use matplotlib.animation.FuncAnimation to put it all together
-anim = FuncAnimation(fig, animation, interval=1, frames=np.arange(0, len(z_data_list), 2), repeat=True, blit=0)
+anim = FuncAnimation(fig, animation, interval=1, frames=np.arange(0, len(z_data_list), 2), repeat=False, blit=0)
 
 # Run the animation!
-# plt.show()
+plt.show()
 
 # # Save the animation
-anim.save('./animation.mp4', writer="ffmpeg", bitrate=-1, fps=30)
+# anim.save('./animation.mp4', writer="ffmpeg", bitrate=-1, fps=30)
