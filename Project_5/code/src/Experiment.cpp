@@ -44,7 +44,8 @@ Experiment::Experiment(double h, double dt, double T, double xc, double yc, doub
     // generate storage
     n_timesteps = std::round(T/dt);
     storage = arma::cube(len, len, n_timesteps);
-
+    Re = arma::cx_cube(len, len, n_timesteps);
+    Im = arma::cx_cube(len, len, n_timesteps);
     // store remaining parameters
     this->T = T;
     this->dt = dt;
@@ -59,7 +60,7 @@ void Experiment::run() {
     
     // store initial state
     storage.slice(0) = this->probability(this->u);
-
+    
     // simulate
     for (int i=1; i < n_timesteps ; i++) {
         // calc b
@@ -69,6 +70,7 @@ void Experiment::run() {
         // find next timestep
         this->u = arma::spsolve(AB.at(0), b);
         storage.slice(i) = this->probability(this->u);
+        print_u(i);
     }
 }
 
@@ -92,6 +94,16 @@ void Experiment::print_potential(std::string filename) {
 }
 
 /**
+ * @brief Prints the matrix containing the potential to a file.
+ * 
+ * @param filename 
+ */
+void Experiment::save_u(std::string filename) {
+    Re.save(filename + "_Re.bin");
+    Im.save(filename + "_Im.bin");
+}
+
+/**
  * @brief Takes the computed simulation and produces a matrix containing the probabilities of where to find the particle at each grid coordinates.
  * 
  * @param u Vector containing the next timestep data.
@@ -111,6 +123,25 @@ arma::mat Experiment::probability(arma::cx_dvec &u) {
     }
 
     return prob;
+}
+
+/**
+ * @brief Takes inn the current time step and stores the real an imaginary values of i in a cube.
+ * 
+ * @param u Vector containing the next timestep data.
+ * @param len Number of rows/columns in the wave packet matrix (square).
+ */
+void Experiment::print_u(int t) {
+    Matrix matrix_2 = Matrix();
+    arma::cx_mat temp = arma::cx_mat(len,len);
+    int temp_len = len*len;
+    for (int i = 0; i < temp_len; i++) {
+        std::tuple<int,int> a = matrix_2.single_to_pair(i,len);
+        temp(std::get<0>(a),std::get<1>(a)) = this->u(i);
+        }
+    Re.slice(t) = arma::real(temp);
+    Im.slice(t) = imag(temp);
+
 }
 
 /**

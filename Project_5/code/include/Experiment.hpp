@@ -26,11 +26,17 @@ protected:
 
     arma::mat probability(arma::cx_dvec &u);
 
+
 public:
     Experiment(double h, double dt, double T, double xc, double yc, double px, double py, double widthx, double widthy, double potential, int n_slit=2, double thickx=0.02, double centerx=0.5, double slit_sep=0.05, double aperture=0.05);
     void run();
     void print(std::string filename);
     void print_potential(std::string filename);
+    void print_u(int i);
+    arma::cx_cube Re;
+    arma::cx_cube Im;
+    void save_u(std::string filename);
+
 };
 
 #endif
