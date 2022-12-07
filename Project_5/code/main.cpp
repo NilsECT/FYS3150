@@ -30,8 +30,7 @@ int main() {
     //---------------------------
     // Saving data as armadillo cube:
     //---------------------------
-    exp_1.print("No_potential");
-    exp_1.save_u("No_potential");
+    exp_1.print("Experiment_1");
 
 
     //---------------------------
@@ -49,12 +48,64 @@ int main() {
     //---------------------------
     // Saving data as armadillo cube:
     //---------------------------
-    exp_2.print("2_slits");
+    exp_2.print("Experiment_2");
 
     //---------------------------
     // Saving potential as armadillo matrix:
     //---------------------------
-    exp_2.print_potential("pot");
+    exp_2.print_potential("Experiment_2");
+
+    //---------------------------
+    // Initializing experiment nr. 3 (Two slits):
+    //---------------------------
+    width_y = 0.2; // Deviation in y-direction of the gauss-shaped wave.
+    T = 0.002; // Total time for simulation.
+    Experiment exp_3 = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential);
+
+    //---------------------------
+    // Running experiment:
+    //---------------------------
+    exp_3.run();
+
+    //---------------------------
+    // Saving data as armadillo cube:
+    //---------------------------
+    exp_3.print("Experiment_3");
+    exp_3.save_u("Experiment_3");
+
+    //---------------------------
+    // Initializing experiment nr. 4 (single-slit):
+    //--------------------------- 
+    int n_slit = 1;
+    Experiment exp_4 = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential, n_slit);
+    //---------------------------
+    // Running experiment:
+    //---------------------------
+    exp_4.run();
+
+    //---------------------------
+    // Saving data as armadillo cube:
+    //---------------------------
+    exp_4.print("Experiment_4");
+
+    //---------------------------
+    // Initializing experiment nr. 5 (triple-slit):
+    //--------------------------- 
+    int n_slit = 3;
+    Experiment exp_4 = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential, n_slit);
+    //---------------------------
+    // Running experiment:
+    //---------------------------
+    exp_4.run();
+
+    //---------------------------
+    // Saving data as armadillo cube:
+    //---------------------------
+    exp_4.print("Experiment_5");
+    
+
+
+    
 
 
     return 0;

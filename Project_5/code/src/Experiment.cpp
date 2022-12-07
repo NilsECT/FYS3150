@@ -90,7 +90,7 @@ void Experiment::print(std::string filename) {
  * @param filename 
  */
 void Experiment::print_potential(std::string filename) {
-    V.save(filename + ".bin");
+    V.save(filename + "_pot.bin");
 }
 
 /**
