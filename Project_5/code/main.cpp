@@ -7,7 +7,7 @@ int main() {
     //---------------------------
     double h = 0.005; // Step size in the matrix where x,y \in [0,1]. Number of grid points is then 1/h^2.
     double dt = 2.5e-5; // Time step in each time evolution.
-    double T = 0.008; // Total time for simulation. 
+    double T = 0.008; // Total time for simulation.
     double xc = 0.25; // x-coordinate for the center of where the wave starts.
     double yc = 0.5; // y-coordinate for the center of where the wave starts.
     double px = 200; // Momentum of the wave in x-direction.
@@ -15,7 +15,7 @@ int main() {
     double width_x = 0.05; // Deviation in x-direction of the gauss-shaped wave.
     double width_y = 0.05; // Deviation in y-direction of the gauss-shaped wave.
     double potential = 0; // Potential of the wall
-    // int n_slit = 0; // Number of slit. 
+    // int n_slit = 0; // Number of slit.
 
     //---------------------------
     // Initializing experiment. nr.1 (No potential):
@@ -75,7 +75,7 @@ int main() {
 
     //---------------------------
     // Initializing experiment nr. 4 (single-slit):
-    //--------------------------- 
+    //---------------------------
     int n_slit = 1;
     Experiment exp_4 = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential, n_slit);
     //---------------------------
@@ -90,22 +90,22 @@ int main() {
 
     //---------------------------
     // Initializing experiment nr. 5 (triple-slit):
-    //--------------------------- 
-    int n_slit = 3;
-    Experiment exp_4 = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential, n_slit);
+    //---------------------------
+    n_slit = 3;
+    Experiment exp_5 = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential, n_slit);
     //---------------------------
     // Running experiment:
     //---------------------------
-    exp_4.run();
+    exp_5.run();
 
     //---------------------------
     // Saving data as armadillo cube:
     //---------------------------
-    exp_4.print("Experiment_5");
-    
+    exp_5.print("Experiment_5");
 
 
-    
+
+
 
 
     return 0;

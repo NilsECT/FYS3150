@@ -5,7 +5,7 @@
 
 /**
  * @brief Construct a new Experiment:: Experiment object Sets up the values for the experiments. Create the object, run the experiment then print to file.
- * 
+ *
  * @param h Stepsize in the spatial dimensions (x and y).
  * @param dt Stepsize in the time dimension.
  * @param T Total time over which to run the simulation.
@@ -53,16 +53,16 @@ Experiment::Experiment(double h, double dt, double T, double xc, double yc, doub
 
 /**
  * @brief Runs the experiment with the values and places the values into a cube. This cube can be printed once the simulation is complete.
- * 
+ *
  */
 void Experiment::run() {
     Matrix matrix = Matrix();
-    
+
     // store initial state
     storage.slice(0) = this->probability(this->u);
     print_u(0);
     // simulate
-    for (int i=1; i < n_timesteps ; i++) {
+    for (int i=1; i < n_timesteps + 1 ; i++) {
         // calc b
         // b = matrix.mult_Bu(this->u, AB.at(1));
         b = AB.at(1) * this->u;
@@ -76,8 +76,8 @@ void Experiment::run() {
 
 /**
  * @brief Prints the cube containing the simulation to a file.
- * 
- * @param filename 
+ *
+ * @param filename
  */
 void Experiment::print(std::string filename) {
     // storage.save(filename + ".csv", arma::file_type::arma_ascii);
@@ -86,8 +86,8 @@ void Experiment::print(std::string filename) {
 
 /**
  * @brief Prints the matrix containing the potential to a file.
- * 
- * @param filename 
+ *
+ * @param filename
  */
 void Experiment::print_potential(std::string filename) {
     V.save(filename + "_pot.bin");
@@ -95,8 +95,8 @@ void Experiment::print_potential(std::string filename) {
 
 /**
  * @brief Prints two matrices containing the real and imaginary part of u.
- * 
- * @param filename 
+ *
+ * @param filename
  */
 void Experiment::save_u(std::string filename) {
     Re.save(filename + "_Re.bin");
@@ -105,7 +105,7 @@ void Experiment::save_u(std::string filename) {
 
 /**
  * @brief Takes the computed simulation and produces a matrix containing the probabilities of where to find the particle at each grid coordinates.
- * 
+ *
  * @param u Vector containing the next timestep data.
  * @param len Number of rows/columns in the wave packet matrix (square).
  * @return arma::mat MAtrix containing the probabilities.
@@ -117,7 +117,7 @@ arma::mat Experiment::probability(arma::cx_dvec &u) {
     arma::mat prob = arma::mat(len, len);
     for (int j=0; j < len; j++) {
         for (int i=0; i < len; i++) {
-            
+
             prob(i, j) = std::real(std::conj(this->u(Matrix::pair_to_single(i, j, len))) * this->u(Matrix::pair_to_single(i, j, len)));
         }
     }
@@ -127,7 +127,7 @@ arma::mat Experiment::probability(arma::cx_dvec &u) {
 
 /**
  * @brief Takes inn the current time step and stores the real an imaginary values of i in a cube.
- * 
+ *
  * @param t Current time step.
  */
 void Experiment::print_u(int t) {
@@ -145,7 +145,7 @@ void Experiment::print_u(int t) {
 
 /**
  * @brief Initialiszes the wave packet and normalises it, returns the pointer to the initialised vector. All values are normalised to be in [0, 1]
- * 
+ *
  * @param centerx The center of the wave packet in the x direction.
  * @param centery The center of the wave packet in the y direction.
  * @param widthx The standard deviation squared (sigma^2) of the wave packet in the x direction.
@@ -161,20 +161,20 @@ arma::cx_dvec Experiment::wave_init(double centerx, double centery, double width
     double h = 1./len;
     std::complex<double> im(0., 1.);
     //std::complex<double> norm = 0.;
-    
+
     // i is y and j is x
     for (int i=0; i<(len); i++) {
         for (int j=0; j<(len); j++) {
 
             double temp_x = ((h*(j+1)) - centerx);
             double temp_y = ((h*(i+1)) - centery);
-            
+
             std::complex<double> arg = std::exp(-(temp_x*temp_x/(2*widthx*widthx)) - (temp_y*temp_y/(2*widthy*widthy)) + im*(px*temp_x) + im*(py*temp_y));
-            
+
             u(Matrix::pair_to_single(i, j, len)) = arg;
         }
     }
-    
+
     u = u / std::sqrt(arma::accu(arma::conj(u) % u));
 
     return u;
@@ -182,7 +182,7 @@ arma::cx_dvec Experiment::wave_init(double centerx, double centery, double width
 
 /**
  * @brief Creates the potential with a chosen number of slits.
- * 
+ *
  * @param potential The numerical value of the potential.
  * @param M The size of the full grid, including the boundaries.
  * @param n_slit Number of slits.
@@ -219,7 +219,7 @@ arma::mat Experiment::potential(double potential, int M, int n_slit, double thic
 
         // if we have more than one slit then we enter this while loop and place the remaining slits
         while (counter > 0) {
-            
+
             // first we place the wall
             for (int ii=0; ii<len_slit_sep; ii++) {
                 for (int j=j_start; j<j_end; j++) {
@@ -228,7 +228,7 @@ arma::mat Experiment::potential(double potential, int M, int n_slit, double thic
 
                     // lower wall
                     V(i_loc_down, j) = potential;
-                    
+
                 }
                 i_loc_up--;
                 i_loc_down++;
@@ -290,7 +290,7 @@ arma::mat Experiment::potential(double potential, int M, int n_slit, double thic
         // then we make the remaining slits if there are some
         // this is identical to the while loop above
         while (counter > 0) {
-            
+
             // first we place the wall
             for (int ii=0; ii<len_slit_sep; ii++) {
                 for (int j=j_start; j<j_end; j++) {
@@ -299,7 +299,7 @@ arma::mat Experiment::potential(double potential, int M, int n_slit, double thic
 
                     // lower wall
                     V(i_loc_down, j) = potential;
-                    
+
                 }
                 i_loc_up--;
                 i_loc_down++;
