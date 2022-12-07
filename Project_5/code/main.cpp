@@ -91,17 +91,17 @@ int main() {
     //---------------------------
     // Initializing experiment nr. 5 (triple-slit):
     //--------------------------- 
-    int n_slit = 3;
-    Experiment exp_4 = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential, n_slit);
+    n_slit = 3;
+    Experiment exp_5 = Experiment(h, dt, T, xc, yc, px, py, width_x, width_y, potential, n_slit);
     //---------------------------
     // Running experiment:
     //---------------------------
-    exp_4.run();
+    exp_5.run();
 
     //---------------------------
     // Saving data as armadillo cube:
     //---------------------------
-    exp_4.print("Experiment_5");
+    exp_5.print("Experiment_5");
     
 
 
