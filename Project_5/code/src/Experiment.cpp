@@ -60,7 +60,7 @@ void Experiment::run() {
     
     // store initial state
     storage.slice(0) = this->probability(this->u);
-    
+    print_u(0);
     // simulate
     for (int i=1; i < n_timesteps ; i++) {
         // calc b
@@ -94,7 +94,7 @@ void Experiment::print_potential(std::string filename) {
 }
 
 /**
- * @brief Prints the matrix containing the potential to a file.
+ * @brief Prints two matrices containing the real and imaginary part of u.
  * 
  * @param filename 
  */
@@ -128,8 +128,7 @@ arma::mat Experiment::probability(arma::cx_dvec &u) {
 /**
  * @brief Takes inn the current time step and stores the real an imaginary values of i in a cube.
  * 
- * @param u Vector containing the next timestep data.
- * @param len Number of rows/columns in the wave packet matrix (square).
+ * @param t Current time step.
  */
 void Experiment::print_u(int t) {
     Matrix matrix_2 = Matrix();
