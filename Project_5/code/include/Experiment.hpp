@@ -33,8 +33,8 @@ public:
     void print(std::string filename);
     void print_potential(std::string filename);
     void print_u(int i);
-    arma::cx_cube Re;
-    arma::cx_cube Im;
+    arma::cube Re;
+    arma::cube Im;
     void save_u(std::string filename);
 
 };

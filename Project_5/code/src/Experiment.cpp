@@ -44,8 +44,8 @@ Experiment::Experiment(double h, double dt, double T, double xc, double yc, doub
     // generate storage
     n_timesteps = std::round(T/dt);
     storage = arma::cube(len, len, n_timesteps);
-    Re = arma::cx_cube(len, len, n_timesteps);
-    Im = arma::cx_cube(len, len, n_timesteps);
+    Re = arma::cube(len, len, n_timesteps);
+    Im = arma::cube(len, len, n_timesteps);
     // store remaining parameters
     this->T = T;
     this->dt = dt;
@@ -140,7 +140,7 @@ void Experiment::print_u(int t) {
         temp(std::get<0>(a),std::get<1>(a)) = this->u(i);
         }
     Re.slice(t) = arma::real(temp);
-    Im.slice(t) = imag(temp);
+    Im.slice(t) = arma::imag(temp);
 
 }
 

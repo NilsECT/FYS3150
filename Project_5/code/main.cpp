@@ -31,6 +31,7 @@ int main() {
     // Saving data as armadillo cube:
     //---------------------------
     exp_1.print("No_potential");
+    exp_1.save_u("No_potential");
 
 
     //---------------------------
