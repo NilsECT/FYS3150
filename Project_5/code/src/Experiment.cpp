@@ -43,9 +43,9 @@ Experiment::Experiment(double h, double dt, double T, double xc, double yc, doub
 
     // generate storage
     n_timesteps = std::round(T/dt);
-    storage = arma::cube(len, len, n_timesteps);
-    Re = arma::cube(len, len, n_timesteps);
-    Im = arma::cube(len, len, n_timesteps);
+    storage = arma::cube(len, len, n_timesteps + 1);
+    Re = arma::cube(len, len, n_timesteps + 1);
+    Im = arma::cube(len, len, n_timesteps + 1);
     // store remaining parameters
     this->T = T;
     this->dt = dt;
