@@ -3,118 +3,212 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
+import seaborn as sns
+import pandas as pd
 
 A = cube()
-A.load("test.bin", arma_binary)
+A.load("Experiment_3.bin", arma_binary)
 print(size(A))
-# A.reshape(198,320,198)
-
-B = mat()
-B.load("pot.bin", arma_binary)
-
-# # print(A[:,:,0])
-# P = np.zeros((198,198,320))
-# for t in range(320):
-#     for i in range(198):
-#         for ii in range(198):
-#             P[i,ii,t] = A[i,ii,t]
-
 P = np.array(A)
-V = np.array(B)
-print(P.shape)
-print(V.shape)
 
-# for i in range(len(P[:,0,0])):
-#     plt.figure()
-#     plt.contourf(P[i])
-#     plt.show()
+u = cube()
+u.load('Experiment_3_Re.bin', arma_binary)
+u_real = np.array(u)
+
+u.load('Experiment_3_Im.bin', arma_binary)
+u_imag = np.array(u)
+
+# B = mat()
+# B.load("pot.bin", arma_binary)
+# V = np.array(B)
+
+sns.set_theme()
+
+########### Plot sum of probabilities over time:
+
+A = cube()
+A.load("Experiment_1.bin", arma_binary)
+P_zero = np.array(A)
+
+A.load("Experiment_2.bin", arma_binary)
+P_double = np.array(A)
+
+# Array of time points
+dt = 2.5e-5
+T = 0.008
+t_points = np.arange(0, T + dt, dt)
+
+prob = np.abs(np.sum(P_zero, axis=(1, 2)) - 1)
+sns.lineplot(y = prob, x = t_points, label='No slits')
+
+prob = np.abs(np.sum(P_double, axis=(1, 2)) - 1)
+sns.lineplot(y = prob, x = t_points, label='2 slits')
+
+plt.xlabel('Time')
+plt.ylabel(f'$| |p(x, y; t)|^2 - 1 |$')
+
+plt.savefig('figs/probability.pdf')
 
 
-#
-# Let's generate a dummy time series for a function z(x,y,t)
-#
-
-# Set up a 2D xy grid
-
+########### Plot colour maps:
 h = 0.005
 x_points = np.arange(0, 1+h, h)
 y_points = np.arange(0, 1+h, h)
 x, y = np.meshgrid(x_points, y_points, sparse=True)
 
-# plt.contourf(P[0])
-# plt.colorbar()
-# plt.legend()
-# plt.show()
-
 # Array of time points
-dt = 0.005
-t_points = np.arange(0, 1+dt, dt)
-
-
-
-z_data_list = []
-for t in range(320):
-    z_data = P[t,:,:] + V/1e13
-    z_data_list.append(z_data)
-
-#
-# Now the list z_data_list contains a series of "frames" of z(x,y,t), 
-# where each frame can be plotted as a 2D image using imshow. Let's
-# animate it!
-#
+T = 0.002
+t_points = np.arange(0, T, dt)
 
 # Some settings
 fontsize = 12
-t_min = t_points[0]
 x_min, x_max = x_points[0], x_points[-1]
 y_min, y_max = y_points[0], y_points[-1]
 
-# Create figure
-fig = plt.figure()
 
-ax = plt.gca()
+time_points = np.array([0, 0.001, 0.0015])
 
-# Create a colour scale normalization according to the max z value in the first frame
-norm = mpl.cm.colors.Normalize(vmin=0.0, vmax=np.max(z_data_list[0]))
+for t in time_points:
 
-# Plot the first frame
-img = ax.imshow(z_data_list[0], extent=[x_min,x_max,y_min,y_max], cmap=plt.get_cmap("viridis"), norm=norm)
+    ### Plot colourmap of probability:
 
-# Axis labels
-plt.xlabel("x", fontsize=fontsize)
-plt.ylabel("y", fontsize=fontsize)
-plt.xticks(fontsize=fontsize)
-plt.yticks(fontsize=fontsize)
+    t_idx = int(t / dt)
 
-# Add a colourbar
-cbar = fig.colorbar(img, ax=ax)
-cbar.set_label("z(x,y,t)", fontsize=fontsize)
-cbar.ax.tick_params(labelsize=fontsize)
+    # Create figure
+    fig = plt.figure(figsize=(8, 7))
 
-# Add a text element showing the time
-time_txt = plt.text(0.95, 0.95, "t = {:.3e}".format(t_min), color="white", 
-                    horizontalalignment="right", verticalalignment="top", fontsize=fontsize)
+    ax = plt.gca()
+    ax.grid(False)
 
-# Function that takes care of updating the z data and other things for each frame
-def animation(i):
-    # Normalize the colour scale to the current frame?
-    norm = mpl.cm.colors.Normalize(vmin=0.0, vmax=np.max(z_data_list[0]))
+    norm = mpl.cm.colors.Normalize(vmin=0.0, vmax=np.max(P[t_idx, :, :]))
+
+    # Plot the first frame
+    img = ax.imshow(P[t_idx, :, :], extent=[x_min,x_max,y_min,y_max], cmap=plt.get_cmap("hot"), norm=norm)
     img.set_norm(norm)
+    # Axis labels
+    plt.xlabel("$x$", fontsize=fontsize)
+    plt.ylabel("$y$", fontsize=fontsize)
+    plt.xticks(fontsize=fontsize)
+    plt.yticks(fontsize=fontsize)
 
-    # Update z data
-    img.set_data(z_data_list[i])
+    # Add a colourbar
+    cbar = fig.colorbar(img, ax=ax)
+    cbar.set_label(f"$p(x,y; t = ${t})", fontsize=fontsize)
+    cbar.ax.tick_params(labelsize=fontsize)
+    plt.savefig(f'figs/colourmap_{t}.pdf')
 
-    # Update the time label
-    current_time = t_min + i * dt
-    time_txt.set_text("t = {:.3e}".format(current_time))
+    ### Plot real part:
 
-    return img
+    # Create figure
+    fig = plt.figure(figsize=(8, 7))
 
-# Use matplotlib.animation.FuncAnimation to put it all together
-anim = FuncAnimation(fig, animation, interval=1, frames=np.arange(0, len(z_data_list), 2), repeat=True, blit=0)
+    ax = plt.gca()
+    ax.grid(False)
 
-# Run the animation!
+    norm = mpl.cm.colors.Normalize(vmin=0.0, vmax=np.max(u_real[t_idx, :, :]))
+
+    # Plot the first frame
+    img = ax.imshow(u_real[t_idx, :, :], extent=[x_min,x_max,y_min,y_max], cmap=plt.get_cmap("hot"), norm=norm)
+    img.set_norm(norm)
+    # Axis labels
+    plt.xlabel("$x$", fontsize=fontsize)
+    plt.ylabel("$y$", fontsize=fontsize)
+    plt.xticks(fontsize=fontsize)
+    plt.yticks(fontsize=fontsize)
+
+    # Add a colourbar
+    cbar = fig.colorbar(img, ax=ax)
+    cbar.set_label(f"Real part of $u(x,y; t = {t})$", fontsize=fontsize)
+    cbar.ax.tick_params(labelsize=fontsize)
+    plt.savefig(f'figs/colourmap_real_{t}.pdf')
+
+    ### Plot imaginary part:
+
+    # Create figure
+    fig = plt.figure(figsize=(8, 7))
+
+    ax = plt.gca()
+    ax.grid(False)
+
+    norm = mpl.cm.colors.Normalize(vmin=0.0, vmax=np.max(u_imag[t_idx, :, :]))
+
+    # Plot the first frame
+    img = ax.imshow(u_imag[t_idx, :, :], extent=[x_min,x_max,y_min,y_max], cmap=plt.get_cmap("hot"), norm=norm)
+    img.set_norm(norm)
+    # Axis labels
+    plt.xlabel("$x$", fontsize=fontsize)
+    plt.ylabel("$y$", fontsize=fontsize)
+    plt.xticks(fontsize=fontsize)
+    plt.yticks(fontsize=fontsize)
+
+    # Add a colourbar
+    cbar = fig.colorbar(img, ax=ax)
+    cbar.set_label(f"Imaginary part of $u(x,y; t = {t})$", fontsize=fontsize)
+    cbar.ax.tick_params(labelsize=fontsize)
+    plt.savefig(f'figs/colourmap_imag_{t}.pdf')
+
+
+########### Plot "detector screen" for different slit numbers:
+
+# def load_detection_experiment(number):
+#     A = cube()
+#     A.load(f"Experiment_{number}.bin", arma_binary)
+#     P_detection = np.array(A)
+#
+#     # Find indices corresponding to t = 0.002, x = 0.8
+#     x_coord = 0.8
+#     t = 0.002
+#     t_idx = -1
+#     x_idx = int(x_coord / h)
+#
+#     return P_detection[t_idx, x_idx, :]/max(P_detection[t_idx, x_idx, :])
+
+A = cube()
+A.load("Experiment_3.bin", arma_binary)
+P_double = np.array(A)
+
+A.load("Experiment_4.bin", arma_binary)
+P_single = np.array(A)
+
+A.load("Experiment_5.bin", arma_binary)
+P_triple = np.array(A)
+
+# Find indices corresponding to t = 0.002, x = 0.8
+x_coord = 0.8
+t = 0.002
+t_idx = -1
+x_idx = int(x_coord / h)
+
+# Set plotting parameters
+palette = sns.color_palette("colorblind")
+sns.set_palette(palette=palette, desat=0.9, color_codes=True)
+
+# Create figure
+plt.figure(figsize=(12, 7))
+
+x_points = np.linspace(y_min, y_max, len(P[t_idx, x_idx, :]))
+
+# sns.lineplot(y=load_detection_experiment(3), x=x_points, label='Two slits')
+# sns.lineplot(y=load_detection_experiment(4), x=x_points, label='One slit')
+# sns.lineplot(y=load_detection_experiment(5), x=x_points, label='Three slits')
+#
+sns.lineplot(y=P_double[t_idx, x_idx, :] / np.max(P_double[t_idx, x_idx, :]), x=x_points, label='Two slits')
+sns.lineplot(y=P_single[t_idx, x_idx, :] / np.max(P_single[t_idx, x_idx, :]), x=x_points, label='One slit')
+sns.lineplot(y=P_triple[t_idx, x_idx, :] / np.max(P_triple[t_idx, x_idx, :]), x=x_points, label='Three slits')
+
+plt.xlabel('$y$')
+plt.ylabel(f'$p(y | x = 0.8; t = {t})$')
+plt.savefig(f'figs/detectionscreen.pdf')
+
+# fig = sns.heatmap(data = P[0, :, :])
+# fig.set_xticks(np.linspace(0, 1, len(x_points)))
+
+# for idx, (label, label2) in enumerate(zip(fig.get_xticklabels(), fig.get_yticklabels())):
+#     if idx % 2 == 0:
+#         label.set_visible(True)
+#         label2.set_visible(True)
+#     else:
+#         label.set_visible(False)
+#         label2.set_visible(False)
+
 # plt.show()
-
-# # Save the animation
-anim.save('./animation.mp4', writer="ffmpeg", bitrate=-1, fps=30)
