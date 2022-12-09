@@ -33,6 +33,7 @@ temp*
 *.txt
 *.csv
 *.dat
+*.bin
 
 # REVTeX-specific:
 *Notes.bib
