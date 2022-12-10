@@ -121,9 +121,13 @@ P_triple = np.array(A)
 # Find indices corresponding to t = 0.002, x = 0.8
 x_coord = 0.8
 t = 0.002
+<<<<<<< HEAD
 t_idx = int(t / dt)
 print(t_idx)
+=======
+>>>>>>> 14e28c4e9e26bd232cfa79306b56c88795ddb3a3
 x_idx = int(x_coord / h)
+
 
 # Set plotting parameters
 palette = sns.color_palette("colorblind")
@@ -134,9 +138,15 @@ plt.figure(figsize=(12, 7))
 
 x_points = np.linspace(y_min, y_max, len(P_double[t_idx, x_idx, :]))
 
+<<<<<<< HEAD
 sns.lineplot(y=P_double[t_idx, x_idx, :] / np.sum(P_double[t_idx, x_idx, :]), x=x_points, label='Two slits')
 sns.lineplot(y=P_single[t_idx, x_idx, :] / np.sum(P_single[t_idx, x_idx, :]), x=x_points, label='One slit')
 sns.lineplot(y=P_triple[t_idx, x_idx, :] / np.sum(P_triple[t_idx, x_idx, :]), x=x_points, label='Three slits')
+=======
+sns.lineplot(y=P_double[t_idx, :, x_idx] / np.sum(P_double[t_idx, :, x_idx]), x=x_points, label='Two slits')
+sns.lineplot(y=P_single[t_idx, :, x_idx] / np.sum(P_single[t_idx, :, x_idx]), x=x_points, label='One slit')
+sns.lineplot(y=P_triple[t_idx, :, x_idx] / np.sum(P_triple[t_idx, :, x_idx]), x=x_points, label='Three slits')
+>>>>>>> 14e28c4e9e26bd232cfa79306b56c88795ddb3a3
 
 fontsize = 22
 plt.xlabel('$y$', fontsize=fontsize)
