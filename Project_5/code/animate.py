@@ -5,24 +5,13 @@ import numpy as np
 from matplotlib.animation import FuncAnimation
 
 A = cube()
-A.load("test.bin", arma_binary)
-print(size(A))
-# A.reshape(198,320,198)
+A.load("Experiment_4.bin", arma_binary)
 
 B = mat()
 B.load("pot.bin", arma_binary)
 
-# # print(A[:,:,0])
-# P = np.zeros((198,198,320))
-# for t in range(320):
-#     for i in range(198):
-#         for ii in range(198):
-#             P[i,ii,t] = A[i,ii,t]
-
 P = np.array(A)
 V = np.array(B)
-print(P.shape)
-print(V.shape)
 
 # for i in range(len(P[:,0,0])):
 #     plt.figure()
@@ -51,11 +40,11 @@ dt = 2.5e-5
 T = 0.002
 t_points = np.arange(0, 1+dt, dt)
 
-
+shape = P.shape
 
 z_data_list = []
-for t in range(320):
-    z_data = P[t,:,:] + V/1e13
+for t in range(shape[0]):   # run through time-points
+    z_data = P[t,:,:] #+ V/1e13
     z_data_list.append(z_data)
 
 #
@@ -118,4 +107,4 @@ anim = FuncAnimation(fig, animation, interval=1, frames=np.arange(0, len(z_data_
 # plt.show()
 
 # # Save the animation
-anim.save('./animation2.mp4', writer="ffmpeg", bitrate=-1, fps=30)
+anim.save('./animation.mp4', writer="ffmpeg", bitrate=-1, fps=30)
