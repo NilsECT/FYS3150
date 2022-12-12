@@ -6,6 +6,36 @@ from matplotlib.animation import FuncAnimation
 import seaborn as sns
 import pandas as pd
 
+def turn_the_lights_down_low():
+    """
+    Function for setting the plotting environment equal for all plots
+    """
+
+    context = {'font.size': 22.0,
+                'axes.labelsize': 22.0,
+                'axes.titlesize': 22.0,
+                'xtick.labelsize': 22.0,
+                'ytick.labelsize': 22.0,
+                'legend.fontsize': 22.0,
+                'legend.title_fontsize': None,
+                'axes.linewidth': 0.8,
+                'grid.linewidth': 0.8,
+                'lines.linewidth': 1.5,
+                'lines.markersize': 6.0,
+                'patch.linewidth': 1.0,
+                'xtick.major.width': 0.8,
+                'ytick.major.width': 0.8,
+                'xtick.minor.width': 0.6,
+                'ytick.minor.width': 0.6,
+                'xtick.major.size': 3.5,
+                'ytick.major.size': 3.5,
+                'xtick.minor.size': 2.0,
+                'ytick.minor.size': 2.0}
+
+    sns.set_theme(context=context, style="whitegrid", palette="colorblind", font="sans-serif", font_scale=1)
+
+turn_the_lights_down_low()
+
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["mathtext.fontset"] = "dejavuserif"
 plt.rcParams['font.size'] = '16'
