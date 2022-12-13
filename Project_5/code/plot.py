@@ -6,6 +6,12 @@ from matplotlib.animation import FuncAnimation
 import seaborn as sns
 import pandas as pd
 
+plt.rcParams["font.family"] = "serif"
+plt.rcParams["mathtext.fontset"] = "dejavuserif"
+plt.rcParams['font.size'] = '16'
+
+sns.set_theme("notebook", "whitegrid")
+
 def turn_the_lights_down_low():
     """
     Function for setting the plotting environment equal for all plots
@@ -32,21 +38,14 @@ def turn_the_lights_down_low():
                 'xtick.minor.size': 2.0,
                 'ytick.minor.size': 2.0}
 
+    plt.rcParams['text.usetex'] = True
     sns.set_theme(context=context, style="whitegrid", palette="colorblind", font="sans-serif", font_scale=1)
 
 turn_the_lights_down_low()
 
-plt.rcParams["font.family"] = "serif"
-plt.rcParams["mathtext.fontset"] = "dejavuserif"
-plt.rcParams['font.size'] = '16'
-
-sns.set_theme("notebook", "whitegrid")
-
 # B = mat()
 # B.load("pot.bin", arma_binary)
 # V = np.array(B)
-
-sns.set_theme()
 
 ########### Plot sum of probabilities over time:
 
@@ -72,8 +71,8 @@ prob = np.abs(np.sum(P_double, axis=(1, 2)) - 1)
 sns.lineplot(y = prob, x = t_points, label='2 slits')
 
 plt.legend()
-plt.xlabel('Time', fontsize=fontsize)
-plt.ylabel(f'$| |p(x, y; t)|^2 - 1 |$', fontsize=fontsize)
+plt.xlabel('Time')
+plt.ylabel(f'$| |p(x, y; t)|^2 - 1 |$')
 plt.tick_params(axis='both', which='major', labelsize=fontsize-1)
 plt.savefig('figs/probability.pdf')
 
@@ -105,7 +104,6 @@ for filename, label in zip(filenames, ['full', 'real', 'imag']):
     probability = np.array(A)
 
     fig, axs = plt.subplots(1, 3, figsize=(16, 7))
-    fontsize = 15
 
     for i, t in enumerate(time_points):
 
@@ -114,17 +112,17 @@ for filename, label in zip(filenames, ['full', 'real', 'imag']):
         axs[i].grid(False)
 
         norm = mpl.cm.colors.Normalize(vmin=0.0, vmax=np.max(probability[t_idx, :, :]))
-        img = axs[i].imshow(probability[t_idx, :, :], extent=[x_min,x_max,y_min,y_max], cmap=plt.get_cmap("hot"))#, norm=norm)
+        img = axs[i].imshow(probability[t_idx, :, :], extent=[x_min,x_max,y_min,y_max], cmap=plt.get_cmap("hot"))
         img.set_norm(norm)
 
         cbar = fig.colorbar(img, ax=axs[i],orientation="horizontal", pad=.2, fraction = 0.05)
 
-        cbar.set_label(f'$p(x,y; t)$', fontsize=fontsize)
+        cbar.set_label(f'$p(x,y; t)$')
         cbar.ax.tick_params(labelsize=fontsize)
         axs[i].tick_params(axis='both', which='major', labelsize=fontsize)
 
-        axs[i].set_xlabel("$x$", fontsize=fontsize)
-        axs[i].set_ylabel("$y$", fontsize=fontsize)
+        axs[i].set_xlabel("$x$")
+        axs[i].set_ylabel("$y$")
 
 
         axs[i].title.set_text(f'$t = {t}$')
@@ -168,10 +166,7 @@ sns.lineplot(y=P_double[t_idx, :, x_idx] / np.sum(P_double[t_idx, :, x_idx]), x=
 sns.lineplot(y=P_single[t_idx, :, x_idx] / np.sum(P_single[t_idx, :, x_idx]), x=x_points, label='One slit')
 sns.lineplot(y=P_triple[t_idx, :, x_idx] / np.sum(P_triple[t_idx, :, x_idx]), x=x_points, label='Three slits')
 
-fontsize = 22
-plt.xlabel('$y$', fontsize=fontsize)
-plt.ylabel(f'$p(y | x = 0.8; t = {t})$', fontsize=fontsize)
-plt.legend(fontsize=fontsize)
-plt.xticks(fontsize=fontsize)
-plt.yticks(fontsize=fontsize)
+plt.xlabel('$y$')
+plt.ylabel(f'$p(y | x = 0.8; t = {t})$')
+plt.legend()
 plt.savefig(f'figs/detectionscreen.pdf')
