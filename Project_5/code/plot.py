@@ -44,10 +44,6 @@ def turn_the_lights_down_low():
 
 turn_the_lights_down_low()
 
-# B = mat()
-# B.load("pot.bin", arma_binary)
-# V = np.array(B)
-
 ########### Plot sum of probabilities over time:
 
 A = cube()
