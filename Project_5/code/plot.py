@@ -2,9 +2,7 @@ from pyarma import *
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.animation import FuncAnimation
 import seaborn as sns
-import pandas as pd
 
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["mathtext.fontset"] = "dejavuserif"
@@ -71,7 +69,7 @@ plt.legend()
 plt.xlabel('Time')
 plt.ylabel(f'$| |p(x, y; t)|^2 - 1 |$')
 plt.tick_params(axis='both', which='major', labelsize=fontsize-1)
-plt.savefig('figs/probability.pdf')
+plt.savefig('probability.pdf')
 
 
 ########### Plot colour maps:
@@ -104,7 +102,7 @@ for filename, label in zip(filenames, ['full', 'real', 'imag']):
 
     for i, t in enumerate(time_points):
 
-        t_idx = int(t / dt)
+        t_idx = int(t / dt) # index for current time-step
 
         axs[i].grid(False)
 
@@ -121,14 +119,13 @@ for filename, label in zip(filenames, ['full', 'real', 'imag']):
         axs[i].set_xlabel("$x$")
         axs[i].set_ylabel("$y$")
 
-
         axs[i].title.set_text(f'$t = {t}$')
 
     plt.tight_layout()
     # Make space for title
     plt.subplots_adjust(top=0.99)
 
-    plt.savefig(f'figs/colourmap_{label}.pdf')
+    plt.savefig(f'colourmap_{label}.pdf')
 
 
 ########### Plot "detector screen" for different slit numbers:
@@ -166,4 +163,4 @@ sns.lineplot(y=P_triple[t_idx, :, x_idx] / np.sum(P_triple[t_idx, :, x_idx]), x=
 plt.xlabel('$y$')
 plt.ylabel(f'$p(y | x = 0.8; t = {t})$')
 plt.legend()
-plt.savefig(f'figs/detectionscreen.pdf')
+plt.savefig(f'detectionscreen.pdf')
