@@ -5,19 +5,13 @@ import numpy as np
 from matplotlib.animation import FuncAnimation
 
 A = cube()
-A.load("Experiment_4.bin", arma_binary)
+A.load("Experiment_2.bin", arma_binary)
 
 B = mat()
-B.load("pot.bin", arma_binary)
+B.load("Experiment_2_pot.bin", arma_binary)
 
 P = np.array(A)
 V = np.array(B)
-
-# for i in range(len(P[:,0,0])):
-#     plt.figure()
-#     plt.contourf(P[i])
-#     plt.show()
-
 
 #
 # Let's generate a dummy time series for a function z(x,y,t)
@@ -29,11 +23,6 @@ h = 0.005
 x_points = np.arange(0, 1+h, h)
 y_points = np.arange(0, 1+h, h)
 x, y = np.meshgrid(x_points, y_points, sparse=True)
-
-# plt.contourf(P[0])
-# plt.colorbar()
-# plt.legend()
-# plt.show()
 
 # Array of time points
 dt = 2.5e-5
@@ -102,9 +91,6 @@ def animation(i):
 
 # Use matplotlib.animation.FuncAnimation to put it all together
 anim = FuncAnimation(fig, animation, interval=1, frames=np.arange(0, len(z_data_list), 2), repeat=True, blit=0)
-
-# Run the animation!
-# plt.show()
 
 # # Save the animation
 anim.save('./animation.mp4', writer="ffmpeg", bitrate=-1, fps=30)
