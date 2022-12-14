@@ -39,7 +39,8 @@ def turn_the_lights_down_low():
                 'ytick.minor.size': 2.0}
 
     plt.rcParams['text.usetex'] = True
-    sns.set_theme(context=context, style="whitegrid", palette="colorblind", font="sans-serif", font_scale=1)
+    sns.set_theme(context=context, palette="colorblind", font="sans-serif", font_scale=1)
+    sns.set_style("whitegrid", {'axes.linewidth': 2, 'axes.edgecolor':'black'})
 
 turn_the_lights_down_low()
 
