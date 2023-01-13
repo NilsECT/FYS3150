@@ -28,6 +28,10 @@ temp*
 *.vrb
 
 *.pdf
+!FYS3150-PDE.pdf
+!FYS3150_Ising_Model.pdf
+!Penning_trap_FYS3150.pdf
+
 
 # Intermediate files
 *.txt
