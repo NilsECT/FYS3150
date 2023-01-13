@@ -27,8 +27,6 @@ temp*
 *.snm
 *.vrb
 
-*.pdf
-
 # Intermediate files
 *.txt
 *.csv
